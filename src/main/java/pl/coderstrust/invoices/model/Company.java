@@ -2,30 +2,28 @@ package pl.coderstrust.invoices.model;
 
 import java.util.Objects;
 
-public class Company {
+final public class Company {
 
-    private String name;
-    private String taxIdentificationNumber;
+    final private Long id;
+    final private String name;
+    final private String taxIdentificationNumber;
 
-    public Company(String name, String taxIdentificationNumber) {
+    public Company(Long id, String name, String taxIdentificationNumber) {
+        this.id = id;
         this.name = name;
         this.taxIdentificationNumber = taxIdentificationNumber;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getTaxIdentificationNumber() {
         return taxIdentificationNumber;
-    }
-
-    public void setTaxIdentificationNumber(String taxIdentificationNumber) {
-        this.taxIdentificationNumber = taxIdentificationNumber;
     }
 
     @Override

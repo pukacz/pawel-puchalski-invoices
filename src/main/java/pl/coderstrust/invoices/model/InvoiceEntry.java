@@ -3,14 +3,18 @@ package pl.coderstrust.invoices.model;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public class InvoiceEntry {
+final public class InvoiceEntry {
 
-    private String productName;
-    private String amount;
-    private BigDecimal price;
-    private VAT vat;
+    final private Long id;
+    final private String unit;
+    final private String productName;
+    final private String amount;
+    final private BigDecimal price;
+    final private VAT vat;
 
-    public InvoiceEntry(String productName, String amount, BigDecimal price, VAT vat) {
+    public InvoiceEntry(Long id, String unit, String productName, String amount, BigDecimal price, VAT vat) {
+        this.id = id;
+        this.unit = unit;
         this.productName = productName;
         this.amount = amount;
         this.price = price;
@@ -21,32 +25,16 @@ public class InvoiceEntry {
         return productName;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
     public String getAmount() {
         return amount;
-    }
-
-    public void setAmount(String amount) {
-        this.amount = amount;
     }
 
     public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
     public VAT getVat() {
         return vat;
-    }
-
-    public void setVat(VAT vat) {
-        this.vat = vat;
     }
 
     @Override
