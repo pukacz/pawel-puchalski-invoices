@@ -31,21 +31,22 @@ final public class Company {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Company company = (Company) o;
-        return Objects.equals(name, company.name) &&
+        return Objects.equals(id, company.id) &&
+                Objects.equals(name, company.name) &&
                 Objects.equals(taxIdentificationNumber, company.taxIdentificationNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, taxIdentificationNumber);
+        return Objects.hash(id, name, taxIdentificationNumber);
     }
 
     @Override
     public String toString() {
         return "Company{"
-                + "name='" + name
-                + '\'' + ", taxIdentificationNumber='"
-                + taxIdentificationNumber + '\''
+                + "id=" + id
+                + ", name='" + name + '\''
+                + ", taxIdentificationNumber='" + taxIdentificationNumber + '\''
                 + '}';
     }
 }

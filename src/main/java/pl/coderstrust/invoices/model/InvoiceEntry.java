@@ -42,7 +42,9 @@ final public class InvoiceEntry {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         InvoiceEntry that = (InvoiceEntry) o;
-        return Objects.equals(productName, that.productName) &&
+        return Objects.equals(id, that.id) &&
+                Objects.equals(unit, that.unit) &&
+                Objects.equals(productName, that.productName) &&
                 Objects.equals(amount, that.amount) &&
                 Objects.equals(price, that.price) &&
                 vat == that.vat;
@@ -50,6 +52,18 @@ final public class InvoiceEntry {
 
     @Override
     public int hashCode() {
-        return Objects.hash(productName, amount, price, vat);
+        return Objects.hash(id, unit, productName, amount, price, vat);
+    }
+
+    @Override
+    public String toString() {
+        return "InvoiceEntry{"
+                + "id=" + id
+                + ", unit='" + unit + '\''
+                + ", productName='" + productName + '\''
+                + ", amount='" + amount + '\''
+                + ", price=" + price
+                + ", vat=" + vat
+                + '}';
     }
 }

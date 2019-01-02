@@ -47,7 +47,8 @@ final public class Invoice {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Invoice invoice = (Invoice) o;
-        return Objects.equals(issue, invoice.issue) &&
+        return Objects.equals(id, invoice.id) &&
+                Objects.equals(issue, invoice.issue) &&
                 Objects.equals(issueDate, invoice.issueDate) &&
                 Objects.equals(seller, invoice.seller) &&
                 Objects.equals(buyer, invoice.buyer) &&
@@ -56,13 +57,14 @@ final public class Invoice {
 
     @Override
     public int hashCode() {
-        return Objects.hash(issue, issueDate, seller, buyer, entries);
+        return Objects.hash(id, issue, issueDate, seller, buyer, entries);
     }
 
     @Override
     public String toString() {
         return "Invoice{"
-                + "issue='" + issue + '\''
+                + "id=" + id
+                + ", issue='" + issue + '\''
                 + ", issueDate=" + issueDate
                 + ", seller=" + seller
                 + ", buyer=" + buyer
