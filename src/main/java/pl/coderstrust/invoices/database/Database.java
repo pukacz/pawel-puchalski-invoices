@@ -3,19 +3,17 @@ package pl.coderstrust.invoices.database;
 import pl.coderstrust.invoices.model.Invoice;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Collection;
 
 public interface Database {
 
     void saveInvoice(Invoice invoice);
 
-    void updateInvoiceById(Long id);
-
     void deleteInvoiceById(Long id);
 
     Invoice getInvoiceById(Long id);
 
-    List<Invoice> getInvoices();
+    Collection<Invoice> getInvoices();
 
-    List<Invoice> getAllInvoicesInGivenDateRange(LocalDate startDate, LocalDate endDate);
+    Collection<Invoice> getInvoicesByDate(LocalDate startDate, LocalDate endDate);
 }
