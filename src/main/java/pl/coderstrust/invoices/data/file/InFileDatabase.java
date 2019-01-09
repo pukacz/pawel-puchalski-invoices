@@ -19,7 +19,7 @@ public class InFileDatabase {
 
     void saveInvoice(Invoice invoice) throws JsonProcessingException {
         String json = sentInvoiceToJSONString(invoice);
-        fileHelper.writeLineToFile(json);
+//        fileHelper.writeLineToFile(json);
     }
 
     private Invoice getInvoiceFromJSONString(String line) throws IOException {
