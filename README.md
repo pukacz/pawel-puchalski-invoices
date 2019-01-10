@@ -2,7 +2,7 @@
 
 * * *
 
-This app lets anyone to create, delete, mantain and send invoices in an easy way. 
+This app lets anyone to create, delete, maintain and send invoices in an easy way. 
 
 ## **How to run the program?**
 
