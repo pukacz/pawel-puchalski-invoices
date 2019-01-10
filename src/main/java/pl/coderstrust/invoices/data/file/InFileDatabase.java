@@ -5,21 +5,51 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.coderstrust.invoices.model.Invoice;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class InFileDatabase {
 
     private FileHelper fileHelper;
     private ObjectMapper mapper;
-
+    private Configuration configuration;
 
     public InFileDatabase() {
         fileHelper = new FileHelper();
         mapper = new ObjectMapper();
+        configuration = new Configuration();
     }
 
-    void saveInvoice(Invoice invoice) throws JsonProcessingException {
+    Collection<Invoice> getInvoices() throws IOException {
+        List<String> invoicesInJson = fileHelper.readLinesFromFile(configuration.getInvoicesFile());
+        List<Invoice> invoices = new ArrayList<>();
+
+        for (String json : invoicesInJson) {
+            invoices.add(getInvoiceFromJSONString(json));
+        }
+        return invoices;
+    }
+
+    void saveInvoice(Invoice invoice) throws IOException {
         String json = sentInvoiceToJSONString(invoice);
-//        fileHelper.writeLineToFile(json);
+        Long id = invoice.getId();
+
+        List<Invoice> invoices = new ArrayList<>(getInvoices());
+
+        boolean isInvoiceFound = false;
+
+        for (int i = 0; i < invoices.size(); i++) {
+            if (invoices.get(i).getId() == id) {
+                invoices.remove(i);
+                invoices.add(i, invoice);
+                isInvoiceFound = true;
+            }
+        }
+
+        if (!isInvoiceFound) {
+            invoices.add(invoice);
+        }
     }
 
     private Invoice getInvoiceFromJSONString(String line) throws IOException {

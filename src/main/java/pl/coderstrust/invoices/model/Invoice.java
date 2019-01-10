@@ -39,6 +39,10 @@ public final class Invoice {
         this.entries = entries;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getIssue() {
         return issue;
     }
