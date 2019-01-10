@@ -2,11 +2,11 @@ package pl.coderstrust.invoices.model;
 
 import java.util.Objects;
 
-final public class Company {
+public final class Company {
 
-    final private Long id;
-    final private String name;
-    final private String taxIdentificationNumber;
+    private final Long id;
+    private final String name;
+    private final String taxIdentificationNumber;
 
     public Company(Long id, String name, String taxIdentificationNumber) {
         this.id = id;
@@ -28,12 +28,16 @@ final public class Company {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Company company = (Company) o;
-        return Objects.equals(id, company.id) &&
-                Objects.equals(name, company.name) &&
-                Objects.equals(taxIdentificationNumber, company.taxIdentificationNumber);
+        return Objects.equals(id, company.id)
+                && Objects.equals(name, company.name)
+                && Objects.equals(taxIdentificationNumber, company.taxIdentificationNumber);
     }
 
     @Override

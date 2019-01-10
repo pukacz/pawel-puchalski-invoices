@@ -2,6 +2,7 @@ package pl.coderstrust.invoices.model;
 
 import java.math.BigDecimal;
 
+@SuppressWarnings("checkstyle:abbreviationaswordinname")
 public enum VAT {
 
     VAT_23(BigDecimal.valueOf(0.23)),
@@ -9,7 +10,7 @@ public enum VAT {
     VAT_5(BigDecimal.valueOf(0.05)),
     VAT_0(BigDecimal.ZERO);
 
-    final private BigDecimal value;
+    private final BigDecimal value;
 
     VAT(BigDecimal value) {
         this.value = value;
