@@ -5,14 +5,15 @@ import java.util.Objects;
 
 final public class InvoiceEntry {
 
-    final private Long id;
-    final private String unit;
-    final private String productName;
-    final private String amount;
-    final private BigDecimal price;
-    final private VAT vat;
+     private final Long id;
+     private final String unit;
+     private final String productName;
+     private final String amount;
+     private final BigDecimal price;
+     private final VAT vat;
 
-    public InvoiceEntry(Long id, String unit, String productName, String amount, BigDecimal price, VAT vat) {
+    public InvoiceEntry(Long id, String unit, String productName,
+                        String amount, BigDecimal price, VAT vat) {
         this.id = id;
         this.unit = unit;
         this.productName = productName;
@@ -42,12 +43,12 @@ final public class InvoiceEntry {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         InvoiceEntry that = (InvoiceEntry) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(unit, that.unit) &&
-                Objects.equals(productName, that.productName) &&
-                Objects.equals(amount, that.amount) &&
-                Objects.equals(price, that.price) &&
-                vat == that.vat;
+        return Objects.equals(id, that.id)
+                && Objects.equals(unit, that.unit)
+                && Objects.equals(productName, that.productName)
+                && Objects.equals(amount, that.amount)
+                && Objects.equals(price, that.price)
+                && vat == that.vat;
     }
 
     @Override

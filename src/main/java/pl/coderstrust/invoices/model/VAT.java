@@ -2,7 +2,7 @@ package pl.coderstrust.invoices.model;
 
 import java.math.BigDecimal;
 
-@SuppressWarnings("AbbreviationAsWordInName")
+@SuppressWarnings("checkstyle:abbreviationaswordinname")
 public enum VAT {
 
     VAT_23(BigDecimal.valueOf(0.23)),

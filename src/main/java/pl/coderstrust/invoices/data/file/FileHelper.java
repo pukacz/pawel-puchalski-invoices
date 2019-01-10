@@ -6,7 +6,7 @@ import java.util.List;
 
 class FileHelper {
 
-    private List<String> readLinesFromFile(String fileName) throws IOException {
+    public List<String> readLinesFromFile(String fileName) throws IOException {
         List<String> list = new ArrayList<>();
         String line;
 
@@ -19,7 +19,7 @@ class FileHelper {
         return list;
     }
 
-    private void writeLinesToFile(List<String> list, String fileName) throws IOException {
+    public void writeLinesToFile(List<String> list, String fileName) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
 
             for (int i = 0; i < list.size(); i++) {

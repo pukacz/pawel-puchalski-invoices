@@ -5,18 +5,14 @@ import java.io.File;
 public class Configuration {
 
     private String invoicesFile = "invoices.json";
-    private String companiesFile = "companies.json";
+    private String folder = "localData";
 
-    public String getCompaniesFile(String fileName) {
-        return getFilePath(companiesFile);
-    }
-
-    public String getInvoicesFile(String fileName) {
+    public String getInvoicesFile() {
         return getFilePath(invoicesFile);
     }
 
     private String getFilePath(String fileName) {
-        File localDataDirectory = new File("localData");
+        File localDataDirectory = new File(folder);
         return localDataDirectory.getAbsolutePath() + "\\" + fileName;
     }
 }

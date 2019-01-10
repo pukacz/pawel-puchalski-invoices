@@ -6,20 +6,25 @@ import java.util.Objects;
 
 final public class Invoice {
 
-    final private Long id;
-    final private String issue;
-    final private LocalDate issueDate;
-    final private Company seller;
-    final private Company buyer;
-    final private List<InvoiceEntry> entries;
+    private final Long id;
+    private final String issue;
+    private final LocalDate issueDate;
+    private final Company seller;
+    private final Company buyer;
+    private final List<InvoiceEntry> entries;
 
-    public Invoice(Long id, String issue, LocalDate issueDate, Company seller, Company buyer, List<InvoiceEntry> entries) {
+    public Invoice(Long id, String issue, LocalDate issueDate,
+                   Company seller, Company buyer, List<InvoiceEntry> entries) {
         this.id = id;
         this.issue = issue;
         this.issueDate = issueDate;
         this.seller = seller;
         this.buyer = buyer;
         this.entries = entries;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getIssue() {
@@ -47,12 +52,12 @@ final public class Invoice {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Invoice invoice = (Invoice) o;
-        return Objects.equals(id, invoice.id) &&
-                Objects.equals(issue, invoice.issue) &&
-                Objects.equals(issueDate, invoice.issueDate) &&
-                Objects.equals(seller, invoice.seller) &&
-                Objects.equals(buyer, invoice.buyer) &&
-                Objects.equals(entries, invoice.entries);
+        return Objects.equals(id, invoice.id)
+                && Objects.equals(issue, invoice.issue)
+                && Objects.equals(issueDate, invoice.issueDate)
+                && Objects.equals(seller, invoice.seller)
+                && Objects.equals(buyer, invoice.buyer)
+                && Objects.equals(entries, invoice.entries);
     }
 
     @Override
