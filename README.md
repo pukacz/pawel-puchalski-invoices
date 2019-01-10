@@ -29,3 +29,5 @@ Fakturownik is powered by:
  [ ![](https://spring.io/img/spring-platform-watermark-3a1b9ff25a20c68852696041d21275c0.png) ](https://spring.io/) 
  [ ![](https://maven.apache.org/images/logos/maven-feather.png)](https://maven.apache.org/)
  
+ 
+ 
