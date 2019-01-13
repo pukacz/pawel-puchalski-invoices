@@ -19,14 +19,7 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.4.0</version>
-                <configuration>
-                    <mainClass>pl.coderstrust.Application</mainClass>
-                </configuration>
-            </plugin>
+
             <plugin>
                 <groupId>com.github.sevntu-checkstyle</groupId>
                 <artifactId>dsm-maven-plugin</artifactId>
