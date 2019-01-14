@@ -9,9 +9,9 @@ public interface Database {
 
     void saveInvoice(Invoice invoice);
 
-    void deleteInvoiceById(Long id);
+    void deleteInvoice(Long id);
 
-    Invoice getInvoiceById(Long id);
+    Invoice getInvoice(Long id);
 
     Collection<Invoice> getInvoices();
 
