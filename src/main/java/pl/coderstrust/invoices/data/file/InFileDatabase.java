@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.coderstrust.invoices.model.Invoice;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class InFileDatabase {
 
@@ -23,7 +23,7 @@ public class InFileDatabase {
 
     Collection<Invoice> getInvoices() throws IOException {
         List<String> invoicesInJson = fileHelper.readLinesFromFile(configuration.getInvoicesFile());
-        List<Invoice> invoices = new ArrayList<>();
+        ArrayList<Invoice> invoices = new ArrayList<>();
 
         for (String json : invoicesInJson) {
             invoices.add(getInvoiceFromJSONString(json));
@@ -32,23 +32,26 @@ public class InFileDatabase {
     }
 
     void saveInvoice(Invoice invoice) throws IOException {
-        String json = sentInvoiceToJSONString(invoice);
         Long id = invoice.getId();
 
-        List<Invoice> invoices = new ArrayList<>(getInvoices());
+        if (getIDsOfInvoices().contains(id)) {
+            deleteInvoice(id);
+        }
 
-        boolean isInvoiceFound = false;
+        String json = sentInvoiceToJSONString(invoice);
+
+        ArrayList<Invoice> invoices = new ArrayList<>(getInvoices());
+        invoices.add(invoice);
+    }
+
+    void deleteInvoice(Long id) throws IOException {
+        ArrayList<Invoice> invoices = new ArrayList<>(getInvoices());
 
         for (int i = 0; i < invoices.size(); i++) {
             if (invoices.get(i).getId() == id) {
                 invoices.remove(i);
-                invoices.add(i, invoice);
-                isInvoiceFound = true;
+                break;
             }
-        }
-
-        if (!isInvoiceFound) {
-            invoices.add(invoice);
         }
     }
 
@@ -57,6 +60,18 @@ public class InFileDatabase {
     }
 
     private String sentInvoiceToJSONString(Invoice invoice) throws JsonProcessingException {
+        return mapper.writeValueAsString(invoice);
+    }
+
+    private List<Long> getIDsOfInvoices() throws IOException {
+        List<String> idsInString = fileHelper.readLinesFromFile(configuration.getInvoicesIDFile());
+        List<Long> ids = idsInString.stream()
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+        return ids;
+    }
+
+    private void addInvoiceIDtoList(Long id) throws JsonProcessingException {
         return mapper.writeValueAsString(invoice);
     }
 }
