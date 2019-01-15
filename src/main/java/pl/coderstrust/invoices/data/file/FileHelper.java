@@ -3,6 +3,7 @@ package pl.coderstrust.invoices.data.file;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 class FileHelper {
 
@@ -28,6 +29,37 @@ class FileHelper {
                     writer.newLine();
                 }
             }
+        }
+    }
+
+    public void appendLineToFile(String line, String fileName) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.newLine();
+            writer.write(line);
+        }
+    }
+
+    public void removeEmptyLinesFromFile(String fileName) throws IOException {
+        try (Scanner scanner = new Scanner(new FileReader(fileName));
+             BufferedWriter writer = new BufferedWriter(new FileWriter("temp.txt"))) {
+            ArrayList<String> tempArray = new ArrayList<>();
+            boolean hasEmptyLine = false;
+
+            while (scanner.hasNext()) {
+                String line = scanner.nextLine();
+
+                if (!line.matches("\\s")) {
+                    tempArray.add(line);
+                } else hasEmptyLine = true;
+            }
+
+            if (hasEmptyLine) {
+                for (String line : tempArray) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+
         }
     }
 }
