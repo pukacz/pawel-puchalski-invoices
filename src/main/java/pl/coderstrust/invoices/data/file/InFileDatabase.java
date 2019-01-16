@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.coderstrust.invoices.model.Invoice;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class InFileDatabase {
 
@@ -71,7 +72,7 @@ public class InFileDatabase {
         return ids;
     }
 
-    private void addInvoiceIDtoList(Long id) throws JsonProcessingException {
-        return mapper.writeValueAsString(invoice);
-    }
+//    private void addInvoiceIDtoList(Long id) throws JsonProcessingException {
+//        return mapper.writeValueAsString(invoice);
+//    }
 }
