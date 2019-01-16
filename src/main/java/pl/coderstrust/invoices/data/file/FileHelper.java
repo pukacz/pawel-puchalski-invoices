@@ -1,14 +1,29 @@
 package pl.coderstrust.invoices.data.file;
 
 import java.io.*;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 class FileHelper {
 
+    public static void main(String[] args) throws IOException {
+        FileHelper f = new FileHelper();
+
+//        ArrayList <String>list = new ArrayList(Arrays.asList("Iwona", "Grzesiek", "Zyrafa"));
+//        f.writeLinesToFile(list, "myNewFile");
+
+//        ArrayList<String> list2 = (ArrayList) f.readLinesFromFile("myNewFile");
+//        System.out.println(list2);
+
+//        f.removeEmptyLineFromFile("myNewFile");
+        f.removeLineFromFile("Grzesiek", "myNewFile");
+    }
+
     public List<String> readLinesFromFile(String fileName) throws IOException {
-        List<String> list = new ArrayList<>();
+        ArrayList<String> list = new ArrayList<>();
         String line;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
@@ -32,34 +47,44 @@ class FileHelper {
         }
     }
 
+    public void removeLineFromFile(String line, String fileName) throws IOException {
+        File inputFile = new File(fileName);
+        File tempFile = new File("tempFile");
+        String lineFromFile;
+        boolean isFirstLine = true;
+
+        ArrayList<String> list = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+
+            while ((lineFromFile = reader.readLine()) != null) {
+                if (!lineFromFile.equals(line)) {
+
+                    list.add(lineFromFile);
+
+                    if (isFirstLine) {
+                        writer.write(lineFromFile);
+                        isFirstLine = false;
+                    } else {
+                        writer.newLine();
+                        writer.write(lineFromFile);
+                    }
+                }
+            }
+        }
+
+        Files.move(tempFile.toPath(), inputFile.toPath(), new CopyOption[]{StandardCopyOption.REPLACE_EXISTING});
+    }
+
+    public void removeEmptyLinesFromFile(String fileName) throws IOException {
+        removeLineFromFile("", fileName);
+    }
+
     public void appendLineToFile(String line, String fileName) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             writer.newLine();
             writer.write(line);
-        }
-    }
-
-    public void removeEmptyLinesFromFile(String fileName) throws IOException {
-        try (Scanner scanner = new Scanner(new FileReader(fileName));
-             BufferedWriter writer = new BufferedWriter(new FileWriter("temp.txt"))) {
-            ArrayList<String> tempArray = new ArrayList<>();
-            boolean hasEmptyLine = false;
-
-            while (scanner.hasNext()) {
-                String line = scanner.nextLine();
-
-                if (!line.matches("\\s")) {
-                    tempArray.add(line);
-                } else hasEmptyLine = true;
-            }
-
-            if (hasEmptyLine) {
-                for (String line : tempArray) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-            }
-
         }
     }
 }
