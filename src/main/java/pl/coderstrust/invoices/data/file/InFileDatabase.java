@@ -10,16 +10,21 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 public class InFileDatabase {
 
+    private Collection<Invoice> invoices;
+    private Collection<Long> ids;
     private FileHelper fileHelper;
     private ObjectMapper mapper;
     private Configuration configuration;
 
-    public InFileDatabase() {
+    public InFileDatabase() throws IOException {
         fileHelper = new FileHelper();
         mapper = new ObjectMapper();
         configuration = new Configuration();
+        invoices = getInvoices();
+        ids = getIDsOfExistingInvoices();
     }
 
     Collection<Invoice> getInvoices() throws IOException {
@@ -32,28 +37,40 @@ public class InFileDatabase {
         return invoices;
     }
 
+    Collection<Long> getIDsOfExistingInvoices() throws IOException {
+        List<String> idsInString = fileHelper.readLinesFromFile(configuration.getInvoicesIDFile());
+        List<Long> ids = idsInString.stream()
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+        return ids;
+    }
+
     void saveInvoice(Invoice invoice) throws IOException {
         Long id = invoice.getId();
 
-        if (getIDsOfInvoices().contains(id)) {
+        if (isInvoiceExisting(id)) {
             deleteInvoice(id);
         }
 
         String json = sentInvoiceToJSONString(invoice);
 
-        ArrayList<Invoice> invoices = new ArrayList<>(getInvoices());
         invoices.add(invoice);
     }
 
-    void deleteInvoice(Long id) throws IOException {
-        ArrayList<Invoice> invoices = new ArrayList<>(getInvoices());
 
-        for (int i = 0; i < invoices.size(); i++) {
-            if (invoices.get(i).getId() == id) {
-                invoices.remove(i);
-                break;
+    void deleteInvoice(Long id) {
+        if (isInvoiceExisting(id)) {
+            for (Invoice i : invoices) {
+                if (i.getId().equals(id)) {
+                    invoices.remove(i);
+                    break;
+                }
             }
         }
+    }
+
+    private boolean isInvoiceExisting(Long id) {
+        return ids.contains(id);
     }
 
     private Invoice getInvoiceFromJSONString(String line) throws IOException {
@@ -64,13 +81,6 @@ public class InFileDatabase {
         return mapper.writeValueAsString(invoice);
     }
 
-    private List<Long> getIDsOfInvoices() throws IOException {
-        List<String> idsInString = fileHelper.readLinesFromFile(configuration.getInvoicesIDFile());
-        List<Long> ids = idsInString.stream()
-                .map(Long::parseLong)
-                .collect(Collectors.toList());
-        return ids;
-    }
 
 //    private void addInvoiceIDtoList(Long id) throws JsonProcessingException {
 //        return mapper.writeValueAsString(invoice);
