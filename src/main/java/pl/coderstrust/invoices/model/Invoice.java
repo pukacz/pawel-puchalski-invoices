@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-final public class Invoice {
+public final class Invoice {
 
     private final Long id;
     private final String issue;
@@ -49,8 +49,12 @@ final public class Invoice {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Invoice invoice = (Invoice) o;
         return Objects.equals(id, invoice.id)
                 && Objects.equals(issue, invoice.issue)

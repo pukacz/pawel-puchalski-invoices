@@ -3,14 +3,14 @@ package pl.coderstrust.invoices.model;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-final public class InvoiceEntry {
+public final class InvoiceEntry {
 
-     private final Long id;
-     private final String unit;
-     private final String productName;
-     private final String amount;
-     private final BigDecimal price;
-     private final VAT vat;
+    private final Long id;
+    private final String unit;
+    private final String productName;
+    private final String amount;
+    private final BigDecimal price;
+    private final VAT vat;
 
     public InvoiceEntry(Long id, String unit, String productName,
                         String amount, BigDecimal price, VAT vat) {
@@ -40,8 +40,12 @@ final public class InvoiceEntry {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         InvoiceEntry that = (InvoiceEntry) o;
         return Objects.equals(id, that.id)
                 && Objects.equals(unit, that.unit)
