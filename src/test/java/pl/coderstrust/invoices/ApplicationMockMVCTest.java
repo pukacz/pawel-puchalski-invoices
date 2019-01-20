@@ -27,7 +27,7 @@ public class ApplicationMockMVCTest {
     this.mockMvc.perform(get("/invoices"))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(content().string(containsString(" ")));
+        .andExpect(content().string(containsString("[]")));
   }
 
 }
