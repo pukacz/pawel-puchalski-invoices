@@ -2,9 +2,14 @@
 
 * * *
 
-This app lets anyone to create, delete, maintain and send invoices in an easy way. 
+Web application that allows manage invoices in easy way.
 
-## **How to run the program?**
+## **Requirements**
+
+JDK >= 8
+Maven >= 2.5.1
+
+## **Quickstart**
 
  To execute Fakturownik simply type in the command line :
 `mvn exec:java`
@@ -14,13 +19,13 @@ This app lets anyone to create, delete, maintain and send invoices in an easy wa
 
 * * *
 
-Fakturownik is made available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
+Fakturownik is available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
 
 ## Credits
 
 * * *
 
-Fakturownik is created and maintained by Karolina, Paweł and Mariusz as the main project at [CodersTrust ](https://coderstrust.pl/)
+Fakturownik is created and maintained by Karolina, Paweł and Mariusz as the main project at [CodersTrust ](https://coderstrust.pl/)
 
 Fakturownik is powered by:
 
@@ -28,6 +33,3 @@ Fakturownik is powered by:
  [ ![](https://tinyurl.com/yb8nsx2p) ](https://www.oracle.com/java/) 
  [ ![](https://spring.io/img/spring-platform-watermark-3a1b9ff25a20c68852696041d21275c0.png) ](https://spring.io/) 
  [ ![](https://maven.apache.org/images/logos/maven-feather.png)](https://maven.apache.org/)
- 
- 
- 
