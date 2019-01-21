@@ -63,7 +63,7 @@ public class InvoiceService implements InvoiceServiceInterface {
             throw new InvoiceException("invoice ID can not be negative or null", new IllegalArgumentException());
         }
         try {
-            return  database.updateInvoice(id);
+            return  database.saveInvoice(id);
         } catch (Exception e) {
             throw new InvoiceException("there are no invoice with this ID in the database", e);
         }
