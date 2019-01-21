@@ -21,7 +21,7 @@ public class InvoiceService implements InvoiceServiceInterface {
 
     public Collection<Invoice> getAllInvoices() throws InvoiceException {
         try {
-            return  database.findAll();
+            return  database.getInvoices();
         } catch (Exception e) {
             throw new InvoiceException("there are no invoices", e);
         }
@@ -29,7 +29,7 @@ public class InvoiceService implements InvoiceServiceInterface {
 
     public Collection<Invoice> getAllofRange(LocalDate fromDate, LocalDate toDate) throws InvoiceException {
         try {
-            return  database.getAllofRange();
+            return  database.getInvoicesByDate(fromDate, toDate);
         } catch (Exception e) {
             throw new InvoiceException("there are no invoices in this data range", e);
         }
@@ -40,7 +40,7 @@ public class InvoiceService implements InvoiceServiceInterface {
             throw new InvoiceException("invoice ID can not be negative or null", new IllegalArgumentException());
         }
         try {
-            return  database.getInvoiceByID();
+            return  database.getInvoice(id);
         } catch (Exception e) {
             throw new InvoiceException("there are no invoice with this ID in the database", e);
         }
@@ -52,7 +52,7 @@ public class InvoiceService implements InvoiceServiceInterface {
             throw new InvoiceException("invoice ID can not be negative or null", new IllegalArgumentException());
         }
         try {
-            return  database.addInvoice();
+            return  database.saveInvoice();
         } catch (Exception e) {
             throw new InvoiceException("can not add an invoice to the database", e);
         }
@@ -63,7 +63,7 @@ public class InvoiceService implements InvoiceServiceInterface {
             throw new InvoiceException("invoice ID can not be negative or null", new IllegalArgumentException());
         }
         try {
-            return  database.updateInvoice();
+            return  database.updateInvoice(id);
         } catch (Exception e) {
             throw new InvoiceException("there are no invoice with this ID in the database", e);
         }
@@ -74,7 +74,7 @@ public class InvoiceService implements InvoiceServiceInterface {
             throw new InvoiceException("invoice ID can not be negative or null", new IllegalArgumentException());
         }
         try {
-            return  database.getAllofRange();
+            return  database.deleteInvoice(id);
         } catch (Exception e) {
             throw new InvoiceException("there are no invoice with this ID in the database", e);
         }
