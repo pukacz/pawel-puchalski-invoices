@@ -17,10 +17,12 @@ public interface InvoiceServiceInterface {
 
     Invoice getInvoiceByID(Long id) throws InvoiceException;
 
-    void addInvoice(Long id, String issue, LocalDate issueDate, Company seller, Company buyer,
+    void addInvoice(String issue, LocalDate issueDate, Company seller, Company buyer,
         List<InvoiceEntry> entries) throws InvoiceException;
 
-    Invoice updateInvoice(Long id) throws InvoiceException;
+    Invoice updateInvoice(Long id, String issue, LocalDate issueDate,
+        Company seller, Company buyer,
+        List<InvoiceEntry> entries) throws InvoiceException;
 
     void deleteInvoice(Long id) throws InvoiceException;
 }

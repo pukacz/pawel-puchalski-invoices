@@ -1,5 +1,7 @@
 package pl.coderstrust.invoices.services;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,26 +48,28 @@ public class InvoiceService implements InvoiceServiceInterface {
         }
     }
 
-    public void addInvoice(Long id, String issue, LocalDate issueDate, Company seller,
-        Company buyer, List<InvoiceEntry> entries) throws InvoiceException {
-        if (id <= 0 || id == null) {
-            throw new InvoiceException("invoice ID can not be negative or null", new IllegalArgumentException());
-        }
+    @JsonCreator
+    public void addInvoice(@JsonProperty("issue") String issue, @JsonProperty("issueDate") LocalDate issueDate, @JsonProperty("seller") Company seller,
+        @JsonProperty("buyer") Company buyer, @JsonProperty("entries") List<InvoiceEntry> entries) throws InvoiceException {
         try {
-            return  database.saveInvoice();
+            Invoice invoice = new Invoice(0L, issue, issueDate, seller, buyer, entries);
+            return  database.saveInvoice(invoice);
         } catch (Exception e) {
             throw new InvoiceException("can not add an invoice to the database", e);
         }
     }
 
-    public Invoice updateInvoice(Long id) throws InvoiceException {
+    @JsonCreator
+    public Invoice updateInvoice(@JsonProperty("id") Long id, @JsonProperty("issue") String issue, @JsonProperty("issueDate") LocalDate issueDate, @JsonProperty("seller") Company seller,
+        @JsonProperty("buyer") Company buyer, @JsonProperty("entries") List<InvoiceEntry> entries) throws InvoiceException {
         if (id <= 0 || id == null) {
             throw new InvoiceException("invoice ID can not be negative or null", new IllegalArgumentException());
         }
         try {
-            return  database.saveInvoice(id);
+            Invoice invoice = new Invoice(id, issue, issueDate, seller, buyer, entries);
+            return  database.saveInvoice(invoice);
         } catch (Exception e) {
-            throw new InvoiceException("there are no invoice with this ID in the database", e);
+            throw new InvoiceException("can not update an invoice to the database", e);
         }
     }
 
