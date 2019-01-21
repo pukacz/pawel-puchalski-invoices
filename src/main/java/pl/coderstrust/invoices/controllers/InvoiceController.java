@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import pl.coderstrust.invoices.Exceptions.InvoiceException;
 import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
@@ -27,18 +26,18 @@ public class InvoiceController {
     }
 
     @RequestMapping("")
-    public Collection<Invoice> getAllInvoices() throws InvoiceException {
+    public Collection<Invoice> getAllInvoices() throws DatabaseOperationException {
         return invoiceService.getAllInvoices();
     }
 
     @RequestMapping("/getAllofRange")
     public Collection<Invoice> getAllofRange(@RequestParam(value = "fromDate") LocalDate fromDate,
-        @RequestParam(value = "toDate") LocalDate toDate) throws InvoiceException {
+        @RequestParam(value = "toDate") LocalDate toDate) throws DatabaseOperationException {
         return invoiceService.getAllofRange(fromDate, toDate);
     }
 
     @GetMapping("/(id)")
-    public Invoice getInvoiceByID(@PathVariable Long id) throws InvoiceException {
+    public Invoice getInvoiceByID(@PathVariable Long id) throws DatabaseOperationException {
         return invoiceService.getInvoiceByID(id);
     }
 
@@ -46,7 +45,7 @@ public class InvoiceController {
     public void addInvoice(@RequestParam(defaultValue = "0", required = false) Long id, @RequestParam String issue,
         @RequestParam LocalDate issueDate, @RequestParam Company seller,
         @RequestParam Company buyer, @RequestParam List<InvoiceEntry> entries)
-        throws InvoiceException {
+        throws DatabaseOperationException {
         if (id != 0) {
             invoiceService.updateInvoice(id, issue, issueDate, seller, buyer, entries);
         } else {
@@ -55,7 +54,7 @@ public class InvoiceController {
     }
 
     @DeleteMapping("/(id)")
-    public void deleteInvoice(@PathVariable Long id) throws InvoiceException {
+    public void deleteInvoice(@PathVariable Long id) throws DatabaseOperationException {
         invoiceService.deleteInvoice(id);
     }
 
