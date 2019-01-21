@@ -4,16 +4,11 @@ import java.io.File;
 
 public class Configuration {
 
-    private String invoices = "invoicesData.json";
-    private String IDsOfExistingInvoices = "invoicesID.json";
+    private String invoicesFile = "invoices.dat";
     private String folder = "localData";
 
     public String getInvoicesFile() {
-        return getFilePath(invoices);
-    }
-
-    public String getInvoicesIDFile() {
-        return getFilePath(IDsOfExistingInvoices);
+        return getFilePath(invoicesFile);
     }
 
     private String getFilePath(String fileName) {
