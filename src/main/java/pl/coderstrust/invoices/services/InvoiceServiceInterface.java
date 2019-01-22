@@ -16,11 +16,7 @@ public interface InvoiceServiceInterface {
 
     Invoice getInvoiceByID(Long id) throws DatabaseOperationException;
 
-    void addInvoice(String issue, LocalDate issueDate, Company seller, Company buyer,
-        List<InvoiceEntry> entries) throws DatabaseOperationException;
-
-    void updateInvoice(Long id, String issue, LocalDate issueDate,
-        Company seller, Company buyer,
+    void saveInvoice(String issue, LocalDate issueDate, Company seller, Company buyer,
         List<InvoiceEntry> entries) throws DatabaseOperationException;
 
     void deleteInvoice(Long id) throws DatabaseOperationException;

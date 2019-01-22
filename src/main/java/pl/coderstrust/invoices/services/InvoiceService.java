@@ -27,9 +27,10 @@ public class InvoiceService implements InvoiceServiceInterface {
         }
     }
 
-    public Collection<Invoice> getAllofRange(LocalDate fromDate, LocalDate toDate) throws DatabaseOperationException {
+    public Collection<Invoice> getAllofRange(LocalDate fromDate, LocalDate toDate)
+        throws DatabaseOperationException {
         try {
-            return  database.getInvoicesByDate(fromDate, toDate);
+            return database.getInvoicesByDate(fromDate, toDate);
         } catch (Exception e) {
             throw new DatabaseOperationException("there are no invoices in this data range", e);
         }
@@ -37,48 +38,37 @@ public class InvoiceService implements InvoiceServiceInterface {
 
     public Invoice getInvoiceByID(Long id) throws DatabaseOperationException {
         if (id <= 0 || id == null) {
-            throw new DatabaseOperationException("invoice ID can not be negative or null", new IllegalArgumentException());
+            throw new DatabaseOperationException("invoice ID can not be negative or null",
+                new IllegalArgumentException());
         }
         try {
             return database.getInvoice(id);
         } catch (Exception e) {
-            throw new DatabaseOperationException("there are no invoice with this ID in the database", e);
+            throw new DatabaseOperationException(
+                "there are no invoice with this ID in the database", e);
         }
     }
 
-    @JsonCreator
-    public void addInvoice(@JsonProperty("issue") String issue, @JsonProperty("issueDate") LocalDate issueDate, @JsonProperty("seller") Company seller,
-        @JsonProperty("buyer") Company buyer, @JsonProperty("entries") List<InvoiceEntry> entries) throws DatabaseOperationException {
+    public void saveInvoice(Long id, String issue, LocalDate issueDate, Company seller,
+        Company buyer, List<InvoiceEntry> entries) throws DatabaseOperationException {
         try {
-            Invoice invoice = new Invoice(0L, issue, issueDate, seller, buyer, entries);
+            Invoice invoice = new Invoice(id, issue, issueDate, seller, buyer, entries);
             database.saveInvoice(invoice);
         } catch (Exception e) {
             throw new DatabaseOperationException("can not add an invoice to the database", e);
         }
     }
 
-    @JsonCreator
-    public void updateInvoice(@JsonProperty("id") Long id, @JsonProperty("issue") String issue, @JsonProperty("issueDate") LocalDate issueDate, @JsonProperty("seller") Company seller,
-        @JsonProperty("buyer") Company buyer, @JsonProperty("entries") List<InvoiceEntry> entries) throws DatabaseOperationException {
-        if (id <= 0 || id == null) {
-            throw new DatabaseOperationException("invoice ID can not be negative or null", new IllegalArgumentException());
-        }
-        try {
-            Invoice invoice = new Invoice(id, issue, issueDate, seller, buyer, entries);
-            database.saveInvoice(invoice);
-        } catch (Exception e) {
-            throw new DatabaseOperationException("can not update an invoice to the database", e);
-        }
-    }
-
     public void deleteInvoice(Long id) throws DatabaseOperationException {
         if (id <= 0 || id == null) {
-            throw new DatabaseOperationException("invoice ID can not be negative or null", new IllegalArgumentException());
+            throw new DatabaseOperationException("invoice ID can not be negative or null",
+                new IllegalArgumentException());
         }
         try {
             database.deleteInvoice(id);
         } catch (Exception e) {
-            throw new DatabaseOperationException("there are no invoice with this ID in the database", e);
+            throw new DatabaseOperationException(
+                "there are no invoice with this ID in the database", e);
         }
     }
 

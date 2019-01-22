@@ -42,15 +42,13 @@ public class InvoiceController {
     }
 
     @PostMapping("/add")
-    public void addInvoice(@RequestParam(defaultValue = "0", required = false) Long id, @RequestParam String issue,
-        @RequestParam LocalDate issueDate, @RequestParam Company seller,
-        @RequestParam Company buyer, @RequestParam List<InvoiceEntry> entries)
-        throws DatabaseOperationException {
-        if (id != 0) {
-            invoiceService.updateInvoice(id, issue, issueDate, seller, buyer, entries);
-        } else {
-            invoiceService.addInvoice(issue, issueDate, seller, buyer, entries);
-        }
+    public void addInvoice(@RequestParam(defaultValue = "0", required = false) Long id,
+        @RequestParam String issue,
+        @RequestParam LocalDate issueDate,
+        @RequestParam Company seller,
+        @RequestParam Company buyer,
+        @RequestParam List<InvoiceEntry> entries) throws DatabaseOperationException {
+        invoiceService.saveInvoice(id, issue, issueDate, seller, buyer, entries);
     }
 
     @DeleteMapping("/(id)")
