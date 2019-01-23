@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
@@ -49,10 +50,8 @@ public class InvoiceService implements InvoiceServiceInterface {
         }
     }
 
-    public void saveInvoice(Long id, String issue, LocalDate issueDate, Company seller,
-        Company buyer, List<InvoiceEntry> entries) throws DatabaseOperationException {
+    public void saveInvoice(@RequestBody Invoice invoice) throws DatabaseOperationException {
         try {
-            Invoice invoice = new Invoice(id, issue, issueDate, seller, buyer, entries);
             database.saveInvoice(invoice);
         } catch (Exception e) {
             throw new DatabaseOperationException("can not add an invoice to the database", e);
