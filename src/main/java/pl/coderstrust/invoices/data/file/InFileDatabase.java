@@ -15,10 +15,6 @@ import pl.coderstrust.invoices.model.Invoice;
 
 public class InFileDatabase implements Database {
 
-    public static void main(String[] args) throws IOException {
-        InFileDatabase fileDatabase = new InFileDatabase();
-    }
-
     private ObjectMapper mapper;
     private Configuration configuration;
 
