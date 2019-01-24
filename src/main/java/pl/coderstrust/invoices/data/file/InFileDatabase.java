@@ -2,6 +2,7 @@ package pl.coderstrust.invoices.data.file;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -11,62 +12,60 @@ import pl.coderstrust.invoices.model.Invoice;
 
 public class InFileDatabase {
 
-    private FileHelper fileHelper;
     private ObjectMapper mapper;
     private Configuration configuration;
 
-    public InFileDatabase() {
-        //sprawdzamy czy plik invoices.dat istnieje, jesli nie to go tworzymy
-        this.fileHelper = new FileHelper();
+    public InFileDatabase() throws IOException {
         mapper = new ObjectMapper();
         configuration = new Configuration();
+
+        if (configuration.getInvoicesFile().equals(null)) {
+            File file = new File(configuration.getInvoicesFile());
+            file.createNewFile();
+        }
     }
 
     Collection<Invoice> getInvoices() throws IOException {
 
-        ArrayList<String> list = new ArrayList<>();
-        String line;
+        ArrayList<Invoice> invoices = new ArrayList<>();
+        List<String> lines;
+        String invoiceInJson;
 
-        try (RandomAccessFile reader = new RandomAccessFile(configuration.getInvoicesFile(), "r")) {
-//            FileHelper fileHelper = new FileHelper(reader);
-            while ((line = reader.readLine()) != null) {
-                list.add(line);
+        try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFile(), "r")) {
+            FileHelper fileHelper = new FileHelper(file);
+            lines = fileHelper.getInvoices();
+
+            for (String line : lines) {
+                int colonPosition = line.indexOf(": ");
+                if (colonPosition > 0) {
+                    invoiceInJson = line.substring(colonPosition);
+                    Invoice invoice = getInvoiceFromJSONString(invoiceInJson);
+                    invoices.add(invoice);
+                }
             }
         }
-//        return list;
-
-        List<String> lines = fileHelper.getInvoices();
-        ArrayList<Invoice> invoices = new ArrayList<>();
-        int colonPosition;
-
-//        for (String line : lines) {
-//            colonPosition = line.indexOf(":");
-//            invoices.add(getInvoiceFromJSONString(line.substring(colonPosition)));
-//        }
-        return null;
+        return invoices;
     }
-
 
     void saveInvoice(Invoice invoice) throws IOException {
         Long invoiceId = invoice.getId();
         String invoiceInJson = sentInvoiceToJSONString(invoice);
-        fileHelper.saveInvoice(invoiceId, invoiceInJson);
+
+        try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFile(),
+            "rw")) {
+            FileHelper fileHelper = new FileHelper(file);
+            fileHelper.saveInvoice(invoiceId, invoiceInJson);
+        }
     }
 
-//    void deleteInvoice(Long id) {
-//        if (isInvoiceExisting(id)) {
-//            for (Invoice i : invoices) {
-//                if (i.getId().equals(id)) {
-//                    invoices.remove(i);
-//                    break;
-//                }
-//            }
-//        }
-//    }
+    void deleteInvoice(Long invoiceId) throws IOException {
 
-//    private boolean isInvoiceExisting(Long id) {
-//        return ids.contains(id);
-//    }
+        try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFile(),
+            "rw")) {
+            FileHelper fileHelper = new FileHelper(file);
+            fileHelper.deleteInvoice(invoiceId);
+        }
+    }
 
     private Invoice getInvoiceFromJSONString(String line) throws IOException {
         return mapper.readValue(line, Invoice.class);
