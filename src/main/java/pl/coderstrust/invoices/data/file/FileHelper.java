@@ -23,7 +23,7 @@ class FileHelper {
         return list;
     }
 
-    public void saveInvoice(Long invoiceId, String invoice) throws IOException {
+    void saveInvoice(Long invoiceId, String invoice) throws IOException {
 
         String line = "" + invoiceId + ": " + invoice + "\n";
         Long cursor = getPositionOfInvoice(invoiceId);
@@ -32,7 +32,7 @@ class FileHelper {
         file.writeBytes(line);
     }
 
-    public void deleteInvoice(Long invoiceId) throws IOException {
+    void deleteInvoice(Long invoiceId) throws IOException {
 
         Long cursor = getPositionOfInvoice(invoiceId);
 
@@ -50,7 +50,7 @@ class FileHelper {
 
     private Long getPositionOfInvoice(Long invoiceId) throws IOException {
 
-        Long cursor;
+        long cursor;
         String line;
         String idInString;
         int colonIndex;
