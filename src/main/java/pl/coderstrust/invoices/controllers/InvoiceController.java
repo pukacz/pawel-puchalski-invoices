@@ -3,6 +3,7 @@ package pl.coderstrust.invoices.controllers;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,18 +11,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import pl.coderstrust.invoices.database.DatabaseOperationException;
 import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
-import pl.coderstrust.invoices.services.InvoiceServiceInterface;
+import pl.coderstrust.invoices.services.InvoiceService;
 
 @RequestMapping("/invoices")
 @RestController
 public class InvoiceController {
 
-    private InvoiceServiceInterface invoiceService;
+    private InvoiceService invoiceService;
 
-    public InvoiceController(InvoiceServiceInterface invoiceService) {
+    @Autowired
+    public InvoiceController(InvoiceService invoiceService) {
         this.invoiceService = invoiceService;
     }
 
@@ -30,13 +33,13 @@ public class InvoiceController {
         return invoiceService.getAllInvoices();
     }
 
-    @RequestMapping("/getAllofRange")
+    @RequestMapping("/byDates")
     public Collection<Invoice> getAllofRange(@RequestParam(value = "fromDate") LocalDate fromDate,
         @RequestParam(value = "toDate") LocalDate toDate) throws DatabaseOperationException {
         return invoiceService.getAllofRange(fromDate, toDate);
     }
 
-    @GetMapping("/(id)")
+    @GetMapping("/{id}")
     public Invoice getInvoiceByID(@PathVariable Long id) throws DatabaseOperationException {
         return invoiceService.getInvoiceByID(id);
     }
@@ -51,7 +54,7 @@ public class InvoiceController {
         invoiceService.saveInvoice(id, issue, issueDate, seller, buyer, entries);
     }
 
-    @DeleteMapping("/(id)")
+    @DeleteMapping("/{id}")
     public void deleteInvoice(@PathVariable Long id) throws DatabaseOperationException {
         invoiceService.deleteInvoice(id);
     }

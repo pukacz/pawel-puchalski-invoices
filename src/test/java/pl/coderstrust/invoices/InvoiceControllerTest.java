@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import pl.coderstrust.invoices.services.InvoiceService;
+import pl.coderstrust.invoices.services.InvoiceServiceImplementation;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -27,7 +27,7 @@ public class InvoiceControllerTest {
   private MockMvc mockMvc;
 
   @MockBean
-  private InvoiceService service;
+  private InvoiceServiceImplementation service;
 
   @Test
   public void greetingShouldReturnMessageFromService() throws Exception {
