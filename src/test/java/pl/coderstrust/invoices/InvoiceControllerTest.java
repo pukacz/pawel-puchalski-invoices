@@ -30,7 +30,7 @@ public class InvoiceControllerTest {
   private InvoiceServiceImplementation service;
 
   @Test
-  public void greetingShouldReturnMessageFromService() throws Exception {
+  public void testShouldReturnMessageFromService() throws Exception {
     when(service.getAllInvoices()).thenReturn(new ArrayList<>());
     this.mockMvc.perform(get("/invoices"))
         .andDo(print())

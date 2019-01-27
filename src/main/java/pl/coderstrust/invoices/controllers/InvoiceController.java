@@ -2,19 +2,17 @@ package pl.coderstrust.invoices.controllers;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
-import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
-import pl.coderstrust.invoices.model.InvoiceEntry;
 import pl.coderstrust.invoices.services.InvoiceService;
 
 @RequestMapping("/invoices")
@@ -40,18 +38,13 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}")
-    public Invoice getInvoiceByID(@PathVariable Long id) throws DatabaseOperationException {
-        return invoiceService.getInvoiceByID(id);
+    public Invoice getInvoiceById(@PathVariable Long id) throws DatabaseOperationException {
+        return invoiceService.getInvoiceById(id);
     }
 
     @PostMapping("/add")
-    public void addInvoice(@RequestParam(defaultValue = "0", required = false) Long id,
-        @RequestParam String issue,
-        @RequestParam LocalDate issueDate,
-        @RequestParam Company seller,
-        @RequestParam Company buyer,
-        @RequestParam List<InvoiceEntry> entries) throws DatabaseOperationException {
-        invoiceService.saveInvoice(id, issue, issueDate, seller, buyer, entries);
+    public void addInvoice(@RequestBody Invoice invoice) throws DatabaseOperationException {
+        invoiceService.saveInvoice(invoice);
     }
 
     @DeleteMapping("/{id}")

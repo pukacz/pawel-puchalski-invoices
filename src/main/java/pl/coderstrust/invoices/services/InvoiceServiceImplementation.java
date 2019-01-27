@@ -4,7 +4,8 @@ import java.time.LocalDate;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import pl.coderstrust.invoices.database.Database;
+import pl.coderstrust.invoices.database.DatabaseOperationException;
 import pl.coderstrust.invoices.model.Invoice;
 
 @Service
@@ -34,7 +35,7 @@ public class InvoiceServiceImplementation implements InvoiceService {
         }
     }
 
-    public Invoice getInvoiceByID(Long id) throws DatabaseOperationException {
+    public Invoice getInvoiceById(Long id) throws DatabaseOperationException {
         if (id <= 0 || id == null) {
             throw new DatabaseOperationException("invoice ID can not be negative or null",
                 new IllegalArgumentException());
@@ -47,7 +48,7 @@ public class InvoiceServiceImplementation implements InvoiceService {
         }
     }
 
-    public void saveInvoice(@RequestBody Invoice invoice) throws DatabaseOperationException {
+    public void saveInvoice(Invoice invoice) throws DatabaseOperationException {
         try {
             database.saveInvoice(invoice);
         } catch (Exception e) {
