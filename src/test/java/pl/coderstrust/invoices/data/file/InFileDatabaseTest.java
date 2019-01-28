@@ -1,78 +1,64 @@
 package pl.coderstrust.invoices.data.file;
 
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.hamcrest.core.Is;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.runners.MockitoJUnitRunner;
 import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
 import pl.coderstrust.invoices.model.VAT;
 
-@RunWith(MockitoJUnitRunner.class)
+//@RunWith(MockitoJUnitRunner.class)
 public class InFileDatabaseTest {
 
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
-
-    @Mock
-    FileHelper fileHelper;
-
-    @Mock
-    Configuration configuration;
-
-    @Mock
-    RandomAccessFile file;
-
-    @InjectMocks
-    InFileDatabase inFileDatabase;
+//    @Rule
+//    public MockitoRule mockitoRule = MockitoJUnit.rule();
+//
+//    @Mock
+//    FileHelper fileHelper;
+//
+//    @Mock
+//    Configuration configuration;
+//
+//    @Mock
+//    RandomAccessFile file;
+//
+//    @InjectMocks
+//    InFileDatabase inFileDatabase;
 
     public static void main(String[] args) throws IOException {
         InFileDatabase inFileDatabase = new InFileDatabase();
 
         InFileDatabaseTest inFileDatabaseTest = new InFileDatabaseTest();
 
-//        for (Invoice i : inFileDatabaseTest.getInvoices()) {
-//            inFileDatabase.saveInvoice(i);
-//        }
+        for (Invoice i : inFileDatabaseTest.getInvoices()) {
+            inFileDatabase.saveInvoice(i);
+        }
+
+        ArrayList<Invoice> list = new ArrayList<>(inFileDatabase.getInvoices());
+        for (Invoice i : list) {
+            System.out.println(i);
+        }
+    }
+
+//    @Test
+//    public void shouldReturnListOfInvoices() throws IOException {
+//        //given
+//        String filePath = new File("localData").getAbsolutePath() + "\\" + "invoices.dat";
+//        when(configuration.getInvoicesFile()).thenReturn(filePath);
+//        when(fileHelper.getInvoices()).thenReturn(invoicesInJson());
 //
-//        ArrayList<Invoice> list = new ArrayList<>(inFileDatabase.getInvoices());
-//        for (Invoice i : list) {
-//            System.out.println(i);
-//        }
-    }
-
-    @Test
-    public void shouldReturnListOfInvoices() throws IOException {
-        //given
-        String filePath = new File("localData").getAbsolutePath() + "\\" + "invoices.dat";
-        when(configuration.getInvoicesFile()).thenReturn(filePath);
-        when(fileHelper.getInvoices()).thenReturn(invoicesInJson());
-
-        //when
-        Invoice actual = getInvoices().get(0);
-        Invoice expected = new ArrayList<>(inFileDatabase.getInvoices()).get(0);
-
-        //then
-        Assert.assertThat(actual, Is.is(expected));
-    }
+//        //when
+//        Invoice actual = getInvoices().get(0);
+//        Invoice expected = new ArrayList<>(inFileDatabase.getInvoices()).get(0);
+//
+//        //then
+//        Assert.assertThat(actual, Is.is(expected));
+//    }
 
     private ArrayList<String> invoicesInJson() throws JsonProcessingException {
         ArrayList<Invoice> invoices = getInvoices();

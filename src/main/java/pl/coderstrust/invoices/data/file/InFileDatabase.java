@@ -22,6 +22,8 @@ public class InFileDatabase implements Database {
 
     public InFileDatabase() throws IOException {
         mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         configuration = new Configuration();
 
         File file = new File(configuration.getInvoicesFile());
@@ -103,13 +105,10 @@ public class InFileDatabase implements Database {
     }
 
     public Invoice getInvoiceFromJsonString(String line) throws IOException {
-        mapper.registerModule(new JavaTimeModule());
         return mapper.readValue(line, Invoice.class);
     }
 
     public String sentInvoiceToJsonString(Invoice invoice) throws JsonProcessingException {
-        mapper.registerModule(new JavaTimeModule());
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         return mapper.writeValueAsString(invoice);
     }
 }
