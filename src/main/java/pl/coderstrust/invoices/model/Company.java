@@ -10,13 +10,16 @@ public final class Company {
 
     @ApiModelProperty(value = "Unique ID of company", readOnly = true)
     @NotNull(message = "NotNull.Company.description")
-    private final Long id;
+    private Long id;
 
     @ApiModelProperty(value = "Name of company", readOnly = true)
-    private final String name;
+    private String name;
 
     @ApiModelProperty(value = "Tax identification number", readOnly = true)
-    private final String taxIdentificationNumber;
+    private String taxIdentificationNumber;
+
+    public Company() {
+    }
 
     public Company(Long id, String name, String taxIdentificationNumber) {
         this.id = id;
@@ -46,8 +49,8 @@ public final class Company {
         }
         Company company = (Company) o;
         return Objects.equals(id, company.id)
-                && Objects.equals(name, company.name)
-                && Objects.equals(taxIdentificationNumber, company.taxIdentificationNumber);
+            && Objects.equals(name, company.name)
+            && Objects.equals(taxIdentificationNumber, company.taxIdentificationNumber);
     }
 
     @Override
@@ -58,9 +61,9 @@ public final class Company {
     @Override
     public String toString() {
         return "Company{"
-                + "id=" + id
-                + ", name='" + name + '\''
-                + ", taxIdentificationNumber='" + taxIdentificationNumber + '\''
-                + '}';
+            + "id=" + id
+            + ", name='" + name + '\''
+            + ", taxIdentificationNumber='" + taxIdentificationNumber + '\''
+            + '}';
     }
 }
