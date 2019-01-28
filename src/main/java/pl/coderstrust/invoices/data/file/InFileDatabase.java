@@ -2,6 +2,8 @@ package pl.coderstrust.invoices.data.file;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -80,7 +82,7 @@ public class InFileDatabase implements Database {
             for (String line : lines) {
                 int colonPosition = line.indexOf(": ");
                 if (colonPosition > 0) {
-                    invoiceInJson = line.substring(colonPosition);
+                    invoiceInJson = line.substring(colonPosition+2);
                     Invoice invoice = getInvoiceFromJsonString(invoiceInJson);
                     invoices.add(invoice);
                 }
@@ -100,11 +102,14 @@ public class InFileDatabase implements Database {
             .collect(Collectors.toList());
     }
 
-    private Invoice getInvoiceFromJsonString(String line) throws IOException {
+    public Invoice getInvoiceFromJsonString(String line) throws IOException {
+        mapper.registerModule(new JavaTimeModule());
         return mapper.readValue(line, Invoice.class);
     }
 
-    private String sentInvoiceToJsonString(Invoice invoice) throws JsonProcessingException {
+    public String sentInvoiceToJsonString(Invoice invoice) throws JsonProcessingException {
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         return mapper.writeValueAsString(invoice);
     }
 }

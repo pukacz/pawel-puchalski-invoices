@@ -4,9 +4,12 @@ import java.util.Objects;
 
 public final class Company {
 
-    private final Long id;
-    private final String name;
-    private final String taxIdentificationNumber;
+    private Long id;
+    private String name;
+    private String taxIdentificationNumber;
+
+    public Company() {
+    }
 
     public Company(Long id, String name, String taxIdentificationNumber) {
         this.id = id;

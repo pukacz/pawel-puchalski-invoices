@@ -5,12 +5,15 @@ import java.util.Objects;
 
 public final class InvoiceEntry {
 
-    private final Long id;
-    private final String unit;
-    private final String productName;
-    private final String amount;
-    private final BigDecimal price;
-    private final VAT vat;
+    private Long id;
+    private String unit;
+    private String productName;
+    private String amount;
+    private BigDecimal price;
+    private VAT vat;
+
+    public InvoiceEntry() {
+    }
 
     public InvoiceEntry(Long id, String unit, String productName,
                         String amount, BigDecimal price, VAT vat) {
