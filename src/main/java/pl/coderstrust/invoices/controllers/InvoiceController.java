@@ -50,16 +50,6 @@ public class InvoiceController {
         invoiceService.saveInvoice(invoice);
     }
 
-//    @PostMapping("/add")
-//    public void addInvoice(@RequestParam Long id, @RequestParam String issue, @RequestParam String issueDate, @RequestParam String seller, @RequestParam String buyer, @RequestParam String entries) throws DatabaseOperationException {
-//        LocalDate date = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(issueDate));
-//        Company tenSeller = new Company(23L, seller, "");
-//        Company tenBuyer = new Company(24L, buyer, "");
-//        List<InvoiceEntry> taEntries = new ArrayList<>();
-//        Invoice invoice = new Invoice(id, issue, date, tenSeller, tenBuyer, taEntries);
-//        invoiceService.saveInvoice(invoice);
-//    }
-
     @DeleteMapping("/{id}")
     public void deleteInvoice(@PathVariable Long id) throws DatabaseOperationException {
         invoiceService.deleteInvoice(id);
