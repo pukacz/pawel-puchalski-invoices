@@ -26,7 +26,7 @@ public class InFileDatabase implements Database {
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         configuration = new Configuration();
 
-        File file = new File(configuration.getInvoicesFile());
+        File file = new File(configuration.getInvoicesFilePath());
         if (!file.exists()) {
             file.createNewFile();
         }
@@ -35,11 +35,10 @@ public class InFileDatabase implements Database {
     @Override
     public void saveInvoice(Invoice invoice) {
         Long invoiceId = invoice.getId();
-        String invoiceInJson;
 
-        try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFile(),
+        try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFilePath(),
             "rw")) {
-            invoiceInJson = sentInvoiceToJsonString(invoice);
+            String invoiceInJson = sentInvoiceToJsonString(invoice);
             FileHelper fileHelper = new FileHelper(file);
             fileHelper.saveInvoice(invoiceId, invoiceInJson);
         } catch (IOException e) {
@@ -50,7 +49,7 @@ public class InFileDatabase implements Database {
     @Override
     public void deleteInvoice(Long invoiceId) {
 
-        try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFile(),
+        try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFilePath(),
             "rw")) {
             FileHelper fileHelper = new FileHelper(file);
             fileHelper.deleteInvoice(invoiceId);
@@ -77,14 +76,15 @@ public class InFileDatabase implements Database {
         List<String> lines;
         String invoiceInJson;
 
-        try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFile(), "r")) {
+        try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFilePath(),
+            "r")) {
             FileHelper fileHelper = new FileHelper(file);
             lines = fileHelper.getInvoices();
 
             for (String line : lines) {
                 int colonPosition = line.indexOf(": ");
                 if (colonPosition > 0) {
-                    invoiceInJson = line.substring(colonPosition+2);
+                    invoiceInJson = line.substring(colonPosition + 2);
                     Invoice invoice = getInvoiceFromJsonString(invoiceInJson);
                     invoices.add(invoice);
                 }

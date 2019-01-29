@@ -41,6 +41,14 @@ public final class InvoiceEntry {
         this.vat = vat;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
     public String getProductName() {
         return productName;
     }
