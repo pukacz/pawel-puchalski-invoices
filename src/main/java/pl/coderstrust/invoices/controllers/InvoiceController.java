@@ -1,6 +1,7 @@
 package pl.coderstrust.invoices.controllers;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,9 +33,11 @@ public class InvoiceController {
     }
 
     @RequestMapping("/byDates")
-    public Collection<Invoice> getAllofRange(@RequestParam(value = "fromDate") LocalDate fromDate,
-        @RequestParam(value = "toDate") LocalDate toDate) throws DatabaseOperationException {
-        return invoiceService.getAllofRange(fromDate, toDate);
+    public Collection<Invoice> getAllofRange(@RequestParam(value = "fromDate") String fromDate,
+        @RequestParam(value = "toDate") String toDate) throws DatabaseOperationException {
+        LocalDate startDate = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(fromDate));
+        LocalDate endDate = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(toDate));
+        return invoiceService.getAllofRange(startDate, endDate);
     }
 
     @GetMapping("/{id}")
