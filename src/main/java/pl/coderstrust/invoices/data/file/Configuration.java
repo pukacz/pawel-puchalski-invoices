@@ -7,7 +7,7 @@ class Configuration {
     private String invoicesFile = "invoices.dat";
     private String folder = "localData";
 
-    String getInvoicesFile() {
+    String getInvoicesFilePath() {
         File dataFolder = new File(folder);
         return dataFolder.getAbsolutePath() + "\\" + invoicesFile;
     }
