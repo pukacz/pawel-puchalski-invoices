@@ -48,28 +48,8 @@ public class InvoiceServiceImplementation implements InvoiceService {
         }
     }
 
-//    @JsonCreator
-//    public void saveInvoice(@JsonProperty("id") Long id,
-//        @JsonProperty("issue") String issue,
-//        @JsonProperty("issueDate") String issueDate,
-//        @JsonProperty("seller") Company seller,
-//        @JsonProperty("buyer") Company buyer,
-//        @JsonProperty("entries") List<InvoiceEntry> entries) throws DatabaseOperationException {
-//        LocalDate date = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(issueDate));
-////        Company tenSeller = new Company(23L, seller, "");
-////        Company tenBuyer = new Company(24L, buyer, "");
-////        List<InvoiceEntry> taEntries = new ArrayList<>();
-//        Invoice invoice = new Invoice(id, issue, date, seller, buyer, entries);
-//        try {
-//            database.saveInvoice(invoice);
-//        } catch (Exception e) {
-//            throw new DatabaseOperationException("can not add an invoice to the database", e);
-//        }
-//    }
-
     public void saveInvoice(Invoice invoice) throws DatabaseOperationException {
         try {
-            //Invoice deserializedInvoice = new ObjectMapper().readValue(invoice.toString(), Invoice.class);
             database.saveInvoice(invoice);
         } catch (Exception e) {
             throw new DatabaseOperationException("can not add/update an invoice to the database", e);
