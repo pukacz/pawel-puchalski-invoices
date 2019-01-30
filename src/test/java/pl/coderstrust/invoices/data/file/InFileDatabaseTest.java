@@ -63,19 +63,20 @@ public class InFileDatabaseTest {
     public void shouldSaveAndReturnInvoice() throws IOException {
         //given
         String filePath = new File("localTestData").getAbsolutePath() + "\\" + "invoicesTest.dat";
-        ArrayList<String> list = new ArrayList<>();
-        String invoiceInJson = inFileDatabase.sentInvoiceToJsonString(getInvoices().get(0));
-        list.add("1: " + invoiceInJson + "\n");
         when(configuration.getInvoicesFilePath()).thenReturn(filePath);
+
         doAnswer(invocationOnMock -> null).when(fileHelper).saveInvoice(anyLong(), anyString());
+        ArrayList<String> list = new ArrayList<>();
+        list.add(invoicesInJson().get(0));
+        list.add(invoicesInJson().get(1));
+        list.add(invoicesInJson().get(2));
         when(fileHelper.getInvoices()).thenReturn(list);
 
         //when
-        inFileDatabase.saveInvoice(getInvoices().get(0));
-        Invoice actual = inFileDatabase.getInvoice(1L);
-        Invoice expected = inFileDatabase.getInvoiceFromJsonString(list.get(0).substring(3));
+        Invoice actual = inFileDatabase.getInvoice(2L);
+        Invoice expected = getInvoices().get(1);
 
-        //then
+//        //then
         Assert.assertThat(actual, Is.is(expected));
     }
 
@@ -85,7 +86,9 @@ public class InFileDatabaseTest {
         //given
         LocalDate start = LocalDate.of(2016, 12, 1);
         LocalDate end = LocalDate.of(2018, 1, 31);
+
         String filePath = new File("localTestData").getAbsolutePath() + "\\" + "invoicesTest.dat";
+
         when(configuration.getInvoicesFilePath()).thenReturn(filePath);
         when(fileHelper.getInvoices()).thenReturn(invoicesInJson());
 
@@ -102,6 +105,7 @@ public class InFileDatabaseTest {
     public void shouldReturnListOfInvoices() throws IOException {
         //given
         String filePath = new File("localTestData").getAbsolutePath() + "\\" + "invoicesTest.dat";
+
         when(configuration.getInvoicesFilePath()).thenReturn(filePath);
         when(fileHelper.getInvoices()).thenReturn(invoicesInJson());
 
