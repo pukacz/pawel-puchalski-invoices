@@ -4,11 +4,11 @@ import java.io.File;
 
 class Configuration {
 
-    private String invoicesFile = "invoices.dat";
-    private String folder = "localData";
+    private static final String INVOICES_FILE = "invoices.dat";
+    private static final String FOLDER = "localData";
 
-    String getInvoicesFilePath() {
-        File dataFolder = new File(folder);
-        return dataFolder.getAbsolutePath() + "\\" + invoicesFile;
+    public String getInvoicesFilePath() {
+        File dataFolder = new File(FOLDER);
+        return dataFolder.getAbsolutePath() + "\\" + INVOICES_FILE;
     }
 }
