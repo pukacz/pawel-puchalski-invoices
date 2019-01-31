@@ -1,8 +1,5 @@
 package pl.coderstrust.invoices.data.file;
 
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -43,40 +41,36 @@ public class InFileDatabaseTest {
     @InjectMocks
     InFileDatabase inFileDatabase;
 
-//    public static void main(String[] args) throws IOException {
-//        InFileDatabase inFileDatabase = new InFileDatabase();
-//
-//        InFileDatabaseTest inFileDatabaseTest = new InFileDatabaseTest();
-//
-//        for (Invoice i : inFileDatabaseTest.getInvoices()) {
-//            inFileDatabase.saveInvoice(i);
-//        }
-//
-//        ArrayList<Invoice> list = new ArrayList<>(inFileDatabase.getInvoices());
-//        for (Invoice i : list) {
-//            System.out.println(i);
-//        }
-//        System.out.println(list.get(1).getEntries().get(0).getPrice());
-//    }
-
     @Test
-    public void shouldSaveAndReturnInvoice() throws IOException {
+    public void shouldSave3Delete1andReturn2Invoice() throws IOException {
         //given
-        String filePath = new File("localTestData").getAbsolutePath() + "\\" + "invoicesTest.dat";
-        when(configuration.getInvoicesFilePath()).thenReturn(filePath);
-
-        doAnswer(invocationOnMock -> null).when(fileHelper).saveInvoice(anyLong(), anyString());
         ArrayList<String> list = new ArrayList<>();
-        list.add(invoicesInJson().get(0));
-        list.add(invoicesInJson().get(1));
-        list.add(invoicesInJson().get(2));
+        String filePath = new File("localTestData").getAbsolutePath() + "\\" + "invoicesTest.dat";
+
+        when(configuration.getInvoicesFilePath()).thenReturn(filePath);
         when(fileHelper.getInvoices()).thenReturn(list);
 
-        //when
-        Invoice actual = inFileDatabase.getInvoice(2L);
-        Invoice expected = getInvoices().get(1);
+        when(fileHelper.saveInvoice(1L, invoicesInJson().get(0)))
+            .thenReturn(list.add("" + 1L + invoicesInJson().get(0)));
+        when(fileHelper.saveInvoice(2L, invoicesInJson().get(1)))
+            .thenReturn(list.add("" + 2L + invoicesInJson().get(1)));
+        when(fileHelper.saveInvoice(3L, invoicesInJson().get(2)))
+            .thenReturn(list.add("" + 3L + invoicesInJson().get(2)));
 
-//        //then
+        when(fileHelper.deleteInvoice(2L)).thenReturn(Boolean.valueOf(list.remove(1)));
+
+        //when
+        inFileDatabase.saveInvoice(getInvoices().get(0));
+        inFileDatabase.saveInvoice(getInvoices().get(1));
+        inFileDatabase.saveInvoice(getInvoices().get(2));
+        inFileDatabase.deleteInvoice(2L);
+
+        List<String> actual = list;
+        List<String> expected = new ArrayList<>(
+            Arrays.asList("" + 1L + invoicesInJson().get(0), "" + 3L + invoicesInJson().get(2)));
+
+        //then
+        Assert.assertEquals(list.size(), 2);
         Assert.assertThat(actual, Is.is(expected));
     }
 

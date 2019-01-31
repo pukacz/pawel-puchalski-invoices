@@ -23,16 +23,17 @@ class FileHelper {
         return list;
     }
 
-    void saveInvoice(Long invoiceId, String invoice) throws IOException {
+    public boolean saveInvoice(Long invoiceId, String invoiceInJson) throws IOException {
 
-        String line = "" + invoiceId + ": " + invoice + "\n";
+        String line = "" + invoiceId + ": " + invoiceInJson + "\n";
         Long cursor = getPositionOfInvoice(invoiceId);
 
         file.seek(cursor);
         file.writeBytes(line);
+        return true;
     }
 
-    void deleteInvoice(Long invoiceId) throws IOException {
+    boolean deleteInvoice(Long invoiceId) throws IOException {
 
         Long cursor = getPositionOfInvoice(invoiceId);
 
@@ -46,6 +47,7 @@ class FileHelper {
             }
             file.writeBytes("\n");
         }
+        return true;
     }
 
     private Long getPositionOfInvoice(Long invoiceId) throws IOException {
