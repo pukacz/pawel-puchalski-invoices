@@ -16,7 +16,7 @@ public final class InvoiceEntry {
     }
 
     public InvoiceEntry(Long id, String unit, String productName,
-                        String amount, BigDecimal price, VAT vat) {
+        String amount, BigDecimal price, VAT vat) {
         this.id = id;
         this.unit = unit;
         this.productName = productName;
@@ -59,11 +59,11 @@ public final class InvoiceEntry {
         }
         InvoiceEntry that = (InvoiceEntry) o;
         return Objects.equals(id, that.id)
-                && Objects.equals(unit, that.unit)
-                && Objects.equals(productName, that.productName)
-                && Objects.equals(amount, that.amount)
-                && Objects.equals(price, that.price)
-                && vat == that.vat;
+            && Objects.equals(unit, that.unit)
+            && Objects.equals(productName, that.productName)
+            && Objects.equals(amount, that.amount)
+            && Objects.equals(price, that.price)
+            && vat == that.vat;
     }
 
     @Override
@@ -74,12 +74,12 @@ public final class InvoiceEntry {
     @Override
     public String toString() {
         return "InvoiceEntry{"
-                + "id=" + id
-                + ", unit='" + unit + '\''
-                + ", productName='" + productName + '\''
-                + ", amount='" + amount + '\''
-                + ", price=" + price
-                + ", vat=" + vat
-                + '}';
+            + "id=" + id
+            + ", unit='" + unit + '\''
+            + ", productName='" + productName + '\''
+            + ", amount='" + amount + '\''
+            + ", price=" + price
+            + ", vat=" + vat
+            + '}';
     }
 }

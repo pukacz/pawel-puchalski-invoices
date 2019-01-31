@@ -3,7 +3,6 @@ package pl.coderstrust.invoices.data.file;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.List;
 
 class FileHelper {
 
@@ -13,17 +12,20 @@ class FileHelper {
         this.file = file;
     }
 
-    public List<String> getInvoices() throws IOException {
+    public ArrayList<String> getInvoices() throws IOException {
         ArrayList<String> list = new ArrayList<>();
         String line;
+        file.seek(0);
 
-        while ((line = file.readLine()) != null) {
+        while ((line = file.readLine()) != null && file.getFilePointer() < file.length() + 1) {
             list.add(line);
         }
         return list;
     }
 
-    public boolean saveInvoice(Long invoiceId, String invoiceInJson) throws IOException {
+    boolean saveInvoice(Long invoiceId, String invoiceInJson) throws IOException {
+
+        deleteInvoice(invoiceId);
 
         String line = "" + invoiceId + ": " + invoiceInJson + "\n";
         Long cursor = getPositionOfInvoice(invoiceId);
@@ -34,14 +36,14 @@ class FileHelper {
     }
 
     boolean deleteInvoice(Long invoiceId) throws IOException {
-
+        file.seek(0);
         Long cursor = getPositionOfInvoice(invoiceId);
 
         if (!cursor.equals(file.length())) {
             file.seek(cursor);
             String line = file.readLine();
 
-            file.seek(file.getFilePointer() - line.getBytes().length - 1);
+            file.seek(file.getFilePointer() - line.length() - 1);
             for (int i = 0; i < line.length(); i++) {
                 file.writeBytes(" ");
             }
@@ -52,13 +54,12 @@ class FileHelper {
 
     private Long getPositionOfInvoice(Long invoiceId) throws IOException {
 
-        long cursor;
         String line;
         String idInString;
         int colonIndex;
-        cursor = file.getFilePointer();
+        long cursor = file.getFilePointer();
 
-        while ((line = file.readLine()) != null) {
+        while ((line = file.readLine()) != null && file.getFilePointer() < file.length() + 1) {
 
             if ((colonIndex = line.indexOf(": ")) > 0) {
                 idInString = line.substring(0, colonIndex);

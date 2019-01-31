@@ -39,8 +39,8 @@ public final class Company {
         }
         Company company = (Company) o;
         return Objects.equals(id, company.id)
-                && Objects.equals(name, company.name)
-                && Objects.equals(taxIdentificationNumber, company.taxIdentificationNumber);
+            && Objects.equals(name, company.name)
+            && Objects.equals(taxIdentificationNumber, company.taxIdentificationNumber);
     }
 
     @Override
@@ -51,9 +51,9 @@ public final class Company {
     @Override
     public String toString() {
         return "Company{"
-                + "id=" + id
-                + ", name='" + name + '\''
-                + ", taxIdentificationNumber='" + taxIdentificationNumber + '\''
-                + '}';
+            + "id=" + id
+            + ", name='" + name + '\''
+            + ", taxIdentificationNumber='" + taxIdentificationNumber + '\''
+            + '}';
     }
 }
