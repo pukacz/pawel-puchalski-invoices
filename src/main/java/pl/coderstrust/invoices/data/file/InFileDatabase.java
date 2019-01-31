@@ -73,15 +73,15 @@ public class InFileDatabase implements Database {
     public Collection<Invoice> getInvoices() {
 
         ArrayList<Invoice> invoices = new ArrayList<>();
-        List<String> lines;
+        List<String> invoiceIdAndInvoiceInJson;
         String invoiceInJson;
 
         try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFilePath(),
             "r")) {
             FileHelper fileHelper = new FileHelper(file);
-            lines = fileHelper.getInvoices();
+            invoiceIdAndInvoiceInJson = fileHelper.getInvoices();
 
-            for (String line : lines) {
+            for (String line : invoiceIdAndInvoiceInJson) {
                 int colonPosition = line.indexOf(": ");
                 if (colonPosition > 0) {
                     invoiceInJson = line.substring(colonPosition + 2);
@@ -104,11 +104,11 @@ public class InFileDatabase implements Database {
             .collect(Collectors.toList());
     }
 
-    public Invoice getInvoiceFromJsonString(String line) throws IOException {
+    private Invoice getInvoiceFromJsonString(String line) throws IOException {
         return mapper.readValue(line, Invoice.class);
     }
 
-    public String sentInvoiceToJsonString(Invoice invoice) throws JsonProcessingException {
+    String sentInvoiceToJsonString(Invoice invoice) throws JsonProcessingException {
         return mapper.writeValueAsString(invoice);
     }
 }
