@@ -1,9 +1,10 @@
-package pl.coderstrust.invoices.data.file;
+package pl.coderstrust.invoices.database.file;
 
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -33,34 +34,37 @@ public class InFileDatabaseTest {
     public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock
-    FileHelper fileHelper;
+    InvoiceFileAccessor invoiceFileAccessor;
 
     @Mock
     Configuration configuration;
 
+    @Mock
+    InvoiceConverter invoiceConverter;
+
     @InjectMocks
     InFileDatabase inFileDatabase;
 
-    private File testFile = new File("localTestData" + "\\" + "invoicesTest.dat");
+    private File testFile = new File("src/test/resources/inFileTestData/invoicesTest.dat");
 
     @Test
     public void shouldSave_3_Delete_1_andReturn_2_Invoices() throws IOException {
         //given
         ArrayList<String> actual = new ArrayList<>();
         when(configuration.getInvoicesFilePath()).thenReturn(testFile.getPath());
-        when(fileHelper.getInvoices()).thenReturn(actual);
+        when(invoiceFileAccessor.getInvoices()).thenReturn(actual);
 
-        when(fileHelper
-            .saveInvoice(1L, inFileDatabase.sentInvoiceToJsonString(getInvoices().get(0))))
+        when(invoiceFileAccessor
+            .saveInvoice(1L, invoiceConverter.sentInvoiceToJsonString(getInvoices().get(0))))
             .thenReturn(actual.add(getLinesOfIdsAndInvoicesInJson().get(0)));
-        when(fileHelper
-            .saveInvoice(2L, inFileDatabase.sentInvoiceToJsonString(getInvoices().get(1))))
+        when(invoiceFileAccessor
+            .saveInvoice(2L, invoiceConverter.sentInvoiceToJsonString(getInvoices().get(1))))
             .thenReturn(actual.add(getLinesOfIdsAndInvoicesInJson().get(1)));
-        when(fileHelper
-            .saveInvoice(3L, inFileDatabase.sentInvoiceToJsonString(getInvoices().get(2))))
+        when(invoiceFileAccessor
+            .saveInvoice(3L, invoiceConverter.sentInvoiceToJsonString(getInvoices().get(2))))
             .thenReturn(actual.add(getLinesOfIdsAndInvoicesInJson().get(2)));
 
-        when(fileHelper
+        when(invoiceFileAccessor
             .deleteInvoice(2L))
             .thenReturn(actual.remove(1).isEmpty());
 
@@ -81,7 +85,7 @@ public class InFileDatabaseTest {
         LocalDate end = LocalDate.of(2018, 1, 31);
 
         when(configuration.getInvoicesFilePath()).thenReturn(testFile.getPath());
-        when(fileHelper.getInvoices()).thenReturn(getLinesOfIdsAndInvoicesInJson());
+        when(invoiceFileAccessor.getInvoices()).thenReturn(getLinesOfIdsAndInvoicesInJson());
 
         //when
         ArrayList actual = new ArrayList<>(inFileDatabase.getInvoicesByDate(start, end));
@@ -94,9 +98,10 @@ public class InFileDatabaseTest {
 
     @Test
     public void shouldReturnListOfInvoices() throws IOException {
+        System.out.println(testFile.getPath());
         //given
         when(configuration.getInvoicesFilePath()).thenReturn(testFile.getPath());
-        when(fileHelper.getInvoices()).thenReturn(getLinesOfIdsAndInvoicesInJson());
+        when(invoiceFileAccessor.getInvoices()).thenReturn(getLinesOfIdsAndInvoicesInJson());
 
         //when
         ArrayList actual = new ArrayList<>(inFileDatabase.getInvoices());
@@ -111,7 +116,7 @@ public class InFileDatabaseTest {
         String line;
 
         for (Invoice invoice : getInvoices()) {
-            line = "" + invoice.getId() + ": " + inFileDatabase.sentInvoiceToJsonString(invoice)
+            line = "" + invoice.getId() + ": " + new ObjectMapper().writeValueAsString(invoice)
                 + "\n";
             invoicesInJson.add(line);
         }
