@@ -6,30 +6,27 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @ApiModel(value = "Invoice", description = "invoice model")
 public final class Invoice {
 
-    @ApiModelProperty(value = "unique ID of invoice", readOnly = true)
+    @ApiModelProperty(value = "Unique ID of invoice", readOnly = true)
     @NotNull(message = "NotNull.Invoice.description")
-    @Size(min = 1, message = "Long value")
     private final Long id;
 
-    @ApiModelProperty(value = "place of invoice issue", readOnly = true)
-    @Size(min = 3, max = 64)
+    @ApiModelProperty(value = "Place of invoice issue", readOnly = true)
     private final String issue;
 
-    @ApiModelProperty(value = "date of invoice issue", readOnly = true)
+    @ApiModelProperty(value = "Date of invoice issue", readOnly = true)
     private final LocalDate issueDate;
 
-    @ApiModelProperty(value = "model Company of seller", readOnly = true)
+    @ApiModelProperty(value = "Model Company of seller", readOnly = true)
     private final Company seller;
 
-    @ApiModelProperty(value = "model Company of buyer", readOnly = true)
+    @ApiModelProperty(value = "Model Company of buyer", readOnly = true)
     private final Company buyer;
 
-    @ApiModelProperty(value = "model InvoiceEntry - selling items", readOnly = true)
+    @ApiModelProperty(value = "Model InvoiceEntry - selling items", readOnly = true)
     private final List<InvoiceEntry> entries;
 
     public Invoice(Long id, String issue, LocalDate issueDate,

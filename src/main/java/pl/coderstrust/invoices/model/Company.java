@@ -4,22 +4,18 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @ApiModel(value = "Company", description = "company model")
 public final class Company {
 
-    @ApiModelProperty(value = "unique ID of company", readOnly = true)
+    @ApiModelProperty(value = "Unique ID of company", readOnly = true)
     @NotNull(message = "NotNull.Company.description")
-    @Size(min = 1, message = "Long value")
     private final Long id;
 
-    @ApiModelProperty(value = "name of company", readOnly = true)
-    @Size(min = 1, max = 64)
+    @ApiModelProperty(value = "Name of company", readOnly = true)
     private final String name;
 
-    @ApiModelProperty(value = "tax identification number, ???", readOnly = true)
-    @Size(min = 1, max = 8)
+    @ApiModelProperty(value = "Tax identification number", readOnly = true)
     private final String taxIdentificationNumber;
 
     public Company(Long id, String name, String taxIdentificationNumber) {
