@@ -12,7 +12,7 @@ class InvoiceFileAccessor {
         this.file = file;
     }
 
-    public ArrayList<String> getInvoiceFileLines() throws IOException {
+    ArrayList<String> getInvoiceFileLines() throws IOException {
         ArrayList<String> list = new ArrayList<>();
         String line;
         file.seek(0);
