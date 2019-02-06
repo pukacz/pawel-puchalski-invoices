@@ -9,18 +9,19 @@ import pl.coderstrust.invoices.model.Invoice;
 
 public class InvoiceConverter {
 
-    public InvoiceConverter(){
-        ObjectMapper invoiceMapper = new ObjectMapper();
+    private ObjectMapper invoiceMapper;
+
+    public InvoiceConverter() {
         invoiceMapper = new ObjectMapper();
         invoiceMapper.registerModule(new JavaTimeModule());
         invoiceMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
-    public  Invoice getInvoiceFromJsonString(String line) throws IOException {
-        return new ObjectMapper().readValue(line, Invoice.class);
+    public Invoice getInvoiceFromJson(String invoiceInJson) throws IOException {
+        return invoiceMapper.readValue(invoiceInJson, Invoice.class);
     }
 
-    public  String sentInvoiceToJsonString(Invoice invoice) throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(invoice);
+    public String getJsonFromInvoice(Invoice invoice) throws JsonProcessingException {
+        return invoiceMapper.writeValueAsString(invoice);
     }
 }

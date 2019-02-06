@@ -14,15 +14,14 @@ import pl.coderstrust.invoices.model.Invoice;
 public class InFileDatabase implements Database {
 
     private InvoiceConverter invoiceConverter;
-    private Configuration configuration;
+    private File invoiceFile;
 
     public InFileDatabase() throws IOException {
         invoiceConverter = new InvoiceConverter();
-        configuration = new Configuration();
+        invoiceFile = new Configuration().getFile();
 
-        File file = new File(configuration.getInvoicesFilePath());
-        if (!file.exists()) {
-            file.createNewFile();
+        if (!invoiceFile.exists()) {
+            invoiceFile.createNewFile();
         }
     }
 
@@ -30,11 +29,10 @@ public class InFileDatabase implements Database {
     public void saveInvoice(Invoice invoice) {
         Long invoiceId = invoice.getId();
 
-        try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFilePath(),
-            "rw")) {
-            String invoiceInJson = invoiceConverter.sentInvoiceToJsonString(invoice);
-            InvoiceFileAccessor invoiceFileAccessor = new InvoiceFileAccessor(file);
-            invoiceFileAccessor.saveInvoice(invoiceId, invoiceInJson);
+        try (RandomAccessFile file = new RandomAccessFile(invoiceFile, "rw")) {
+            String invoiceInJson = invoiceConverter.getJsonFromInvoice(invoice);
+            InvoiceFileAccessor fileAccessor = new InvoiceFileAccessor(file);
+            fileAccessor.saveLine(invoiceId, invoiceInJson);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -42,10 +40,9 @@ public class InFileDatabase implements Database {
 
     @Override
     public void deleteInvoice(Long invoiceId) {
-        try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFilePath(),
-            "rw")) {
-            InvoiceFileAccessor invoiceFileAccessor = new InvoiceFileAccessor(file);
-            invoiceFileAccessor.deleteInvoice(invoiceId);
+        try (RandomAccessFile file = new RandomAccessFile(invoiceFile, "rw")) {
+            InvoiceFileAccessor fileAccessor = new InvoiceFileAccessor(file);
+            fileAccessor.invalidateLine(invoiceId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -65,19 +62,16 @@ public class InFileDatabase implements Database {
 
     public Collection<Invoice> getInvoices() {
         ArrayList<Invoice> invoices = new ArrayList<>();
-        List<String> invoiceIdAndInvoiceInJson;
-        String invoiceInJson;
 
-        try (RandomAccessFile file = new RandomAccessFile(configuration.getInvoicesFilePath(),
-            "r")) {
-            InvoiceFileAccessor invoiceFileAccessor = new InvoiceFileAccessor(file);
-            invoiceIdAndInvoiceInJson = invoiceFileAccessor.getInvoices();
+        try (RandomAccessFile file = new RandomAccessFile(invoiceFile, "r")) {
+            InvoiceFileAccessor fileAccessor = new InvoiceFileAccessor(file);
+            List<String> lines = fileAccessor.getInvoiceFileLines();
 
-            for (String line : invoiceIdAndInvoiceInJson) {
+            for (String line : lines) {
                 int colonPosition = line.indexOf(": ");
                 if (colonPosition > 0) {
-                    invoiceInJson = line.substring(colonPosition + 2);
-                    Invoice invoice = invoiceConverter.getInvoiceFromJsonString(invoiceInJson);
+                    String invoiceInJson = line.substring(colonPosition + 2);
+                    Invoice invoice = invoiceConverter.getInvoiceFromJson(invoiceInJson);
                     invoices.add(invoice);
                 }
             }
