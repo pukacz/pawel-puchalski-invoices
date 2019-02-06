@@ -14,14 +14,14 @@ import pl.coderstrust.invoices.model.Invoice;
 public class InFileDatabase implements Database {
 
     private InvoiceConverter invoiceConverter;
-    private File invoiceFile;
+    private File invoicesFile;
 
     public InFileDatabase() throws IOException {
         invoiceConverter = new InvoiceConverter();
-        invoiceFile = new Configuration().getFile();
+        invoicesFile = new Configuration().getFile();
 
-        if (!invoiceFile.exists()) {
-            invoiceFile.createNewFile();
+        if (!invoicesFile.exists()) {
+            invoicesFile.createNewFile();
         }
     }
 
@@ -29,7 +29,7 @@ public class InFileDatabase implements Database {
     public void saveInvoice(Invoice invoice) {
         Long invoiceId = invoice.getId();
 
-        try (RandomAccessFile file = new RandomAccessFile(invoiceFile, "rw")) {
+        try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
             String invoiceInJson = invoiceConverter.getJsonFromInvoice(invoice);
             InvoiceFileAccessor fileAccessor = new InvoiceFileAccessor(file);
             fileAccessor.saveLine(invoiceId, invoiceInJson);
@@ -40,7 +40,7 @@ public class InFileDatabase implements Database {
 
     @Override
     public void deleteInvoice(Long invoiceId) {
-        try (RandomAccessFile file = new RandomAccessFile(invoiceFile, "rw")) {
+        try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
             InvoiceFileAccessor fileAccessor = new InvoiceFileAccessor(file);
             fileAccessor.invalidateLine(invoiceId);
         } catch (IOException e) {
@@ -63,7 +63,7 @@ public class InFileDatabase implements Database {
     public Collection<Invoice> getInvoices() {
         ArrayList<Invoice> invoices = new ArrayList<>();
 
-        try (RandomAccessFile file = new RandomAccessFile(invoiceFile, "r")) {
+        try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "r")) {
             InvoiceFileAccessor fileAccessor = new InvoiceFileAccessor(file);
             List<String> lines = fileAccessor.getInvoiceFileLines();
 
