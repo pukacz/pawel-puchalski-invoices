@@ -6,7 +6,6 @@ import java.io.RandomAccessFile;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.model.Invoice;
@@ -18,7 +17,7 @@ public class InFileDatabase implements Database {
 
     public InFileDatabase() throws IOException {
         invoiceConverter = new InvoiceConverter();
-        invoicesFile = new Configuration().getFile();
+        invoicesFile = new Configuration().getInvoicesFile();
 
         if (!invoicesFile.exists()) {
             invoicesFile.createNewFile();
@@ -65,16 +64,9 @@ public class InFileDatabase implements Database {
 
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "r")) {
             InvoiceFileAccessor fileAccessor = new InvoiceFileAccessor(file);
-            List<String> lines = fileAccessor.getInvoiceFileLines();
+            ArrayList<String> lines = fileAccessor.getInvoiceFileLines();
+            invoices = invoiceConverter.getInvoicesFromLines(lines);
 
-            for (String line : lines) {
-                int colonPosition = line.indexOf(": ");
-                if (colonPosition > 0) {
-                    String invoiceInJson = line.substring(colonPosition + 2);
-                    Invoice invoice = invoiceConverter.getInvoiceFromJson(invoiceInJson);
-                    invoices.add(invoice);
-                }
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }

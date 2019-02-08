@@ -51,7 +51,7 @@ public class InFileDatabaseTest {
     public void shouldSave_3_Delete_1_andReturn_2_Invoices() throws IOException {
         //given
         ArrayList<String> actual = new ArrayList<>();
-        when(config.getFile()).thenReturn(testFile);
+        when(config.getInvoicesFile()).thenReturn(testFile);
         when(fileAccessor.getInvoiceFileLines()).thenReturn(actual);
 
         when(fileAccessor.saveLine
@@ -84,7 +84,7 @@ public class InFileDatabaseTest {
         LocalDate start = LocalDate.of(2016, 12, 1);
         LocalDate end = LocalDate.of(2018, 1, 31);
 
-        when(config.getFile()).thenReturn(testFile);
+        when(config.getInvoicesFile()).thenReturn(testFile);
         when(fileAccessor.getInvoiceFileLines()).thenReturn(getIdsAndJsonInvoices(getInvoices()));
 
         //when
@@ -98,7 +98,7 @@ public class InFileDatabaseTest {
     @Test
     public void shouldReturnListOfInvoices() throws IOException {
         //given
-        when(config.getFile()).thenReturn(testFile);
+        when(config.getInvoicesFile()).thenReturn(testFile);
         when(fileAccessor.getInvoiceFileLines()).thenReturn(getIdsAndJsonInvoices(getInvoices()));
 
         System.out.println(inFileDatabase.getInvoices());
