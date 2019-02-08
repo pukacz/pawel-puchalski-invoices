@@ -4,11 +4,11 @@ import java.io.File;
 
 class Configuration {
 
-    private static final String INVOICES_FILE = "invoices.dat";
+    private static final String INVOICES_FILE = "invoices.datxx";
+    private static final String FOLDER = "src" + File.separator + "main" + File.separator
+        + "resources" + File.separator;
 
-     File getFile() {
-        return new File(
-            "src" + File.separator + "main" + File.separator
-                + "resources" + File.separator + INVOICES_FILE);
+    File getInvoicesFile() {
+        return new File(FOLDER + INVOICES_FILE);
     }
 }
