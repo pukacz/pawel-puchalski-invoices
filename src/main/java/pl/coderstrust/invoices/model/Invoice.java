@@ -25,18 +25,22 @@ public final class Invoice {
     @ApiModelProperty(value = "Model InvoiceEntry - selling items", readOnly = true)
     private  List<InvoiceEntry> entries;
 
-
     public Invoice() {
     }
 
-    public Invoice(Long id, String issue, LocalDate issueDate,
-                   Company seller, Company buyer, List<InvoiceEntry> entries) {
-        this.id = id;
+    public Invoice(String issue, LocalDate issueDate,
+        Company seller, Company buyer, List<InvoiceEntry> entries) {
         this.issue = issue;
         this.issueDate = issueDate;
         this.seller = seller;
         this.buyer = buyer;
         this.entries = entries;
+    }
+
+    public Invoice(Long id, String issue, LocalDate issueDate,
+        Company seller, Company buyer, List<InvoiceEntry> entries) {
+        this(issue, issueDate, seller, buyer, entries);
+        this.id = id;
     }
 
     public Long getId() {
@@ -63,6 +67,10 @@ public final class Invoice {
         return entries;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -73,11 +81,11 @@ public final class Invoice {
         }
         Invoice invoice = (Invoice) o;
         return Objects.equals(id, invoice.id)
-                && Objects.equals(issue, invoice.issue)
-                && Objects.equals(issueDate, invoice.issueDate)
-                && Objects.equals(seller, invoice.seller)
-                && Objects.equals(buyer, invoice.buyer)
-                && Objects.equals(entries, invoice.entries);
+            && Objects.equals(issue, invoice.issue)
+            && Objects.equals(issueDate, invoice.issueDate)
+            && Objects.equals(seller, invoice.seller)
+            && Objects.equals(buyer, invoice.buyer)
+            && Objects.equals(entries, invoice.entries);
     }
 
     @Override
@@ -88,12 +96,12 @@ public final class Invoice {
     @Override
     public String toString() {
         return "Invoice{"
-                + "id=" + id
-                + ", issue='" + issue + '\''
-                + ", issueDate=" + issueDate
-                + ", seller=" + seller
-                + ", buyer=" + buyer
-                + ", entries=" + entries
-                + '}';
+            + "id=" + id
+            + ", issue='" + issue + '\''
+            + ", issueDate=" + issueDate
+            + ", seller=" + seller
+            + ", buyer=" + buyer
+            + ", entries=" + entries
+            + '}';
     }
 }

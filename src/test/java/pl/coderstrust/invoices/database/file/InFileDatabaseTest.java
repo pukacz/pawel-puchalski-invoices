@@ -40,7 +40,7 @@ public class InFileDatabaseTest {
     Configuration config;
 
     @Mock
-    InvoiceConverter invoiceConverter;
+    Converter converter;
 
     @InjectMocks
     InFileDatabase inFileDatabase;
@@ -55,13 +55,13 @@ public class InFileDatabaseTest {
         when(fileAccessor.getInvoiceFileLines()).thenReturn(actual);
 
         when(fileAccessor.saveLine
-            (1L, invoiceConverter.getJsonFromInvoice(getInvoices().get(0))))
+            (1L, converter.getJsonFromInvoice(getInvoices().get(0))))
             .thenReturn(actual.add(getIdsAndJsonInvoices(getInvoices()).get(0)));
         when(fileAccessor
-            .saveLine(2L, invoiceConverter.getJsonFromInvoice(getInvoices().get(1))))
+            .saveLine(2L, converter.getJsonFromInvoice(getInvoices().get(1))))
             .thenReturn(actual.add(getIdsAndJsonInvoices(getInvoices()).get(1)));
         when(fileAccessor
-            .saveLine(3L, invoiceConverter.getJsonFromInvoice(getInvoices().get(2))))
+            .saveLine(3L, converter.getJsonFromInvoice(getInvoices().get(2))))
             .thenReturn(actual.add(getIdsAndJsonInvoices(getInvoices()).get(2)));
 
         when(fileAccessor

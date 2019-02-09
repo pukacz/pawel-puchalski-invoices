@@ -6,24 +6,25 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.TreeSet;
 import pl.coderstrust.invoices.model.Invoice;
 
-class InvoiceConverter {
+class Converter {
 
-    private ObjectMapper invoiceMapper;
+    private ObjectMapper converter;
 
-    InvoiceConverter() {
-        invoiceMapper = new ObjectMapper();
-        invoiceMapper.registerModule(new JavaTimeModule());
-        invoiceMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    Converter() {
+        converter = new ObjectMapper();
+        converter.registerModule(new JavaTimeModule());
+        converter.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     private Invoice getInvoiceFromJson(String invoiceInJson) throws IOException {
-        return invoiceMapper.readValue(invoiceInJson, Invoice.class);
+        return converter.readValue(invoiceInJson, Invoice.class);
     }
 
     String getJsonFromInvoice(Invoice invoice) throws JsonProcessingException {
-        return invoiceMapper.writeValueAsString(invoice);
+        return converter.writeValueAsString(invoice);
     }
 
     ArrayList<Invoice> getInvoicesFromLines(ArrayList<String> lines) throws IOException {
@@ -39,5 +40,13 @@ class InvoiceConverter {
             }
         }
         return invoices;
+    }
+
+    TreeSet<Long> getInvoiceIds(String line) throws IOException {
+        return converter.readValue(line, TreeSet.class);
+    }
+
+    String sendIdsToJson(TreeSet<Long> ids) throws JsonProcessingException {
+        return converter.writeValueAsString(ids);
     }
 }
