@@ -12,12 +12,26 @@ import pl.coderstrust.invoices.model.Invoice;
 
 public class InFileDatabase implements Database {
 
-    private InvoiceConverter invoiceConverter;
+    public static void main(String[] args) throws IOException {
+        InFileDatabase inf = new InFileDatabase();
+
+        Invoice invoice1 = new Invoice(1L, null, null, null, null, null);
+        Invoice invoice2 = new Invoice(2L, null, null, null, null, null);
+        Invoice invoice3 = new Invoice(null, null, null, null, null);
+
+        inf.saveInvoice(invoice1);
+        inf.saveInvoice(invoice2);
+        inf.saveInvoice(invoice3);
+    }
+
+    private Converter converter;
     private File invoicesFile;
+    private InvoiceIdCoordinator idCoordinator;
 
     public InFileDatabase() throws IOException {
-        invoiceConverter = new InvoiceConverter();
+        converter = new Converter();
         invoicesFile = new Configuration().getInvoicesFile();
+        idCoordinator = new InvoiceIdCoordinator();
 
         if (!invoicesFile.exists()) {
             invoicesFile.createNewFile();
@@ -25,16 +39,21 @@ public class InFileDatabase implements Database {
     }
 
     @Override
-    public void saveInvoice(Invoice invoice) {
+    public void saveInvoice(Invoice invoice) throws IOException {
         Long invoiceId = invoice.getId();
 
+        if (invoiceId.equals(0L)) {
+            invoiceId = new InvoiceIdCoordinator().generateId();
+            invoice.setId(invoiceId);
+        }
+
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
-            String invoiceInJson = invoiceConverter.getJsonFromInvoice(invoice);
+            String invoiceInJson = converter.getJsonFromInvoice(invoice);
             InvoiceFileAccessor fileAccessor = new InvoiceFileAccessor(file);
             fileAccessor.saveLine(invoiceId, invoiceInJson);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
+        idCoordinator.coordinateIds(invoiceId);
     }
 
     @Override
@@ -65,7 +84,7 @@ public class InFileDatabase implements Database {
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "r")) {
             InvoiceFileAccessor fileAccessor = new InvoiceFileAccessor(file);
             ArrayList<String> lines = fileAccessor.getInvoiceFileLines();
-            invoices = invoiceConverter.getInvoicesFromLines(lines);
+            invoices = converter.getInvoicesFromLines(lines);
 
         } catch (IOException e) {
             e.printStackTrace();

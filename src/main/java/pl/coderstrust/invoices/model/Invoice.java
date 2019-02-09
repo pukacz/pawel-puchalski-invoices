@@ -16,14 +16,20 @@ public final class Invoice {
     public Invoice() {
     }
 
-    public Invoice(Long id, String issue, LocalDate issueDate,
+    public Invoice(String issue, LocalDate issueDate,
         Company seller, Company buyer, List<InvoiceEntry> entries) {
-        this.id = id;
+        this.id = 0L;
         this.issue = issue;
         this.issueDate = issueDate;
         this.seller = seller;
         this.buyer = buyer;
         this.entries = entries;
+    }
+
+    public Invoice(Long id, String issue, LocalDate issueDate,
+        Company seller, Company buyer, List<InvoiceEntry> entries) {
+        this(issue, issueDate, seller, buyer, entries);
+        this.id = id;
     }
 
     public Long getId() {
@@ -48,6 +54,10 @@ public final class Invoice {
 
     public List<InvoiceEntry> getEntries() {
         return entries;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
