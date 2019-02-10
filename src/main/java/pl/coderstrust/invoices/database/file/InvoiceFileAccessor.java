@@ -24,7 +24,6 @@ class InvoiceFileAccessor {
     }
 
     boolean saveLine(Long invoiceId, String invoiceInJson) throws IOException {
-        invalidateLine(invoiceId);
         String line = "" + invoiceId + ": " + invoiceInJson + "\n";
         Long cursor = getPositionOfInvoice(invoiceId);
 

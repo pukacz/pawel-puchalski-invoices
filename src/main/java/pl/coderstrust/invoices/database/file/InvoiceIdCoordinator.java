@@ -8,13 +8,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.TreeSet;
 
-public class InvoiceIdCoordinator {
+class InvoiceIdCoordinator {
 
     private File file;
     private TreeSet<Long> invoiceIds;
     private Converter converter;
 
-    public InvoiceIdCoordinator() throws IOException {
+    InvoiceIdCoordinator() throws IOException {
         converter = new Converter();
         file = new Configuration().getInvoicesIdCoordinationFile();
 
@@ -30,7 +30,7 @@ public class InvoiceIdCoordinator {
         invoiceIds = getIds();
     }
 
-    public void coordinateIds(Long invoiceId) throws IOException {
+    void coordinateIds(Long invoiceId) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             invoiceIds.add(invoiceId);
             String line = converter.sendIdsToJson(invoiceIds);
@@ -38,7 +38,7 @@ public class InvoiceIdCoordinator {
         }
     }
 
-    private TreeSet<Long> getIds() throws IOException {
+    TreeSet<Long> getIds() throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             if ((line = reader.readLine()) != null) {
@@ -48,10 +48,9 @@ public class InvoiceIdCoordinator {
         return invoiceIds;
     }
 
-    public Long generateId() {
+    Long generateId() {
         if (!invoiceIds.isEmpty()) {
-            String last = "" + invoiceIds.last();
-            return Long.parseLong(last) + 1;
+            return invoiceIds.last() + 1;
         }
         return 1L;
     }

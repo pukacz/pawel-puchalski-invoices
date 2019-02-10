@@ -30,7 +30,7 @@ class Converter {
     }
 
     ArrayList<Invoice> getInvoicesFromLines(ArrayList<String> lines) throws IOException {
-        ArrayList<Invoice> invoices = null;
+        ArrayList<Invoice> invoices = new ArrayList<>();
         for (String line : lines) {
             int colonPosition = line.indexOf(": ");
             if (colonPosition > 0) {
@@ -44,7 +44,7 @@ class Converter {
         return invoices;
     }
 
-    TreeSet<Long> getInvoiceIds(String line) throws IOException {
+    TreeSet getInvoiceIds(String line) throws IOException {
         return jsonConverter.readValue(line, TreeSet.class);
     }
 
