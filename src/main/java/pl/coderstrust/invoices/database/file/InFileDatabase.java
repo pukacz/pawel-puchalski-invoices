@@ -15,8 +15,8 @@ public class InFileDatabase implements Database {
     public static void main(String[] args) throws IOException {
         InFileDatabase inf = new InFileDatabase();
 
-        Invoice invoice1 = new Invoice(1L, null, null, null, null, null);
-        Invoice invoice2 = new Invoice(2L, null, null, null, null, null);
+        Invoice invoice1 = new Invoice(1L, "cos", null, null, null, null);
+        Invoice invoice2 = new Invoice(3L, "ccc", null, null, null, null);
         Invoice invoice3 = new Invoice(null, null, null, null, null);
 
         inf.saveInvoice(invoice1);
@@ -50,9 +50,11 @@ public class InFileDatabase implements Database {
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
             String invoiceInJson = converter.getJsonFromInvoice(invoice);
             InvoiceFileAccessor fileAccessor = new InvoiceFileAccessor(file);
+            if (idCoordinator.getIds().contains(invoiceId)) {
+                fileAccessor.invalidateLine(invoiceId);
+            }
             fileAccessor.saveLine(invoiceId, invoiceInJson);
         }
-
         idCoordinator.coordinateIds(invoiceId);
     }
 
