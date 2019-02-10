@@ -14,15 +14,6 @@ public class InvoiceIdCoordinator {
     private TreeSet<Long> invoiceIds;
     private Converter converter;
 
-    public static void main(String[] args) throws IOException {
-        InvoiceIdCoordinator invoiceIdCoordinator = new InvoiceIdCoordinator();
-        System.out.println(invoiceIdCoordinator.getIds());
-        System.out.println(invoiceIdCoordinator.generateId());
-        invoiceIdCoordinator.coordinateIds(8L);
-        invoiceIdCoordinator.coordinateIds(4L);
-        invoiceIdCoordinator.coordinateIds(5L);
-    }
-
     public InvoiceIdCoordinator() throws IOException {
         converter = new Converter();
         file = new Configuration().getInvoicesIdCoordinationFile();
@@ -41,8 +32,7 @@ public class InvoiceIdCoordinator {
 
     public void coordinateIds(Long invoiceId) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            System.out.println(invoiceIds);
-            invoiceIds.add(Long.parseLong("" + invoiceId));
+            invoiceIds.add(invoiceId);
             String line = converter.sendIdsToJson(invoiceIds);
             writer.write(line);
         }
