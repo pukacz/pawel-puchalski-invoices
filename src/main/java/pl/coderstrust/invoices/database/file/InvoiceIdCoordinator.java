@@ -13,8 +13,8 @@ class InvoiceIdCoordinator {
     private File invoicesIdsFile;
     private TreeSet<Long> invoicesIds;
 
-    InvoiceIdCoordinator(File invoicesIdsFile) throws IOException {
-        this.invoicesIdsFile = invoicesIdsFile;
+    InvoiceIdCoordinator(Configuration configuration) throws IOException {
+        this.invoicesIdsFile = configuration.getInvoicesIdsFile();
 
         if (!invoicesIdsFile.exists()) {
             invoicesIdsFile.createNewFile();
@@ -38,11 +38,12 @@ class InvoiceIdCoordinator {
         return invoicesIds;
     }
 
-    void coordinateIds(Long invoiceId) throws IOException {
+    boolean coordinateIds(Long invoiceId) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
             invoicesIds.add(invoiceId);
             String line = new Converter().sendIdsToJson(invoicesIds);
             writer.write(line);
         }
+        return true;
     }
 }
