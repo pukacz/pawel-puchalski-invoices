@@ -9,8 +9,13 @@ class InvoiceFileAccessor {
 
     private File invoicesFile;
 
-    InvoiceFileAccessor(File invoicesFile) {
-        this.invoicesFile = invoicesFile;
+    InvoiceFileAccessor(Configuration configuration) throws IOException {
+        this.invoicesFile = configuration.getInvoicesFile();
+
+        File invoicesFile = configuration.getInvoicesFile();
+        if (!invoicesFile.exists()) {
+            invoicesFile.createNewFile();
+        }
     }
 
     ArrayList<String> getInvoiceFileLines() throws IOException {
