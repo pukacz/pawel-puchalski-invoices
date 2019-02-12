@@ -6,14 +6,16 @@ class Configuration {
 
     private static final String INVOICES_FILE = "invoices.dat";
     private static final String INVOICES_ID_FILE_COORDINATOR = "invoiceIds.cor";
-    private static final String FOLDER = "src" + File.separator + "main" + File.separator
-        + "resources" + File.separator + "inFileData" + File.separator;
+
+    private static final String SEPARATOR = File.separator;
+    private static final String FOLDER = "src" + SEPARATOR + "main" + SEPARATOR
+        + "resources" + SEPARATOR + "inFileData" + SEPARATOR;
 
     File getInvoicesFile() {
         return new File(FOLDER + INVOICES_FILE);
     }
 
-    File getInvoicesIdCoordinationFile() {
+    File getInvoicesIdsCoordinationFile() {
         return new File(FOLDER + INVOICES_ID_FILE_COORDINATOR);
     }
 }

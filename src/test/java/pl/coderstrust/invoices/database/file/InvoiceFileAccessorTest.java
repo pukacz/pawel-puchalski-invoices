@@ -35,7 +35,7 @@ public class InvoiceFileAccessorTest {
         String tempFile = "src/test/resources/inFileTestData/invoicesTestTemp.dat";
 
         try (RandomAccessFile file = new RandomAccessFile(tempFile, "rw")) {
-            InvoiceFileAccessor accessor = new InvoiceFileAccessor(file);
+            InvoiceFileAccessor accessor = new InvoiceFileAccessor(new Configuration());
             file.setLength(0);
 
             //when
@@ -59,4 +59,6 @@ public class InvoiceFileAccessorTest {
             Assert.assertEquals(actual, expected);
         }
     }
+
+    //stworzyc rozbite testy na pojedyncze metody
 }
