@@ -45,9 +45,6 @@ public class InFileDatabaseTest {
     @Mock
     InvoiceIdCoordinator invoiceIdCoordinator;
 
-    @Mock
-    File file;
-
     @InjectMocks
     InFileDatabase inFileDatabase;
 
@@ -58,7 +55,7 @@ public class InFileDatabaseTest {
             + "resources" + separator + "inFileTestData" + separator + "invoicesTest.dat");
     }
 
-    private File getInvoicesIdsCoordinationTestFile() {
+    private File getInvoicesIdsTestFile() {
         return new File("src" + separator + "test" + separator
             + "resources" + separator + "inFileTestData" + separator + "invoiceIdsTest.cor");
     }
@@ -68,6 +65,7 @@ public class InFileDatabaseTest {
         //given
         ArrayList<String> actual = new ArrayList<>();
         when(configuration.getInvoicesFile()).thenReturn(getInvoicesTestFile());
+        when(configuration.getInvoicesIdsFile()).thenReturn(getInvoicesIdsTestFile());
         when(fileAccessor.getInvoiceFileLines()).thenReturn(actual);
 
         when(fileAccessor.saveLine

@@ -9,8 +9,8 @@ class InvoiceFileAccessor {
 
     private File invoicesFile;
 
-    InvoiceFileAccessor(Configuration configuration) throws IOException {
-        this.invoicesFile = configuration.getInvoicesFile();
+    InvoiceFileAccessor(File invoicesFile) {
+        this.invoicesFile = invoicesFile;
     }
 
     ArrayList<String> getInvoiceFileLines() throws IOException {

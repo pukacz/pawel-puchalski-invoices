@@ -10,42 +10,39 @@ import java.util.TreeSet;
 
 class InvoiceIdCoordinator {
 
-    private File file;
+    private File invoicesIdsFile;
     private TreeSet<Long> invoicesIds;
-    private Converter converter;
 
-    InvoiceIdCoordinator(Configuration configuration, Converter converter) throws IOException {
-        file = configuration.getInvoicesIdsCoordinationFile();
-        this.converter = converter;
+    InvoiceIdCoordinator(File invoicesIdsFile) throws IOException {
+        this.invoicesIdsFile = invoicesIdsFile;
+
+        if (!invoicesIdsFile.exists()) {
+            invoicesIdsFile.createNewFile();
+            TreeSet<Long> invoicesIds = new TreeSet<>();
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
+                String emptyList = new Converter().sendIdsToJson(invoicesIds);
+                writer.write(emptyList);
+            }
+        }
         invoicesIds = getIds();
     }
 
-
     TreeSet<Long> getIds() throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(invoicesIdsFile))) {
             String line;
             if ((line = reader.readLine()) != null) {
-                invoicesIds = converter.getInvoicesIds(line);
+                invoicesIds = new Converter().getInvoicesIds(line);
             }
         }
         return invoicesIds;
     }
 
     void coordinateIds(Long invoiceId) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
             invoicesIds.add(invoiceId);
-            String line = converter.sendIdsToJson(invoicesIds);
+            String line = new Converter().sendIdsToJson(invoicesIds);
             writer.write(line);
         }
-    }
-
-    Long generateId() {
-        Long invoiceId = 1L;
-        if (!invoicesIds.isEmpty()) {
-            while (invoicesIds.contains(invoiceId)) {
-                invoiceId++;
-            }
-        }
-        return invoiceId;
     }
 }
