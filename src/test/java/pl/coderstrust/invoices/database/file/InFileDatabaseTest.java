@@ -34,24 +34,40 @@ public class InFileDatabaseTest {
     public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock
-    InvoiceFileAccessor fileAccessor;
-
-    @Mock
-    Configuration config;
+    Configuration configuration;
 
     @Mock
     Converter converter;
 
+    @Mock
+    InvoiceFileAccessor fileAccessor;
+
+    @Mock
+    InvoiceIdCoordinator invoiceIdCoordinator;
+
+    @Mock
+    File file;
+
     @InjectMocks
     InFileDatabase inFileDatabase;
 
-    private File testFile = new File("src/test/resources/inFileTestData/invoicesTest.dat");
+    private String separator = File.separator;
+
+    private File getInvoicesTestFile() {
+        return new File("src" + separator + "test" + separator
+            + "resources" + separator + "inFileTestData" + separator + "invoicesTest.dat");
+    }
+
+    private File getInvoicesIdsCoordinationTestFile() {
+        return new File("src" + separator + "test" + separator
+            + "resources" + separator + "inFileTestData" + separator + "invoiceIdsTest.cor");
+    }
 
     @Test
     public void shouldSave_3_Delete_1_andReturn_2_Invoices() throws IOException {
         //given
         ArrayList<String> actual = new ArrayList<>();
-        when(config.getInvoicesFile()).thenReturn(testFile);
+        when(configuration.getInvoicesFile()).thenReturn(getInvoicesTestFile());
         when(fileAccessor.getInvoiceFileLines()).thenReturn(actual);
 
         when(fileAccessor.saveLine
@@ -69,6 +85,8 @@ public class InFileDatabaseTest {
             .thenReturn(actual.remove(1).isEmpty());
 
         //when
+         inFileDatabase.saveInvoice(getInvoices().get(0));
+
         List<String> expected = new ArrayList<>(
             asList(getIdsAndJsonInvoices(getInvoices()).get(0),
                 getIdsAndJsonInvoices(getInvoices()).get(2)));
@@ -84,7 +102,7 @@ public class InFileDatabaseTest {
         LocalDate start = LocalDate.of(2016, 12, 1);
         LocalDate end = LocalDate.of(2018, 1, 31);
 
-        when(config.getInvoicesFile()).thenReturn(testFile);
+        when(configuration.getInvoicesFile()).thenReturn(getInvoicesTestFile());
         when(fileAccessor.getInvoiceFileLines()).thenReturn(getIdsAndJsonInvoices(getInvoices()));
 
         //when
@@ -98,24 +116,16 @@ public class InFileDatabaseTest {
     @Test
     public void shouldReturnListOfInvoices() throws IOException {
         //given
-        when(config.getInvoicesFile()).thenReturn(testFile);
+        when(configuration.getInvoicesFile()).thenReturn(getInvoicesTestFile());
         when(fileAccessor.getInvoiceFileLines()).thenReturn(getIdsAndJsonInvoices(getInvoices()));
 
-        System.out.println(inFileDatabase.getInvoices());
-
         //when
+
         ArrayList<Invoice> expected = new ArrayList<>(getInvoices());
         ArrayList<Invoice> actual = new ArrayList<>(inFileDatabase.getInvoices());
 
         //then
         Assert.assertEquals(expected, actual);
-    }
-
-    private File getTestFile() {
-        return new File(
-            "src" + File.separator + "test" + File.separator
-                + "resources" + File.separator + "inFileTestData"
-                + File.separator + "invoicesTest.dat");
     }
 
     private ArrayList<String> getIdsAndJsonInvoices(ArrayList<Invoice> invoices)

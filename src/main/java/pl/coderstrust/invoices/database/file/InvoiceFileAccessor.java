@@ -1,24 +1,27 @@
 package pl.coderstrust.invoices.database.file;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
 class InvoiceFileAccessor {
 
-    private RandomAccessFile file;
+    private File invoicesFile;
 
-    InvoiceFileAccessor(RandomAccessFile file) {
-        this.file = file;
+    InvoiceFileAccessor(Configuration configuration) throws IOException {
+        this.invoicesFile = configuration.getInvoicesFile();
     }
 
     ArrayList<String> getInvoiceFileLines() throws IOException {
         ArrayList<String> list = new ArrayList<>();
         String line;
-        file.seek(0);
 
-        while ((line = file.readLine()) != null && file.getFilePointer() < file.length() + 1) {
-            list.add(line);
+        try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "r")) {
+            file.seek(0);
+            while ((line = file.readLine()) != null && file.getFilePointer() < file.length() + 1) {
+                list.add(line);
+            }
         }
         return list;
     }
@@ -27,45 +30,54 @@ class InvoiceFileAccessor {
         String line = "" + invoiceId + ": " + invoiceInJson + "\n";
         Long cursor = getPositionOfInvoice(invoiceId);
 
-        file.seek(cursor);
-        file.writeBytes(line);
-        return true;
-    }
-
-    boolean invalidateLine(Long invoiceId) throws IOException {
-        file.seek(0);
-        Long cursor = getPositionOfInvoice(invoiceId);
-
-        if (!cursor.equals(file.length())) {
+        try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
             file.seek(cursor);
-            String line = file.readLine();
-
-            file.seek(file.getFilePointer() - line.length() - 1);
-            for (int i = 0; i < line.length(); i++) {
-                file.writeBytes(" ");
-            }
-            file.writeBytes("\n");
+            file.writeBytes(line);
         }
         return true;
     }
 
-    private Long getPositionOfInvoice(Long invoiceId) throws IOException {
+    boolean invalidateLine(Long invoiceId) throws IOException {
+        try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
+            file.seek(0);
+            file.seek(0);
+            Long cursor = getPositionOfInvoice(invoiceId);
+
+            if (!cursor.equals(file.length())) {
+                file.seek(cursor);
+                String line = file.readLine();
+
+                file.seek(file.getFilePointer() - line.length() - 1);
+                for (int i = 0; i < line.length(); i++) {
+                    file.writeBytes(" ");
+                }
+                file.writeBytes("\n");
+            }
+        }
+        return true;
+    }
+
+    public Long getPositionOfInvoice(Long invoiceId) throws IOException {
         String line;
         String idInString;
         int colonIndex;
-        long cursor = file.getFilePointer();
+        long cursor;
 
-        while ((line = file.readLine()) != null && file.getFilePointer() < file.length() + 1) {
+        try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
+            cursor = file.getFilePointer();
 
-            if ((colonIndex = line.indexOf(": ")) > 0) {
-                idInString = line.substring(0, colonIndex);
+            while ((line = file.readLine()) != null && file.getFilePointer() < file.length() + 1) {
 
-                if (invoiceId.equals(Long.parseLong(idInString))) {
-                    return cursor;
+                if ((colonIndex = line.indexOf(": ")) > 0) {
+                    idInString = line.substring(0, colonIndex);
+
+                    if (invoiceId.equals(Long.parseLong(idInString))) {
+                        return cursor;
+                    }
+                    cursor = file.getFilePointer();
+                } else {
+                    cursor += line.length() + 1;
                 }
-                cursor = file.getFilePointer();
-            } else {
-                cursor += line.length() + 1;
             }
         }
         return cursor;

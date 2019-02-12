@@ -44,7 +44,7 @@ class Converter {
         return invoices;
     }
 
-    TreeSet getInvoiceIds(String line) throws IOException {
+    TreeSet getInvoicesIds(String line) throws IOException {
         return jsonConverter.readValue(line, TreeSet.class);
     }
 

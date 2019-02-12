@@ -1,13 +1,12 @@
 package pl.coderstrust.invoices.database;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collection;
 import pl.coderstrust.invoices.model.Invoice;
 
 public interface Database {
 
-    void saveInvoice(Invoice invoice) throws DatabaseOperationException, IOException;
+    void saveInvoice(Invoice invoice) throws DatabaseOperationException;
 
     void deleteInvoice(Long id) throws DatabaseOperationException;
 
