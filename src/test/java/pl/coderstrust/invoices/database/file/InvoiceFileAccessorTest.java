@@ -32,10 +32,11 @@ public class InvoiceFileAccessorTest {
     public void should_Add_Update_Delete_And_Return_Invoices_Or_Spaces_For_Superseded_Invoices()
         throws IOException {
         //given
-        String tempFile = "src/test/resources/inFileTestData/invoicesTestTemp.dat";
+        File tempFile = new File("src/test/resources/inFileTestData/invoicesTestTemp.dat");
 
+        InvoiceFileAccessor accessor = new InvoiceFileAccessor(tempFile);
         try (RandomAccessFile file = new RandomAccessFile(tempFile, "rw")) {
-            InvoiceFileAccessor accessor = new InvoiceFileAccessor(new Configuration());
+
             file.setLength(0);
 
             //when

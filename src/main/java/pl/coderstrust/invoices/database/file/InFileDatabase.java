@@ -17,43 +17,39 @@ public class InFileDatabase implements Database {
     public static void main(String[] args) throws IOException {
         Configuration configuration = new Configuration();
         Converter converter = new Converter();
-        InFileDatabase inf = new InFileDatabase(configuration, converter);
+        InFileDatabase inf = new InFileDatabase(configuration);
 
         Invoice invoice1 = new Invoice(1L, "cos", null, null, null, null);
         Invoice invoice2 = new Invoice(3L, "ccc", null, null, null, null);
         Invoice invoice3 = new Invoice(null, null, null, null, null);
 
-            inf.saveInvoice(invoice1);
-            inf.saveInvoice(invoice2);
-            inf.saveInvoice(invoice3);
+        inf.saveInvoice(invoice1);
+        inf.saveInvoice(invoice2);
+        inf.saveInvoice(invoice3);
     }
 
-    private Configuration configuration;
-    private Converter converter;
     InvoiceFileAccessor fileAccessor;
-    InvoiceIdCoordinator invoiceIdCoordinator;
+    InvoiceIdCoordinator idCoordinator;
 
-    InFileDatabase(Configuration configuration, Converter converter) throws IOException {
-        this.configuration = configuration;
-        this.converter = converter;
-        this.fileAccessor = new InvoiceFileAccessor(configuration);
+    InFileDatabase(Configuration configuration) throws IOException {
+        this.fileAccessor = new InvoiceFileAccessor(configuration.getInvoicesFile());
+        this.idCoordinator = new InvoiceIdCoordinator(configuration.getInvoicesIdsFile());
 
         File invoicesFile = configuration.getInvoicesFile();
         if (!invoicesFile.exists()) {
             invoicesFile.createNewFile();
         }
 
-        File invoicesIdsFile = configuration.getInvoicesIdsCoordinationFile();
+        File invoicesIdsFile = configuration.getInvoicesFile();
         if (!invoicesIdsFile.exists()) {
             invoicesIdsFile.createNewFile();
             TreeSet<Long> invoicesIds = new TreeSet<>();
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
-                String emptyList = converter.sendIdsToJson(invoicesIds);
+                String emptyList = new Converter().sendIdsToJson(invoicesIds);
                 writer.write(emptyList);
             }
         }
-        this.invoiceIdCoordinator = new InvoiceIdCoordinator(configuration, converter);
     }
 
     @Override
@@ -62,17 +58,17 @@ public class InFileDatabase implements Database {
 
         try {
             if (invoiceId == null) {
-                invoiceId = invoiceIdCoordinator.generateId();
+                invoiceId = new IdGenerator().generateId(idCoordinator.getIds());
                 invoice.setId(invoiceId);
             }
 
-            if (invoiceIdCoordinator.getIds().contains(invoiceId)) {
+            if (idCoordinator.getIds().contains(invoiceId)) {
                 fileAccessor.invalidateLine(invoiceId);
             }
 
-            String invoiceInJson = converter.getJsonFromInvoice(invoice);
+            String invoiceInJson = new Converter().getJsonFromInvoice(invoice);
             fileAccessor.saveLine(invoiceId, invoiceInJson);
-            invoiceIdCoordinator.coordinateIds(invoiceId);
+            idCoordinator.coordinateIds(invoiceId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -105,7 +101,7 @@ public class InFileDatabase implements Database {
 
         try {
             ArrayList<String> lines = fileAccessor.getInvoiceFileLines();
-            invoices = converter.getInvoicesFromLines(lines);
+            invoices = new Converter().getInvoicesFromLines(lines);
         } catch (IOException e) {
             e.printStackTrace();
         }

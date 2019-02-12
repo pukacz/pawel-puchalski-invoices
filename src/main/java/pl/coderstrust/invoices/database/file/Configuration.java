@@ -15,7 +15,7 @@ class Configuration {
         return new File(FOLDER + INVOICES_FILE);
     }
 
-    File getInvoicesIdsCoordinationFile() {
+    File getInvoicesIdsFile() {
         return new File(FOLDER + INVOICES_ID_FILE_COORDINATOR);
     }
 }
