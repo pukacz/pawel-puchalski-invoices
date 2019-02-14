@@ -8,7 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.TreeSet;
 
-class InvoiceIdCoordinator {
+public class InvoiceIdCoordinator {
 
     private File invoicesIdsFile;
     private TreeSet<Long> invoicesIds;

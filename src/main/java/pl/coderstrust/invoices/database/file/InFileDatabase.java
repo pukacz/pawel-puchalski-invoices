@@ -10,22 +10,6 @@ import pl.coderstrust.invoices.model.Invoice;
 
 public class InFileDatabase implements Database {
 
-//    public static void main(String[] args) throws IOException {
-//        Configuration configuration = new Configuration();
-//        Converter converter = new Converter();
-//        InvoiceFileAccessor fileAccessor = new InvoiceFileAccessor(configuration);
-//        InvoiceIdCoordinator idCoordinator = new InvoiceIdCoordinator(configuration);
-//        InFileDatabase inf = new InFileDatabase(fileAccessor, idCoordinator);
-//
-//        Invoice invoice1 = new Invoice(1L, "cos", null, null, null, null);
-//        Invoice invoice2 = new Invoice(3L, "ccc", null, null, null, null);
-//        Invoice invoice3 = new Invoice(null, null, null, null, null);
-//
-//        inf.saveInvoice(invoice1);
-//        inf.saveInvoice(invoice2);
-//        inf.saveInvoice(invoice3);
-//    }
-
     private InvoiceFileAccessor fileAccessor;
     private InvoiceIdCoordinator idCoordinator;
 
