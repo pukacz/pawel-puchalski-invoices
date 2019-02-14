@@ -12,7 +12,6 @@ class InvoiceFileAccessor {
     InvoiceFileAccessor(Configuration configuration) throws IOException {
         this.invoicesFile = configuration.getInvoicesFile();
 
-        File invoicesFile = configuration.getInvoicesFile();
         if (!invoicesFile.exists()) {
             invoicesFile.createNewFile();
         }
@@ -33,9 +32,11 @@ class InvoiceFileAccessor {
 
     boolean saveLine(Long invoiceId, String invoiceInJson) throws IOException {
         String line = "" + invoiceId + ": " + invoiceInJson + "\n";
-        Long cursor = getPositionOfInvoice(invoiceId);
+//        Long cursor = getPositionOfInvoice(invoiceId);
+        invalidateLine(invoiceId);
 
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
+            Long cursor = file.length();
             file.seek(cursor);
             file.writeBytes(line);
         }
