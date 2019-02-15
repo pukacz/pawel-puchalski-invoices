@@ -30,20 +30,18 @@ class InvoiceFileAccessor {
         return list;
     }
 
-    boolean saveLine(Long invoiceId, String invoiceInJson) throws IOException {
+    void saveLine(Long invoiceId, String invoiceInJson) throws IOException {
         String line = "" + invoiceId + ": " + invoiceInJson + "\n";
-//        Long cursor = getPositionOfInvoice(invoiceId);
         invalidateLine(invoiceId);
 
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
-            Long cursor = file.length();
+            long cursor = file.length();
             file.seek(cursor);
             file.writeBytes(line);
         }
-        return true;
     }
 
-    boolean invalidateLine(Long invoiceId) throws IOException {
+    void invalidateLine(Long invoiceId) throws IOException {
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
             file.seek(0);
             file.seek(0);
@@ -60,10 +58,9 @@ class InvoiceFileAccessor {
                 file.writeBytes("\n");
             }
         }
-        return true;
     }
 
-    public Long getPositionOfInvoice(Long invoiceId) throws IOException {
+    Long getPositionOfInvoice(Long invoiceId) throws IOException {
         String line;
         String idInString;
         int colonIndex;
