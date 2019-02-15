@@ -18,12 +18,7 @@ class InvoiceIdCoordinator {
 
         if (!invoicesIdsFile.exists()) {
             invoicesIdsFile.createNewFile();
-            TreeSet<Long> invoicesIds = new TreeSet<>();
-
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
-                String emptyList = new Converter().sendIdsToJson(invoicesIds);
-                writer.write(emptyList);
-            }
+            writeEmptySet();
         }
         invoicesIds = getIds();
     }
@@ -33,17 +28,26 @@ class InvoiceIdCoordinator {
             String line;
             if ((line = reader.readLine()) != null) {
                 invoicesIds = new Converter().getInvoicesIds(line);
+            } else {
+                writeEmptySet();
+                return new TreeSet<>();
             }
         }
         return invoicesIds;
     }
 
-    boolean coordinateIds(Long invoiceId) throws IOException {
+    void coordinateIds(Long invoiceId) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
             invoicesIds.add(invoiceId);
             String line = new Converter().sendIdsToJson(invoicesIds);
             writer.write(line);
         }
-        return true;
+    }
+
+    private void writeEmptySet() throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
+            String emptyList = new Converter().sendIdsToJson(new TreeSet<>());
+            writer.write(emptyList);
+        }
     }
 }
