@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 @RunWith(JUnitParamsRunner.class)
 public class InvoiceFileAccessorTest {
 
-    private static Configuration configuration;
     private static InvoiceFileAccessor fileAccessor;
 
     private static File invoicesFile = new File(folder() + "invoicesTestTemp.dat");
@@ -32,7 +31,7 @@ public class InvoiceFileAccessorTest {
     @Before
     public void createTempFileAndSave3Invoices() throws IOException {
         invoicesFile.createNewFile();
-        configuration = new Configuration(invoicesFile, invoicesIdsFile);
+        Configuration configuration = new Configuration(invoicesFile, invoicesIdsFile);
         fileAccessor = new InvoiceFileAccessor(configuration);
 
         fileAccessor.saveLine(1L, "1st invoice");

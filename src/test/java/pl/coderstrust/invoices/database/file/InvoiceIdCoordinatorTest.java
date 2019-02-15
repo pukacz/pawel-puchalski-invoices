@@ -26,14 +26,6 @@ public class InvoiceIdCoordinatorTest {
     @Mock
     private Configuration configuration;
 
-    private static File invoicesIdsFile = new File(folder() + "invoicesIdsTestFile.cor");
-
-    private static String separator = File.separator;
-
-    private static String folder() {
-        return "src" + separator + "test" + separator + "resources" + separator + "inFileTestData"
-            + separator;
-    }
 
     @BeforeClass
     public static void createTempFile() throws IOException {
@@ -52,7 +44,6 @@ public class InvoiceIdCoordinatorTest {
         InvoiceIdCoordinator idCoordinator = new InvoiceIdCoordinator(configuration);
 
         //when
-        invoicesIdsFile.createNewFile();
         idCoordinator.coordinateIds(2L);
         idCoordinator.coordinateIds(3L);
         idCoordinator.coordinateIds(2L);
@@ -61,5 +52,14 @@ public class InvoiceIdCoordinatorTest {
 
         //then
         Assert.assertEquals(expected, actual);
+    }
+
+    private static File invoicesIdsFile = new File(folder() + "invoicesIdsTestFile.cor");
+
+    private static String separator = File.separator;
+
+    private static String folder() {
+        return "src" + separator + "test" + separator + "resources" + separator + "inFileTestData"
+            + separator;
     }
 }
