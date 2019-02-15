@@ -1,19 +1,19 @@
 package pl.coderstrust.invoices.database.file;
 
 import static java.util.Arrays.asList;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.TreeSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -37,9 +37,6 @@ public class InFileDatabaseTest {
     public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock
-    Configuration configuration;
-
-    @Mock
     InvoiceFileAccessor fileAccessor;
 
     @Mock
@@ -61,18 +58,17 @@ public class InFileDatabaseTest {
     @Test
     public void shouldSave1AndReturn1invoice() throws IOException {
         //given
-        when(fileAccessor.saveLine(3L, getIdsAndJsonInvoices().get(2).substring(3)))
-            .thenReturn(appendLineToFile(getIdsAndJsonInvoices().get(2), fileFor1Invoice()));
-        when(fileAccessor.getInvoiceFileLines()).thenReturn(getLinesFromFile(fileFor1Invoice()));
+        String invoiceInJson = new Converter().getJsonFromInvoice(getInvoices().get(2));
+        when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L, 3L, 4L)));
 
         //when
         inFileDatabase.saveInvoice(getInvoices().get(2));
-        ArrayList<Invoice> expected = new ArrayList<>(
-            Collections.singletonList(getInvoices().get(2)));
-        ArrayList<Invoice> actual = new ArrayList<>(inFileDatabase.getInvoices());
 
         //then
-        Assert.assertEquals(expected, actual);
+        verify(idCoordinator,times(1)).getIds();
+        verify(fileAccessor, times(1)).invalidateLine(3L);
+        verify(fileAccessor, times(1)).saveLine(3L, invoiceInJson);
+        verify(idCoordinator, times(1)).coordinateIds(3L);
     }
 
     @Test
@@ -105,15 +101,6 @@ public class InFileDatabaseTest {
         Assert.assertEquals(expected, actual);
     }
 
-    private boolean appendLineToFile(String line, File file) throws IOException {
-        try (
-            FileWriter fw = new FileWriter(file, true);
-            BufferedWriter bw = new BufferedWriter(fw)) {
-            bw.write(line);
-        }
-        return true;
-    }
-
     private static File fileFor1Invoice() {
         return new File(testFolder()
             + "1_invoice" + separator + "invoicesTestSave1.dat");
@@ -141,18 +128,6 @@ public class InFileDatabaseTest {
             }
         }
         return list;
-    }
-
-    private ArrayList<String> getIdsAndJsonInvoices() throws JsonProcessingException {
-        ArrayList<String> invoicesInJson = new ArrayList<>();
-        String line;
-
-        for (Invoice invoice : getInvoices()) {
-            line = "" + invoice.getId() + ": " + new Converter().getJsonFromInvoice(invoice)
-                + "\n";
-            invoicesInJson.add(line);
-        }
-        return invoicesInJson;
     }
 
     private ArrayList<Invoice> getInvoices() {
