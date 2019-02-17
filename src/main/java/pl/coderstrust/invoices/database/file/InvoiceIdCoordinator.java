@@ -6,12 +6,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.TreeSet;
 
 class InvoiceIdCoordinator {
 
     private File invoicesIdsFile;
-    private TreeSet<Long> invoicesIds;
+    private Collection<Long> invoicesIds;
 
     InvoiceIdCoordinator(Configuration configuration) throws IOException {
         this.invoicesIdsFile = configuration.getInvoicesIdsFile();
@@ -23,7 +24,7 @@ class InvoiceIdCoordinator {
         invoicesIds = getIds();
     }
 
-    TreeSet<Long> getIds() throws IOException {
+    Collection<Long> getIds() throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(invoicesIdsFile))) {
             String line;
             if ((line = reader.readLine()) != null) {

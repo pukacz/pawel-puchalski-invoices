@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.TreeSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -47,7 +48,7 @@ public class InvoiceIdCoordinatorTest {
         idCoordinator.coordinateIds(2L);
         idCoordinator.coordinateIds(3L);
         idCoordinator.coordinateIds(2L);
-        TreeSet<Long> actual = idCoordinator.getIds();
+        Collection<Long> actual = idCoordinator.getIds();
         TreeSet<Long> expected = new TreeSet<>(asList(2L, 3L));
 
         //then

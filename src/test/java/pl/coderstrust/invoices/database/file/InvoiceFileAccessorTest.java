@@ -2,7 +2,6 @@ package pl.coderstrust.invoices.database.file;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import junitparams.JUnitParamsRunner;
@@ -41,7 +40,7 @@ public class InvoiceFileAccessorTest {
 
     @After
     public void deleteTestFile() throws IOException {
-        Files.delete(invoicesFile.toPath());
+        invoicesFile.delete();
     }
 
 

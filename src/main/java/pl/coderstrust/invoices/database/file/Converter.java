@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.TreeSet;
 import pl.coderstrust.invoices.model.Invoice;
 
@@ -44,11 +45,11 @@ class Converter {
         return invoices;
     }
 
-    TreeSet getInvoicesIds(String line) throws IOException {
+    Collection getInvoicesIds(String line) throws IOException {
         return jsonConverter.readValue(line, TreeSet.class);
     }
 
-    String sendIdsToJson(TreeSet<Long> ids) throws JsonProcessingException {
+    String sendIdsToJson(Collection<Long> ids) throws JsonProcessingException {
         return jsonConverter.writeValueAsString(ids);
     }
 }
