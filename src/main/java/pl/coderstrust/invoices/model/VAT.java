@@ -1,8 +1,10 @@
 package pl.coderstrust.invoices.model;
 
+import io.swagger.annotations.ApiModel;
 import java.math.BigDecimal;
 
 @SuppressWarnings("checkstyle:abbreviationaswordinname")
+@ApiModel(value = "VAT", description = "VAT model")
 public enum VAT {
 
     VAT_23(BigDecimal.valueOf(0.23)),

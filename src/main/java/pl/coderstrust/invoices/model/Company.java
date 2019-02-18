@@ -1,11 +1,21 @@
 package pl.coderstrust.invoices.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
+import javax.validation.constraints.NotNull;
 
+@ApiModel(value = "Company", description = "company model")
 public final class Company {
 
+    @ApiModelProperty(value = "Unique ID of company", readOnly = true)
+    @NotNull(message = "NotNull.Company.description")
     private final Long id;
+
+    @ApiModelProperty(value = "Name of company", readOnly = true)
     private final String name;
+
+    @ApiModelProperty(value = "Tax identification number", readOnly = true)
     private final String taxIdentificationNumber;
 
     public Company(Long id, String name, String taxIdentificationNumber) {
