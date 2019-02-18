@@ -1,9 +1,13 @@
 package pl.coderstrust.invoices.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import javax.validation.constraints.NotNull;
 
+@ApiModel(value = "Invoice", description = "invoice model")
 public final class Invoice {
 
     @ApiModelProperty(value = "Unique ID of invoice", readOnly = true)
