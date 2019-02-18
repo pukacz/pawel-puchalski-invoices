@@ -30,18 +30,18 @@ public class InvoiceIdCoordinatorTest {
 
     @BeforeClass
     public static void createTempFile() throws IOException {
-        invoicesIdsFile.createNewFile();
+        invoicesIdsFile().createNewFile();
     }
 
     @AfterClass
     public static void deleteTempFile() {
-        invoicesIdsFile.delete();
+        invoicesIdsFile().delete();
     }
 
     @Test
     public void shouldReturnInvoicesIds() throws IOException {
         //given
-        when(configuration.getInvoicesIdsFile()).thenReturn(invoicesIdsFile);
+        when(configuration.getInvoicesIdsFilePath()).thenReturn(invoicesIdsFilePath);
         InvoiceIdCoordinator idCoordinator = new InvoiceIdCoordinator(configuration);
 
         //when
@@ -55,7 +55,11 @@ public class InvoiceIdCoordinatorTest {
         Assert.assertEquals(expected, actual);
     }
 
-    private static File invoicesIdsFile = new File(folder() + "invoicesIdsTestFile.cor");
+    private static File invoicesIdsFile() {
+        return new File(invoicesIdsFilePath);
+    }
+
+    private static String invoicesIdsFilePath = folder() + "invoicesIdsTestFile.cor";
 
     private static String separator = File.separator;
 

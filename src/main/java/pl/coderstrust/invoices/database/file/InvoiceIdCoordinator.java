@@ -15,7 +15,7 @@ class InvoiceIdCoordinator {
     private Collection<Long> invoicesIds;
 
     InvoiceIdCoordinator(Configuration configuration) throws IOException {
-        this.invoicesIdsFile = configuration.getInvoicesIdsFile();
+        this.invoicesIdsFile = new File(configuration.getInvoicesIdsFilePath());
 
         if (!invoicesIdsFile.exists()) {
             invoicesIdsFile.createNewFile();
@@ -25,6 +25,7 @@ class InvoiceIdCoordinator {
     }
 
     Collection<Long> getIds() throws IOException {
+        Collection<Long> invoicesIds;
         try (BufferedReader reader = new BufferedReader(new FileReader(invoicesIdsFile))) {
             String line;
             if ((line = reader.readLine()) != null) {

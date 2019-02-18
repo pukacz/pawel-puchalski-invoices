@@ -46,28 +46,32 @@ public class InFileDatabaseTest {
     InFileDatabase inFileDatabase;
 
     @BeforeClass
-    public static void createSomeTestFiles() throws IOException {
+    public static void createTestFile() throws IOException {
         fileFor1Invoice().createNewFile();
     }
 
     @AfterClass
-    public static void deleteSomeTestFiles() {
+    public static void deleteTestFile() {
         fileFor1Invoice().delete();
     }
 
     @Test
     public void shouldSave1AndReturn1invoice() throws IOException {
         //given
-        String invoiceInJson = new Converter().getJsonFromInvoice(getInvoices().get(2));
+        Invoice invoice = getInvoices().get(2);
+        String invoiceInJson = new Converter().getJsonFromInvoice(invoice);
+        String line = invoice.getId()+": " + invoiceInJson;
         when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L, 3L, 4L)));
 
         //when
         inFileDatabase.saveInvoice(getInvoices().get(2));
+        Invoice expected = getInvoices().get(1);
+        Invoice actual = inFileDatabase.getInvoice(2L);
 
         //then
         verify(idCoordinator,times(1)).getIds();
         verify(fileAccessor, times(1)).invalidateLine(3L);
-        verify(fileAccessor, times(1)).saveLine(3L, invoiceInJson);
+        verify(fileAccessor, times(1)).saveLine(line);
         verify(idCoordinator, times(1)).coordinateIds(3L);
     }
 

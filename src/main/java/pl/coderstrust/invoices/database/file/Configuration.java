@@ -4,8 +4,8 @@ import java.io.File;
 
 class Configuration {
 
-    private File invoicesFile;
-    private File invoicesIdsFile;
+    private String invoicesFilePath;
+    private String invoicesIdsFilePath;
 
     private static final String INVOICES_FILE = "invoices.dat";
     private static final String INVOICES_ID_FILE_COORDINATOR = "invoiceIds.cor";
@@ -14,24 +14,24 @@ class Configuration {
     private static final String FOLDER = "src" + SEPARATOR + "main" + SEPARATOR
         + "resources" + SEPARATOR + "inFileData" + SEPARATOR;
 
-    public static File invoicesFile() {
-        return new File(FOLDER + INVOICES_FILE);
+    public String getInvoicesFilePath() {
+        return invoicesFilePath;
     }
 
-    public static File invoicesIdsFile() {
-        return new File(FOLDER + INVOICES_ID_FILE_COORDINATOR);
+    public String getInvoicesIdsFilePath() {
+        return invoicesIdsFilePath;
     }
 
-    public Configuration(File invoicesFile, File invoicesIdsFile) {
-        this.invoicesFile = invoicesFile;
-        this.invoicesIdsFile = invoicesIdsFile;
+    public static String getDefaultInvoicesFilePath() {
+        return FOLDER + INVOICES_FILE;
     }
 
-    public File getInvoicesFile() {
-        return invoicesFile;
+    public static String getDefaultInvoicesIdsFilePath() {
+        return FOLDER + INVOICES_ID_FILE_COORDINATOR;
     }
 
-    public File getInvoicesIdsFile() {
-        return invoicesIdsFile;
+    public Configuration(String invoicesFilePath, String invoicesIdsFilePath) {
+        this.invoicesFilePath = invoicesFilePath;
+        this.invoicesIdsFilePath = invoicesIdsFilePath;
     }
 }
