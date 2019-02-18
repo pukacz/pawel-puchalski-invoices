@@ -1,16 +1,32 @@
 package pl.coderstrust.invoices.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import javax.validation.constraints.NotNull;
 
+@ApiModel(value = "Invoice", description = "invoice model")
 public final class Invoice {
 
+    @ApiModelProperty(value = "Unique ID of invoice", readOnly = true)
+    @NotNull(message = "NotNull.Invoice.description")
     private Long id;
+
+    @ApiModelProperty(value = "Place of invoice issue", readOnly = true)
     private String issue;
+
+    @ApiModelProperty(value = "Date of invoice issue", readOnly = true)
     private LocalDate issueDate;
+
+    @ApiModelProperty(value = "Model Company of seller", readOnly = true)
     private Company seller;
+
+    @ApiModelProperty(value = "Model Company of buyer", readOnly = true)
     private Company buyer;
+
+    @ApiModelProperty(value = "Model InvoiceEntry - selling items", readOnly = true)
     private List<InvoiceEntry> entries;
 
     public Invoice() {

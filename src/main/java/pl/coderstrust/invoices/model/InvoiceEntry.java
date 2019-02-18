@@ -1,15 +1,31 @@
 package pl.coderstrust.invoices.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.util.Objects;
+import javax.validation.constraints.NotNull;
 
+@ApiModel(value = "InvoiceEntry", description = "invoice entry model")
 public final class InvoiceEntry {
 
+    @ApiModelProperty(value = "Unique ID of invoice entry", readOnly = true)
+    @NotNull(message = "NotNull.InvoiceEntry.description")
     private Long id;
+
+    @ApiModelProperty(value = "Unit of product", readOnly = true)
     private String unit;
+
+    @ApiModelProperty(value = "Product name", readOnly = true)
     private String productName;
+
+    @ApiModelProperty(value = "Amount of product", readOnly = true)
     private String amount;
+
+    @ApiModelProperty(value = "Price of product", readOnly = true)
     private BigDecimal price;
+
+    @ApiModelProperty(value = "Model of VAT", readOnly = true)
     private VAT vat;
 
     public InvoiceEntry() {
