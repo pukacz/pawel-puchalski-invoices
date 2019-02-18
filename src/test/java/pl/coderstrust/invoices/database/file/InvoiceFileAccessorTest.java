@@ -17,8 +17,8 @@ public class InvoiceFileAccessorTest {
 
     private static InvoiceFileAccessor fileAccessor;
 
-    private static File invoicesFile = new File(folder() + "invoicesTestTemp.dat");
-    private static File invoicesIdsFile = new File(folder() + "invoicesIdsTestTemp.cor");
+    private static String invoicesFilePath = folder() + "invoicesTestTemp.dat";
+    private static String invoicesIdsFilePath = folder() + "invoicesIdsTestTemp.cor";
 
     private static String separator = File.separator;
 
@@ -27,20 +27,30 @@ public class InvoiceFileAccessorTest {
             + separator;
     }
 
+    private static File invoicesFile() {
+        return new File(invoicesFilePath);
+    }
+
+    private static File invoicesIdsFile() {
+        return new File(invoicesIdsFilePath);
+    }
+
     @Before
     public void createTempFileAndSave3Invoices() throws IOException {
-        invoicesFile.createNewFile();
-        Configuration configuration = new Configuration(invoicesFile, invoicesIdsFile);
+        invoicesFile().createNewFile();
+        invoicesIdsFile().createNewFile();
+        Configuration configuration = new Configuration(invoicesFilePath, invoicesIdsFilePath);
         fileAccessor = new InvoiceFileAccessor(configuration);
 
-        fileAccessor.saveLine(1L, "1st invoice");
-        fileAccessor.saveLine(2L, "2nd invoice");
-        fileAccessor.saveLine(3L, "3rd invoice");
+        fileAccessor.saveLine("1: 1st invoice");
+        fileAccessor.saveLine("2: 2nd invoice");
+        fileAccessor.saveLine("3: 3rd invoice");
     }
 
     @After
     public void deleteTestFile() throws IOException {
-        invoicesFile.delete();
+        invoicesFile().delete();
+        invoicesIdsFile().delete();
     }
 
 
@@ -85,19 +95,31 @@ public class InvoiceFileAccessorTest {
     public void should_Add_Update_Delete_And_Return_Invoices_Or_Spaces_For_Superseded_Invoices()
         throws IOException {
         //when
-        fileAccessor.saveLine(1L, "1st invoice 1st update");
-        fileAccessor.saveLine(2L, "2nd invoice 1st update");
-        fileAccessor.saveLine(1L, "1st invoice 2nd update");
-        fileAccessor.saveLine(3L, "3rd invoice 1st update");
-        fileAccessor.saveLine(44L, "44th invoice");
+        fileAccessor.saveLine("1: 1st invoice 1st update");
+        fileAccessor.saveLine("2: 2nd invoice 1st update");
+        fileAccessor.saveLine("1: 1st invoice 2nd update");
+        fileAccessor.saveLine("3: 3rd invoice 1st update");
+        fileAccessor.saveLine("44: 44th invoice");
         fileAccessor.invalidateLine(3L);
 
         ArrayList<String> actual = fileAccessor.getInvoiceFileLines();
         ArrayList<String> expected = new ArrayList<>(
-            Arrays.asList("              ", "              ", "              ",
-                "                         ", "2: 2nd invoice 1st update",
-                "1: 1st invoice 2nd update", "                         ",
-                "44: 44th invoice"));
+            Arrays.asList("1: 1st invoice", "2: 2nd invoice", "              ",
+                "1: 1st invoice 1st update", "2: 2nd invoice 1st update",
+                "1: 1st invoice 2nd update", "3: 3rd invoice 1st update", "44: 44th invoice"));
+        //then
+        Assert.assertThat(actual, Is.is(expected));
+    }
+
+    @Test
+    public void shouldInvalidate2Lines() throws IOException {
+        //when
+        fileAccessor.invalidateLine(1L);
+        fileAccessor.invalidateLine(3L);
+        ArrayList<String> actual = fileAccessor.getInvoiceFileLines();
+        ArrayList<String> expected = new ArrayList<>(
+            Arrays.asList("              ", "2: 2nd invoice", "              "));
+
         //then
         Assert.assertThat(actual, Is.is(expected));
     }

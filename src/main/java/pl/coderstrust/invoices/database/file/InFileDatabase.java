@@ -1,5 +1,6 @@
 package pl.coderstrust.invoices.database.file;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,14 +27,13 @@ public class InFileDatabase implements Database {
             if (invoiceId == null) {
                 invoiceId = new IdGenerator().generateId(idCoordinator.getIds());
                 invoice.setId(invoiceId);
+            } else if (idCoordinator.getIds().contains(invoiceId)) {
+                deleteInvoice(invoiceId);
             }
 
-            if (idCoordinator.getIds().contains(invoiceId)) {
-                fileAccessor.invalidateLine(invoiceId);
-            }
+            String line = getLineFromInvoice(invoice);
 
-            String invoiceInJson = new Converter().getJsonFromInvoice(invoice);
-            fileAccessor.saveLine(invoiceId, invoiceInJson);
+            fileAccessor.saveLine(line);
             idCoordinator.coordinateIds(invoiceId);
         } catch (IOException e) {
             e.printStackTrace();
@@ -80,5 +80,9 @@ public class InFileDatabase implements Database {
             .filter(invoice -> invoice.getIssueDate().toEpochDay() >= startDate.toEpochDay())
             .filter(invoice -> invoice.getIssueDate().toEpochDay() <= endDate.toEpochDay())
             .collect(Collectors.toList());
+    }
+
+    private String getLineFromInvoice(Invoice invoice) throws JsonProcessingException {
+        return invoice.getId() + ": " + new Converter().getJsonFromInvoice(invoice);
     }
 }

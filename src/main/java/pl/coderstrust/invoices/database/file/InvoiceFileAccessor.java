@@ -10,7 +10,7 @@ class InvoiceFileAccessor {
     private File invoicesFile;
 
     InvoiceFileAccessor(Configuration configuration) throws IOException {
-        this.invoicesFile = configuration.getInvoicesFile();
+        this.invoicesFile = new File(configuration.getInvoicesFilePath());
 
         if (!invoicesFile.exists()) {
             invoicesFile.createNewFile();
@@ -30,14 +30,11 @@ class InvoiceFileAccessor {
         return list;
     }
 
-    void saveLine(Long invoiceId, String invoiceInJson) throws IOException {
-        String line = "" + invoiceId + ": " + invoiceInJson + "\n";
-        invalidateLine(invoiceId);
-
+    void saveLine(String line) throws IOException {
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
             long cursor = file.length();
             file.seek(cursor);
-            file.writeBytes(line);
+            file.writeBytes(line + "\n");
         }
     }
 
