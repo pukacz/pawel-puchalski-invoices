@@ -1,5 +1,7 @@
 package pl.coderstrust.invoices.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
@@ -12,30 +14,27 @@ public final class Invoice {
 
     @ApiModelProperty(value = "Unique ID of invoice", readOnly = true)
     @NotNull(message = "NotNull.Invoice.description")
-    private Long id;
+    private final Long id;
 
     @ApiModelProperty(value = "Place of invoice issue", readOnly = true)
-    private String issue;
+    private final String issue;
 
     @ApiModelProperty(value = "Date of invoice issue", readOnly = true)
-    private LocalDate issueDate;
+    private final LocalDate issueDate;
 
     @ApiModelProperty(value = "Model Company of seller", readOnly = true)
-    private Company seller;
+    private final Company seller;
 
     @ApiModelProperty(value = "Model Company of buyer", readOnly = true)
-    private Company buyer;
+    private final Company buyer;
 
     @ApiModelProperty(value = "Model InvoiceEntry - selling items", readOnly = true)
-    private List<InvoiceEntry> entries;
+    private final List<InvoiceEntry> entries;
 
-    public Invoice(String issue, LocalDate issueDate,
-        Company seller, Company buyer, List<InvoiceEntry> entries) {
-        this(0L, issue, issueDate, seller, buyer, entries);
-    }
-
-    public Invoice(Long id, String issue, LocalDate issueDate,
-                   Company seller, Company buyer, List<InvoiceEntry> entries) {
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public Invoice(@JsonProperty("id") Long id, @JsonProperty("issue") String issue,
+        @JsonProperty("issueDate") LocalDate issueDate, @JsonProperty("seller") Company seller,
+        @JsonProperty("buyer") Company buyer, @JsonProperty("entries") List<InvoiceEntry> entries) {
         this.id = id;
         this.issue = issue;
         this.issueDate = issueDate;
@@ -44,16 +43,13 @@ public final class Invoice {
         this.entries = entries;
     }
 
-    public Invoice(Invoice invoice, Long invoiceId) {
-        this.id = invoiceId;
+    public Invoice(Invoice invoice, Long id) {
+        this.id = id;
         this.issue = invoice.getIssue();
         this.issueDate = invoice.getIssueDate();
         this.seller = invoice.getSeller();
         this.buyer = invoice.getBuyer();
         this.entries = invoice.getEntries();
-    }
-
-    public Invoice() {
     }
 
     public Long getId() {
@@ -90,11 +86,11 @@ public final class Invoice {
         }
         Invoice invoice = (Invoice) o;
         return Objects.equals(id, invoice.id)
-                && Objects.equals(issue, invoice.issue)
-                && Objects.equals(issueDate, invoice.issueDate)
-                && Objects.equals(seller, invoice.seller)
-                && Objects.equals(buyer, invoice.buyer)
-                && Objects.equals(entries, invoice.entries);
+            && Objects.equals(issue, invoice.issue)
+            && Objects.equals(issueDate, invoice.issueDate)
+            && Objects.equals(seller, invoice.seller)
+            && Objects.equals(buyer, invoice.buyer)
+            && Objects.equals(entries, invoice.entries);
     }
 
     @Override
@@ -105,12 +101,12 @@ public final class Invoice {
     @Override
     public String toString() {
         return "Invoice{"
-                + "id=" + id
-                + ", issue='" + issue + '\''
-                + ", issueDate=" + issueDate
-                + ", seller=" + seller
-                + ", buyer=" + buyer
-                + ", entries=" + entries
-                + '}';
+            + "id=" + id
+            + ", issue='" + issue + '\''
+            + ", issueDate=" + issueDate
+            + ", seller=" + seller
+            + ", buyer=" + buyer
+            + ", entries=" + entries
+            + '}';
     }
 }

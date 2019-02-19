@@ -1,5 +1,7 @@
 package pl.coderstrust.invoices.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
@@ -11,28 +13,27 @@ public final class InvoiceEntry {
 
     @ApiModelProperty(value = "Unique ID of invoice entry", readOnly = true)
     @NotNull(message = "NotNull.InvoiceEntry.description")
-    private Long id;
+    private final Long id;
 
     @ApiModelProperty(value = "Unit of product", readOnly = true)
-    private String unit;
+    private final String unit;
 
     @ApiModelProperty(value = "Product name", readOnly = true)
-    private String productName;
+    private final String productName;
 
     @ApiModelProperty(value = "Amount of product", readOnly = true)
-    private String amount;
+    private final String amount;
 
     @ApiModelProperty(value = "Price of product", readOnly = true)
-    private BigDecimal price;
+    private final BigDecimal price;
 
     @ApiModelProperty(value = "Model of VAT", readOnly = true)
-    private VAT vat;
+    private final VAT vat;
 
-    public InvoiceEntry() {
-    }
-
-    public InvoiceEntry(Long id, String unit, String productName,
-        String amount, BigDecimal price, VAT vat) {
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public InvoiceEntry(@JsonProperty("id") Long id, @JsonProperty("unit") String unit,
+        @JsonProperty("productName") String productName, @JsonProperty("amount") String amount,
+        @JsonProperty("price") BigDecimal price, @JsonProperty("vat") VAT vat) {
         this.id = id;
         this.unit = unit;
         this.productName = productName;
