@@ -60,7 +60,7 @@ public class InFileDatabaseTest {
         //given
         Invoice invoice = getInvoices().get(2);
         String invoiceInJson = new Converter().getJsonFromInvoice(invoice);
-        String line = invoice.getId()+": " + invoiceInJson;
+        String line = invoice.getId() + ": " + invoiceInJson;
         when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L, 3L, 4L)));
 
         //when
@@ -69,7 +69,7 @@ public class InFileDatabaseTest {
         Invoice actual = inFileDatabase.getInvoice(2L);
 
         //then
-        verify(idCoordinator,times(1)).getIds();
+        verify(idCoordinator, times(1)).getIds();
         verify(fileAccessor, times(1)).invalidateLine(3L);
         verify(fileAccessor, times(1)).saveLine(line);
         verify(idCoordinator, times(1)).coordinateIds(3L);
@@ -106,13 +106,11 @@ public class InFileDatabaseTest {
     }
 
     private static File fileFor1Invoice() {
-        return new File(testFolder()
-            + "1_invoice" + separator + "invoicesTestSave1.dat");
+        return new File(testFolder() + "invoicesTestSave1.dat");
     }
 
     private File allInvoices() {
-        return new File(testFolder()
-            + "allSavedInvoices" + separator + "invoicesTestAll.dat");
+        return new File(testFolder() + "invoicesTestAll.dat");
     }
 
     private static String testFolder() {
