@@ -17,7 +17,7 @@ public enum VAT {
     private final BigDecimal value;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    VAT(@JsonProperty("value ") BigDecimal value) {
+    VAT(@JsonProperty("value") BigDecimal value) {
         this.value = value;
     }
 
