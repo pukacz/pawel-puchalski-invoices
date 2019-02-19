@@ -11,22 +11,22 @@ public final class InvoiceEntry {
 
     @ApiModelProperty(value = "Unique ID of invoice entry", readOnly = true)
     @NotNull(message = "NotNull.InvoiceEntry.description")
-    private  Long id;
+    private Long id;
 
     @ApiModelProperty(value = "Unit of product", readOnly = true)
-    private  String unit;
+    private String unit;
 
     @ApiModelProperty(value = "Product name", readOnly = true)
-    private  String productName;
+    private String productName;
 
     @ApiModelProperty(value = "Amount of product", readOnly = true)
-    private  String amount;
+    private String amount;
 
     @ApiModelProperty(value = "Price of product", readOnly = true)
-    private  BigDecimal price;
+    private BigDecimal price;
 
     @ApiModelProperty(value = "Model of VAT", readOnly = true)
-    private  VAT vat;
+    private VAT vat;
 
     public InvoiceEntry() {
     }

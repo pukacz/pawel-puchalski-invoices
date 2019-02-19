@@ -12,22 +12,22 @@ public final class Invoice {
 
     @ApiModelProperty(value = "Unique ID of invoice", readOnly = true)
     @NotNull(message = "NotNull.Invoice.description")
-    private  Long id;
+    private Long id;
 
     @ApiModelProperty(value = "Place of invoice issue", readOnly = true)
-    private  String issue;
+    private String issue;
 
     @ApiModelProperty(value = "Date of invoice issue", readOnly = true)
-    private  LocalDate issueDate;
+    private LocalDate issueDate;
 
     @ApiModelProperty(value = "Model Company of seller", readOnly = true)
-    private  Company seller;
+    private Company seller;
 
     @ApiModelProperty(value = "Model Company of buyer", readOnly = true)
-    private  Company buyer;
+    private Company buyer;
 
     @ApiModelProperty(value = "Model InvoiceEntry - selling items", readOnly = true)
-    private  List<InvoiceEntry> entries;
+    private List<InvoiceEntry> entries;
 
     public Invoice() {
     }
