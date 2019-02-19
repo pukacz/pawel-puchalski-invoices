@@ -35,7 +35,7 @@ public final class Invoice {
     }
 
     public Invoice(Long id, String issue, LocalDate issueDate,
-        Company seller, Company buyer, List<InvoiceEntry> entries) {
+                   Company seller, Company buyer, List<InvoiceEntry> entries) {
         this.id = id;
         this.issue = issue;
         this.issueDate = issueDate;
@@ -90,11 +90,11 @@ public final class Invoice {
         }
         Invoice invoice = (Invoice) o;
         return Objects.equals(id, invoice.id)
-            && Objects.equals(issue, invoice.issue)
-            && Objects.equals(issueDate, invoice.issueDate)
-            && Objects.equals(seller, invoice.seller)
-            && Objects.equals(buyer, invoice.buyer)
-            && Objects.equals(entries, invoice.entries);
+                && Objects.equals(issue, invoice.issue)
+                && Objects.equals(issueDate, invoice.issueDate)
+                && Objects.equals(seller, invoice.seller)
+                && Objects.equals(buyer, invoice.buyer)
+                && Objects.equals(entries, invoice.entries);
     }
 
     @Override
@@ -105,12 +105,12 @@ public final class Invoice {
     @Override
     public String toString() {
         return "Invoice{"
-            + "id=" + id
-            + ", issue='" + issue + '\''
-            + ", issueDate=" + issueDate
-            + ", seller=" + seller
-            + ", buyer=" + buyer
-            + ", entries=" + entries
-            + '}';
+                + "id=" + id
+                + ", issue='" + issue + '\''
+                + ", issueDate=" + issueDate
+                + ", seller=" + seller
+                + ", buyer=" + buyer
+                + ", entries=" + entries
+                + '}';
     }
 }
