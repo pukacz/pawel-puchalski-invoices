@@ -29,11 +29,14 @@ public final class Invoice {
     @ApiModelProperty(value = "Model InvoiceEntry - selling items", readOnly = true)
     private List<InvoiceEntry> entries;
 
-    public Invoice() {
-    }
-
     public Invoice(String issue, LocalDate issueDate,
         Company seller, Company buyer, List<InvoiceEntry> entries) {
+        this(0L, issue, issueDate, seller, buyer, entries);
+    }
+
+    public Invoice(Long id, String issue, LocalDate issueDate,
+        Company seller, Company buyer, List<InvoiceEntry> entries) {
+        this.id = id;
         this.issue = issue;
         this.issueDate = issueDate;
         this.seller = seller;
@@ -41,10 +44,16 @@ public final class Invoice {
         this.entries = entries;
     }
 
-    public Invoice(Long id, String issue, LocalDate issueDate,
-        Company seller, Company buyer, List<InvoiceEntry> entries) {
-        this(issue, issueDate, seller, buyer, entries);
-        this.id = id;
+    public Invoice(Invoice invoice, Long invoiceId) {
+        this.id = invoiceId;
+        this.issue = invoice.getIssue();
+        this.issueDate = invoice.getIssueDate();
+        this.seller = invoice.getSeller();
+        this.buyer = invoice.getBuyer();
+        this.entries = invoice.getEntries();
+    }
+
+    public Invoice() {
     }
 
     public Long getId() {
@@ -69,10 +78,6 @@ public final class Invoice {
 
     public List<InvoiceEntry> getEntries() {
         return entries;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @Override

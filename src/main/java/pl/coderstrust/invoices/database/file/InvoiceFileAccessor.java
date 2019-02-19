@@ -17,7 +17,7 @@ class InvoiceFileAccessor {
         }
     }
 
-    ArrayList<String> getInvoiceFileLines() throws IOException {
+    ArrayList<String> readLines() throws IOException {
         ArrayList<String> list = new ArrayList<>();
         String line;
 

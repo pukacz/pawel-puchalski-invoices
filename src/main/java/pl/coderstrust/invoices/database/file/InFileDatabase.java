@@ -26,7 +26,7 @@ public class InFileDatabase implements Database {
         try {
             if (invoiceId == null) {
                 invoiceId = new IdGenerator().generateId(idCoordinator.getIds());
-                invoice.setId(invoiceId);
+                invoice = new Invoice(invoice, invoiceId);
             } else if (idCoordinator.getIds().contains(invoiceId)) {
                 deleteInvoice(invoiceId);
             }
@@ -66,7 +66,7 @@ public class InFileDatabase implements Database {
         ArrayList<Invoice> invoices = new ArrayList<>();
 
         try {
-            ArrayList<String> lines = fileAccessor.getInvoiceFileLines();
+            ArrayList<String> lines = fileAccessor.readLines();
             invoices = new Converter().getInvoicesFromLines(lines);
         } catch (IOException e) {
             e.printStackTrace();

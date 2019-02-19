@@ -57,7 +57,7 @@ public class InvoiceFileAccessorTest {
     @Test
     public void shouldReturn3invoices() throws IOException {
         //when
-        ArrayList<String> actual = fileAccessor.getInvoiceFileLines();
+        ArrayList<String> actual = fileAccessor.readLines();
         ArrayList<String> expected = new ArrayList<>(
             Arrays.asList("1: 1st invoice", "2: 2nd invoice", "3: 3rd invoice"));
 
@@ -70,7 +70,7 @@ public class InvoiceFileAccessorTest {
         //when
         fileAccessor.invalidateLine(2L);
 
-        ArrayList<String> actual = fileAccessor.getInvoiceFileLines();
+        ArrayList<String> actual = fileAccessor.readLines();
         ArrayList<String> expected = new ArrayList<>(
             Arrays.asList("1: 1st invoice", "              ", "3: 3rd invoice"));
 
@@ -102,7 +102,7 @@ public class InvoiceFileAccessorTest {
         fileAccessor.saveLine("44: 44th invoice");
         fileAccessor.invalidateLine(3L);
 
-        ArrayList<String> actual = fileAccessor.getInvoiceFileLines();
+        ArrayList<String> actual = fileAccessor.readLines();
         ArrayList<String> expected = new ArrayList<>(
             Arrays.asList("1: 1st invoice", "2: 2nd invoice", "              ",
                 "1: 1st invoice 1st update", "2: 2nd invoice 1st update",
@@ -116,7 +116,7 @@ public class InvoiceFileAccessorTest {
         //when
         fileAccessor.invalidateLine(1L);
         fileAccessor.invalidateLine(3L);
-        ArrayList<String> actual = fileAccessor.getInvoiceFileLines();
+        ArrayList<String> actual = fileAccessor.readLines();
         ArrayList<String> expected = new ArrayList<>(
             Arrays.asList("              ", "2: 2nd invoice", "              "));
 

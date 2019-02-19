@@ -78,7 +78,7 @@ public class InFileDatabaseTest {
     @Test
     public void shouldReturnAllInvoicesFromFile() throws IOException {
         //given
-        when(fileAccessor.getInvoiceFileLines()).thenReturn(getLinesFromFile(allInvoices()));
+        when(fileAccessor.readLines()).thenReturn(getLinesFromFile(allInvoices()));
 
         //when
         ArrayList<Invoice> expected = new ArrayList<>(getInvoices());
@@ -94,7 +94,7 @@ public class InFileDatabaseTest {
         LocalDate start = LocalDate.of(2016, 12, 1);
         LocalDate end = LocalDate.of(2018, 1, 31);
 
-        when(fileAccessor.getInvoiceFileLines()).thenReturn(getLinesFromFile(allInvoices()));
+        when(fileAccessor.readLines()).thenReturn(getLinesFromFile(allInvoices()));
 
         //when
         ArrayList<Invoice> expected = new ArrayList<>(
