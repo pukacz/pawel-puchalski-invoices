@@ -1,4 +1,4 @@
-package pl.coderstrust.invoices.services;
+package pl.coderstrust.invoices.service;
 
 import java.time.LocalDate;
 import java.util.Collection;

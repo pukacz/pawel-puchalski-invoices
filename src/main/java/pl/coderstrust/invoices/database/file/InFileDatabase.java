@@ -6,10 +6,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.model.Invoice;
 
-//@Repository
+@Repository
 public class InFileDatabase implements Database {
 
     private InvoiceFileAccessor fileAccessor;

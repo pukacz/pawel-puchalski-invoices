@@ -1,4 +1,4 @@
-package pl.coderstrust.invoices.controllers;
+package pl.coderstrust.invoices.controller;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
 import pl.coderstrust.invoices.model.Invoice;
-import pl.coderstrust.invoices.services.InvoiceService;
+import pl.coderstrust.invoices.service.InvoiceService;
 
 @RequestMapping("/invoices")
 @RestController

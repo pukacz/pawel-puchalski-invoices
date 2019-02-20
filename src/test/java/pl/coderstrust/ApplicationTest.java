@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import pl.coderstrust.invoices.controllers.InvoiceController;
+import pl.coderstrust.invoices.controller.InvoiceController;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
 
 @RunWith(SpringRunner.class)

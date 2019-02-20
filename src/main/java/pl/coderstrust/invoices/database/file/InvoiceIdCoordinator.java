@@ -8,7 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.TreeSet;
+import org.springframework.stereotype.Service;
 
+@Service
 class InvoiceIdCoordinator {
 
     private File invoicesIdsFile;
