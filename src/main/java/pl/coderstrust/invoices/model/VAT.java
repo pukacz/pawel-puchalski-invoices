@@ -1,5 +1,7 @@
 package pl.coderstrust.invoices.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import java.math.BigDecimal;
 
@@ -14,7 +16,8 @@ public enum VAT {
 
     private final BigDecimal value;
 
-    VAT(BigDecimal value) {
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    VAT(@JsonProperty("value") BigDecimal value) {
         this.value = value;
     }
 

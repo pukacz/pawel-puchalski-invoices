@@ -1,5 +1,7 @@
 package pl.coderstrust.invoices.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
@@ -18,7 +20,9 @@ public final class Company {
     @ApiModelProperty(value = "Tax identification number", readOnly = true)
     private final String taxIdentificationNumber;
 
-    public Company(Long id, String name, String taxIdentificationNumber) {
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public Company(@JsonProperty("id") Long id, @JsonProperty("name") String name,
+        @JsonProperty("taxIdentificationNumber") String taxIdentificationNumber) {
         this.id = id;
         this.name = name;
         this.taxIdentificationNumber = taxIdentificationNumber;
@@ -46,8 +50,8 @@ public final class Company {
         }
         Company company = (Company) o;
         return Objects.equals(id, company.id)
-                && Objects.equals(name, company.name)
-                && Objects.equals(taxIdentificationNumber, company.taxIdentificationNumber);
+            && Objects.equals(name, company.name)
+            && Objects.equals(taxIdentificationNumber, company.taxIdentificationNumber);
     }
 
     @Override
@@ -58,9 +62,9 @@ public final class Company {
     @Override
     public String toString() {
         return "Company{"
-                + "id=" + id
-                + ", name='" + name + '\''
-                + ", taxIdentificationNumber='" + taxIdentificationNumber + '\''
-                + '}';
+            + "id=" + id
+            + ", name='" + name + '\''
+            + ", taxIdentificationNumber='" + taxIdentificationNumber + '\''
+            + '}';
     }
 }

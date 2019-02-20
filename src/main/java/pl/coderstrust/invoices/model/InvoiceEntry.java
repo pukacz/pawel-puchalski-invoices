@@ -1,5 +1,7 @@
 package pl.coderstrust.invoices.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
@@ -28,14 +30,24 @@ public final class InvoiceEntry {
     @ApiModelProperty(value = "Model of VAT", readOnly = true)
     private final VAT vat;
 
-    public InvoiceEntry(Long id, String unit, String productName,
-                        String amount, BigDecimal price, VAT vat) {
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public InvoiceEntry(@JsonProperty("id") Long id, @JsonProperty("unit") String unit,
+        @JsonProperty("productName") String productName, @JsonProperty("amount") String amount,
+        @JsonProperty("price") BigDecimal price, @JsonProperty("vat") VAT vat) {
         this.id = id;
         this.unit = unit;
         this.productName = productName;
         this.amount = amount;
         this.price = price;
         this.vat = vat;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getUnit() {
+        return unit;
     }
 
     public String getProductName() {
@@ -64,11 +76,11 @@ public final class InvoiceEntry {
         }
         InvoiceEntry that = (InvoiceEntry) o;
         return Objects.equals(id, that.id)
-                && Objects.equals(unit, that.unit)
-                && Objects.equals(productName, that.productName)
-                && Objects.equals(amount, that.amount)
-                && Objects.equals(price, that.price)
-                && vat == that.vat;
+            && Objects.equals(unit, that.unit)
+            && Objects.equals(productName, that.productName)
+            && Objects.equals(amount, that.amount)
+            && Objects.equals(price, that.price)
+            && vat == that.vat;
     }
 
     @Override
@@ -79,12 +91,12 @@ public final class InvoiceEntry {
     @Override
     public String toString() {
         return "InvoiceEntry{"
-                + "id=" + id
-                + ", unit='" + unit + '\''
-                + ", productName='" + productName + '\''
-                + ", amount='" + amount + '\''
-                + ", price=" + price
-                + ", vat=" + vat
-                + '}';
+            + "id=" + id
+            + ", unit='" + unit + '\''
+            + ", productName='" + productName + '\''
+            + ", amount='" + amount + '\''
+            + ", price=" + price
+            + ", vat=" + vat
+            + '}';
     }
 }

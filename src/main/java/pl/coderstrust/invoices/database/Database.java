@@ -15,5 +15,5 @@ public interface Database {
     Collection<Invoice> getInvoices() throws DatabaseOperationException;
 
     Collection<Invoice> getInvoicesByDate(LocalDate startDate, LocalDate endDate)
-            throws DatabaseOperationException;
+        throws DatabaseOperationException;
 }
