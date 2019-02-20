@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.model.Invoice;
 
+//@Repository
 public class InFileDatabase implements Database {
 
     private InvoiceFileAccessor fileAccessor;
@@ -20,7 +21,7 @@ public class InFileDatabase implements Database {
     }
 
     @Override
-    public void saveInvoice(Invoice invoice) {
+    public Long saveInvoice(Invoice invoice) {
         Long invoiceId = invoice.getId();
 
         try {
@@ -38,6 +39,7 @@ public class InFileDatabase implements Database {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return invoiceId;
     }
 
     @Override

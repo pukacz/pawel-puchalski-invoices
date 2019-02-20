@@ -26,7 +26,7 @@ public class InvoiceServiceImplementation implements InvoiceService {
         }
     }
 
-    public Collection<Invoice> getAllofRange(LocalDate fromDate, LocalDate toDate)
+    public Collection<Invoice> getAllOfRange(LocalDate fromDate, LocalDate toDate)
         throws DatabaseOperationException {
         try {
             return database.getInvoicesByDate(fromDate, toDate);
@@ -48,11 +48,12 @@ public class InvoiceServiceImplementation implements InvoiceService {
         }
     }
 
-    public void saveInvoice(Invoice invoice) throws DatabaseOperationException {
+    public Long saveInvoice(Invoice invoice) throws DatabaseOperationException {
         try {
-            database.saveInvoice(invoice);
+            return database.saveInvoice(invoice);
         } catch (Exception e) {
-            throw new DatabaseOperationException("can not add/update an invoice to the database", e);
+            throw new DatabaseOperationException("can not add/update an invoice to the database",
+                e);
         }
     }
 
@@ -68,5 +69,4 @@ public class InvoiceServiceImplementation implements InvoiceService {
                 "there are no invoice with this ID in the database", e);
         }
     }
-
 }

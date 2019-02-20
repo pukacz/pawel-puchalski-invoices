@@ -2,15 +2,17 @@ package pl.coderstrust.invoices.database;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Repository;
 import pl.coderstrust.invoices.model.Invoice;
 
-@Component
+@Primary
+@Repository
 public class DatabaseImplementation implements Database {
 
     @Override
-    public void saveInvoice(Invoice invoice) throws DatabaseOperationException {
-
+    public Long saveInvoice(Invoice invoice) throws DatabaseOperationException {
+        return invoice.getId();
     }
 
     @Override

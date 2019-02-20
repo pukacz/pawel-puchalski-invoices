@@ -10,12 +10,12 @@ public interface InvoiceService {
     Collection<Invoice> getAllInvoices()
         throws DatabaseOperationException;
 
-    Collection<Invoice> getAllofRange(LocalDate fromDate, LocalDate toDate)
+    Collection<Invoice> getAllOfRange(LocalDate fromDate, LocalDate toDate)
         throws DatabaseOperationException;
 
     Invoice getInvoiceById(Long id) throws DatabaseOperationException;
 
-    void saveInvoice(Invoice invoice) throws DatabaseOperationException;
+    Long saveInvoice(Invoice invoice) throws DatabaseOperationException;
 
     void deleteInvoice(Long id) throws DatabaseOperationException;
 }

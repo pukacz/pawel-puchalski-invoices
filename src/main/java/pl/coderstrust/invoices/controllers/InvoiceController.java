@@ -30,36 +30,36 @@ public class InvoiceController {
     }
 
     @GetMapping("")
-    @ApiOperation(value = "Show all invoices", notes = "Retreving all invoices", response = Invoice[].class)
+    @ApiOperation(value = "Show all invoices", notes = "Retrieving all invoices", response = Invoice[].class)
     public Collection<Invoice> getAllInvoices() throws DatabaseOperationException {
         return invoiceService.getAllInvoices();
     }
 
     @GetMapping("/byDates")
-    @ApiOperation(value = "Find invoices from the time range", notes = "Retreving time range (from date - to date)", response = Invoice[].class)
-    public Collection<Invoice> getAllofRange(@ApiParam @RequestParam(value = "fromDate") String fromDate,
+    @ApiOperation(value = "Find invoices from the time range", notes = "Retrieving time range (from date - to date)", response = Invoice[].class)
+    public Collection<Invoice> getAllOfRange(
+        @ApiParam @RequestParam(value = "fromDate") String fromDate,
         @ApiParam @RequestParam(value = "toDate") String toDate) throws DatabaseOperationException {
         LocalDate startDate = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(fromDate));
         LocalDate endDate = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(toDate));
-        return invoiceService.getAllofRange(startDate, endDate);
+        return invoiceService.getAllOfRange(startDate, endDate);
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Find invoice by its unique ID", notes = "Retreving the invoice of ID (Long number)", response = Invoice.class)
+    @ApiOperation(value = "Find invoice by its unique ID", notes = "Retrieving the invoice of ID (Long number)", response = Invoice.class)
     public Invoice getInvoiceById(@PathVariable Long id) throws DatabaseOperationException {
         return invoiceService.getInvoiceById(id);
     }
 
     @PostMapping("/add")
-    @ApiOperation(value = "Add or update invoice", notes = "Retreving JSON body of new invoice (ID = 0), or invoice to update")
-    public void addInvoice(@RequestBody Invoice invoice) throws DatabaseOperationException {
-        invoiceService.saveInvoice(invoice);
+    @ApiOperation(value = "Add or update invoice", notes = "Retrieving JSON body of new invoice (ID = 0), or invoice to update")
+    public Long addInvoice(@RequestBody Invoice invoice) throws DatabaseOperationException {
+        return invoiceService.saveInvoice(invoice);
     }
 
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Find invoice by its unique ID and delete it", notes = "Retreving the invoice of ID (Long number)")
+    @ApiOperation(value = "Find invoice by its unique ID and delete it", notes = "Retrieving the invoice of ID (Long number)")
     public void deleteInvoice(@PathVariable Long id) throws DatabaseOperationException {
         invoiceService.deleteInvoice(id);
     }
-
 }
