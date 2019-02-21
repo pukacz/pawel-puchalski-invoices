@@ -36,37 +36,38 @@ public class InvoiceServiceImplementation implements InvoiceService {
     }
 
     public Invoice getInvoiceById(Long id) throws DatabaseOperationException {
-        if (id <= 0 || id == null) {
-            throw new DatabaseOperationException("invoice ID can not be negative or null",
+        if (id <= 0) {
+            throw new DatabaseOperationException(invoicePositiveIdMessage,
                 new IllegalArgumentException());
         }
         try {
             return database.getInvoice(id);
         } catch (Exception e) {
-            throw new DatabaseOperationException(
-                "there are no invoice with this ID in the database", e);
+            throw new DatabaseOperationException(invoiceNotExistingMessage, e);
         }
     }
 
     public void saveInvoice(Invoice invoice) throws DatabaseOperationException {
         try {
-             database.saveInvoice(invoice);
+            database.saveInvoice(invoice);
         } catch (Exception e) {
-            throw new DatabaseOperationException("can not add/update an invoice to the database",
-                e);
+            throw new DatabaseOperationException(
+                "can not add/update this invoice to/in the database", e);
         }
     }
 
     public void deleteInvoice(Long id) throws DatabaseOperationException {
-        if (id <= 0 || id == null) {
-            throw new DatabaseOperationException("invoice ID can not be negative or null",
+        if (id <= 0) {
+            throw new DatabaseOperationException(invoicePositiveIdMessage,
                 new IllegalArgumentException());
         }
         try {
             database.deleteInvoice(id);
         } catch (Exception e) {
-            throw new DatabaseOperationException(
-                "there are no invoice with this ID in the database", e);
+            throw new DatabaseOperationException(invoiceNotExistingMessage, e);
         }
     }
+
+    private String invoiceNotExistingMessage = "there is no invoice with this ID in the database";
+    private String invoicePositiveIdMessage = "invoice ID must be positive";
 }
