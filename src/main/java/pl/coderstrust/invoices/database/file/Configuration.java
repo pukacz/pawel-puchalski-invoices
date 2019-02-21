@@ -1,26 +1,15 @@
 package pl.coderstrust.invoices.database.file;
 
-import java.io.File;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 class Configuration {
 
+    @Value("${pl.coderstrust.database.file.database-file}")
     private String invoicesFilePath;
+    @Value("${pl.coderstrust.database.file.id-controller}")
     private String invoicesIdsFilePath;
-
-    private String defaultFolderPath = "src" + File.separator + "main" + File.separator;
-
-    @Bean("invoicesFilePath")
-    public String defaultInvoicesFilePath() {
-        return defaultFolderPath + "invoices.dat";
-    }
-
-    @Bean("invoicesIdsFilePath")
-    public String defaultInvoicesIdsFilePath() {
-        return defaultFolderPath + "invoicesIds.cor";
-    }
 
     String getInvoicesFilePath() {
         return invoicesFilePath;
@@ -28,6 +17,9 @@ class Configuration {
 
     String getInvoicesIdsFilePath() {
         return invoicesIdsFilePath;
+    }
+
+    Configuration() {
     }
 
     Configuration(String invoicesFilePath, String invoicesIdsFilePath) {

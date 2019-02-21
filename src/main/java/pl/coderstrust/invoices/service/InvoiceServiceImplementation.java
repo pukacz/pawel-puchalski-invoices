@@ -2,6 +2,7 @@ package pl.coderstrust.invoices.service;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
@@ -11,7 +12,8 @@ import pl.coderstrust.invoices.model.Invoice;
 public class InvoiceServiceImplementation implements InvoiceService {
 
     private Database database;
-    
+
+    @Autowired
     public InvoiceServiceImplementation(Database database) {
         this.database = database;
     }
@@ -46,9 +48,9 @@ public class InvoiceServiceImplementation implements InvoiceService {
         }
     }
 
-    public Long saveInvoice(Invoice invoice) throws DatabaseOperationException {
+    public void saveInvoice(Invoice invoice) throws DatabaseOperationException {
         try {
-            return database.saveInvoice(invoice);
+             database.saveInvoice(invoice);
         } catch (Exception e) {
             throw new DatabaseOperationException("can not add/update an invoice to the database",
                 e);

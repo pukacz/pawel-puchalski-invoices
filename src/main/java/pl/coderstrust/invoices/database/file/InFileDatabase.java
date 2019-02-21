@@ -6,23 +6,27 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.model.Invoice;
 
 @Repository
+@ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "file")
 public class InFileDatabase implements Database {
 
     private InvoiceFileAccessor fileAccessor;
     private InvoiceIdCoordinator idCoordinator;
 
+    @Autowired
     InFileDatabase(InvoiceFileAccessor fileAccessor, InvoiceIdCoordinator idCoordinator) {
         this.fileAccessor = fileAccessor;
         this.idCoordinator = idCoordinator;
     }
 
     @Override
-    public Long saveInvoice(Invoice invoice) {
+    public void saveInvoice(Invoice invoice) {
         Long invoiceId = invoice.getId();
 
         try {
@@ -40,7 +44,6 @@ public class InFileDatabase implements Database {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return invoiceId;
     }
 
     @Override

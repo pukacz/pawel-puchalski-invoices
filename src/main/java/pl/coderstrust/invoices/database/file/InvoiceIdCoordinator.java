@@ -8,18 +8,24 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.TreeSet;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 class InvoiceIdCoordinator {
 
     private File invoicesIdsFile;
     private Collection<Long> invoicesIds;
 
+    @Autowired
     InvoiceIdCoordinator(Configuration configuration) throws IOException {
         this.invoicesIdsFile = new File(configuration.getInvoicesIdsFilePath());
+        File parent = invoicesIdsFile.getParentFile();
 
         if (!invoicesIdsFile.exists()) {
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
             invoicesIdsFile.createNewFile();
             writeEmptySet();
         }

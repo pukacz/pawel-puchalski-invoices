@@ -4,17 +4,23 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 class InvoiceFileAccessor {
 
     private File invoicesFile;
 
+    @Autowired
     InvoiceFileAccessor(Configuration configuration) throws IOException {
         this.invoicesFile = new File(configuration.getInvoicesFilePath());
+        File parent = invoicesFile.getParentFile();
 
         if (!invoicesFile.exists()) {
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
             invoicesFile.createNewFile();
         }
     }
