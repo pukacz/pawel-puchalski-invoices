@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.MockitoRule;
+import pl.coderstrust.invoices.database.DatabaseOperationException;
 import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
@@ -56,7 +57,7 @@ public class InFileDatabaseTest {
     }
 
     @Test
-    public void shouldSave1AndReturn1invoice() throws IOException {
+    public void shouldSave1AndReturn1invoice() throws IOException, DatabaseOperationException {
         //given
         Invoice invoice = getInvoices().get(2);
         String invoiceInJson = new Converter().getJsonFromInvoice(invoice);
@@ -65,8 +66,6 @@ public class InFileDatabaseTest {
 
         //when
         inFileDatabase.saveInvoice(getInvoices().get(2));
-        Invoice expected = getInvoices().get(1);
-        Invoice actual = inFileDatabase.getInvoice(2L);
 
         //then
         verify(idCoordinator, times(1)).getIds();
@@ -76,7 +75,7 @@ public class InFileDatabaseTest {
     }
 
     @Test
-    public void shouldReturnAllInvoicesFromFile() throws IOException {
+    public void shouldReturnAllInvoicesFromFile() throws IOException, DatabaseOperationException {
         //given
         when(fileAccessor.readLines()).thenReturn(getLinesFromFile(allInvoices()));
 
@@ -89,7 +88,8 @@ public class InFileDatabaseTest {
     }
 
     @Test
-    public void shouldReturnInvoicesFrom_01_December_2016_to_31_January_2018() throws IOException {
+    public void shouldReturnInvoicesFrom_01_December_2016_to_31_January_2018()
+        throws IOException, DatabaseOperationException {
         //given
         LocalDate start = LocalDate.of(2016, 12, 1);
         LocalDate end = LocalDate.of(2018, 1, 31);

@@ -6,6 +6,7 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.coderstrust.invoices.database.DatabaseOperationException;
 
 @Component
 class InvoiceFileAccessor {
@@ -46,7 +47,7 @@ class InvoiceFileAccessor {
         }
     }
 
-    void invalidateLine(Long invoiceId) throws IOException {
+    void invalidateLine(Long invoiceId) throws IOException, DatabaseOperationException {
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
             file.seek(0);
             file.seek(0);
@@ -61,6 +62,9 @@ class InvoiceFileAccessor {
                     file.writeBytes(" ");
                 }
                 file.writeBytes("\n");
+            } else {
+                throw new DatabaseOperationException(
+                    "Invoice id=[" + invoiceId + "] doesn't exists.");
             }
         }
     }

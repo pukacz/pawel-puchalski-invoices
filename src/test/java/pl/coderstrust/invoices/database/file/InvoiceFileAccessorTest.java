@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import pl.coderstrust.invoices.database.DatabaseOperationException;
 
 @RunWith(JUnitParamsRunner.class)
 public class InvoiceFileAccessorTest {
@@ -48,7 +49,7 @@ public class InvoiceFileAccessorTest {
     }
 
     @After
-    public void deleteTestFile() throws IOException {
+    public void deleteTestFile()  {
         invoicesFile().delete();
         invoicesIdsFile().delete();
     }
@@ -66,7 +67,7 @@ public class InvoiceFileAccessorTest {
     }
 
     @Test
-    public void shouldDelete1invoice() throws IOException {
+    public void shouldDelete1invoice() throws IOException, DatabaseOperationException {
         //when
         fileAccessor.invalidateLine(2L);
 
@@ -93,7 +94,7 @@ public class InvoiceFileAccessorTest {
 
     @Test
     public void should_Add_Update_Delete_And_Return_Invoices_Or_Spaces_For_Superseded_Invoices()
-        throws IOException {
+        throws IOException, DatabaseOperationException {
         //when
         fileAccessor.saveLine("1: 1st invoice 1st update");
         fileAccessor.saveLine("2: 2nd invoice 1st update");
@@ -112,7 +113,7 @@ public class InvoiceFileAccessorTest {
     }
 
     @Test
-    public void shouldInvalidate2Lines() throws IOException {
+    public void shouldInvalidate2Lines() throws IOException, DatabaseOperationException {
         //when
         fileAccessor.invalidateLine(1L);
         fileAccessor.invalidateLine(3L);
