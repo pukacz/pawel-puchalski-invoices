@@ -3,6 +3,10 @@ package pl.coderstrust.invoices.service;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -10,14 +14,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
+import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
+import pl.coderstrust.invoices.model.InvoiceEntry;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InvoiceServiceImplementationTest {
 
     @Mock
     private Database database;
-    private Invoice invoice;
+
     @InjectMocks
     private InvoiceServiceImplementation invoiceService;
 
@@ -54,11 +60,22 @@ public class InvoiceServiceImplementationTest {
 
     @Test
     public void testSaveInvoice() throws DatabaseOperationException {
+        //given
+        LocalDate issueDate = LocalDate.of(2016, 12, 1);
+        Company seller = new Company(22L, "BestSeller", "007");
+        Company buyer = new Company(24L, "BestBuyer", "0,7");
+        List<InvoiceEntry> entries = new ArrayList<>(Collections.emptyList());
+        Invoice invoice = new Invoice(33L, "01", issueDate, seller, buyer, entries);
+
         //when
         invoiceService.saveInvoice(invoice);
+        String actualSellerName = invoice.getSeller().getName();
+        String actualTaxingId = invoice.getBuyer().getTaxIdentificationNumber();
 
         //then
         verify(database).saveInvoice(invoice);
+        Assert.assertEquals("BestSeller", actualSellerName);
+        Assert.assertEquals("0,7", actualTaxingId);
     }
 
     @Test
