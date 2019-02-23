@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -33,6 +34,9 @@ import pl.coderstrust.invoices.model.VAT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InFileDatabaseTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -62,10 +66,10 @@ public class InFileDatabaseTest {
         Invoice invoice = getInvoices().get(2);
         String invoiceInJson = new Converter().getJsonFromInvoice(invoice);
         String line = invoice.getId() + ": " + invoiceInJson;
-        when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L, 3L, 4L)));
-        when(fileAccessor.invalidateLine(3L)).thenReturn(true);
 
         //when
+        when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L, 3L, 4L)));
+        when(fileAccessor.invalidateLine(3L)).thenReturn(true);
         inFileDatabase.saveInvoice(getInvoices().get(2));
 
         //then
@@ -105,6 +109,34 @@ public class InFileDatabaseTest {
         //then
         Assert.assertEquals(expected, actual);
     }
+
+    @Test
+    public void shouldGenerateNewIdForInvoice() throws IOException, DatabaseOperationException {
+        //given
+        Invoice invoice = new Invoice(null, "defaultID", null, null, null, null);
+
+        //when
+        when(idCoordinator.getIds()).thenReturn(new ArrayList<>(asList(1L, 2L)));
+        inFileDatabase.saveInvoice(invoice);
+        Long actual = invoice.getId();
+
+        //then
+        Assert.assertEquals(3L, actual.longValue());
+    }
+
+    @Test
+    public void shouldThrowDatabaseOperationExceptionWhenSaving()
+        throws IOException, DatabaseOperationException {
+        //given
+        expectedException.expect(DatabaseOperationException.class);
+        expectedException.expectMessage("Invoice id=[3] doesn't exist.");
+        Invoice invoice = new Invoice(3L, null, null, null, null, null);
+
+        //when
+        when(idCoordinator.getIds()).thenReturn(new ArrayList<>(asList(2L)));
+        inFileDatabase.saveInvoice(invoice);
+    }
+
 
     private static File fileFor1Invoice() {
         return new File(testFolder() + "invoicesTestSave1.dat");

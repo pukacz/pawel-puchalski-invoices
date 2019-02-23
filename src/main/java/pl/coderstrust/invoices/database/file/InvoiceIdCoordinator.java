@@ -47,16 +47,18 @@ class InvoiceIdCoordinator {
     }
 
     void coordinateIds(Long invoiceId) throws IOException {
+        invoicesIds.add(invoiceId);
+        String line = new Converter().sendIdsToJson(invoicesIds);
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
-            invoicesIds.add(invoiceId);
-            String line = new Converter().sendIdsToJson(invoicesIds);
             writer.write(line);
         }
     }
 
     private void writeEmptySet() throws IOException {
+        String emptyList = new Converter().sendIdsToJson(new TreeSet<>());
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
-            String emptyList = new Converter().sendIdsToJson(new TreeSet<>());
             writer.write(emptyList);
         }
     }
@@ -65,11 +67,13 @@ class InvoiceIdCoordinator {
         invoicesIds.remove(invoiceId);
     }
 
-    public void synchronizeData(Collection<Long> ids) throws IOException {
+    public boolean isDataSynchronized(Collection<Long> ids) throws IOException {
+        invoicesIds = ids;
+        String updatedList = new Converter().sendIdsToJson(new TreeSet<>(invoicesIds));
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
-            invoicesIds = ids;
-            String updatedList = new Converter().sendIdsToJson(new TreeSet<>(invoicesIds));
             writer.write(updatedList);
         }
+        return true;
     }
 }
