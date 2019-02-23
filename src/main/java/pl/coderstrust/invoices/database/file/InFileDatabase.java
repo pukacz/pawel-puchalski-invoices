@@ -17,6 +17,8 @@ import pl.coderstrust.invoices.model.Invoice;
 @ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "file")
 public class InFileDatabase implements Database {
 
+    private static final String INVOICE_NOT_EXISTING_MSG = "Invoice id=[%d] doesn't exist.";
+    private static final String DATABASE_CORRUPTED_MSG = "Database is corrupted.";
     private InvoiceFileAccessor fileAccessor;
     private InvoiceIdCoordinator idCoordinator;
 
@@ -27,14 +29,14 @@ public class InFileDatabase implements Database {
     }
 
     @Override
-    public void saveInvoice(Invoice invoice) throws DatabaseOperationException {
+    public Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException {
         Long invoiceId = invoice.getId();
 
         try {
             Collection<Long> ids = idCoordinator.getIds();
             if (!invoiceId.equals(null) && !ids.contains(invoiceId)) {
-                throw new DatabaseOperationException(invoiceNotExistingMessage(invoiceId)
-                    + " Update failed.");
+                throw new DatabaseOperationException(
+                    String.format(INVOICE_NOT_EXISTING_MSG + " Update failed.", invoiceId));
             }
 
             if (invoiceId.equals(null)) {
@@ -49,52 +51,53 @@ public class InFileDatabase implements Database {
             fileAccessor.saveLine(line);
             idCoordinator.coordinateIds(invoiceId);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new DatabaseOperationException("Unable to save invoice.", e);
         }
+        return invoice;
     }
 
     @Override
-    public void deleteInvoice(Long invoiceId) {
+    public void deleteInvoice(Long invoiceId) throws DatabaseOperationException {
         try {
-            fileAccessor.invalidateLine(invoiceId);
+            if (!fileAccessor.invalidateLine(invoiceId)) {
+                throw new DatabaseOperationException(
+                    "Invoice id=[" + invoiceId + "] doesn't exist.");
+            }
+            idCoordinator.removeId(invoiceId);
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (DatabaseOperationException e) {
-            e.getMessage();
+            throw new DatabaseOperationException("Unable to delete invoice.", e);
         }
     }
 
     @Override
     public Invoice getInvoice(Long invoiceId) throws DatabaseOperationException {
-        ArrayList<Invoice> invoices = new ArrayList<>(getInvoices());
+        try {
+            if (!idCoordinator.getIds().contains(invoiceId)) {
+                throw new DatabaseOperationException(
+                    String.format(INVOICE_NOT_EXISTING_MSG, invoiceId));
+            }
+        } catch (IOException e) {
+            throw new DatabaseOperationException("Unable to read invoice.", e);
+        }
 
-        for (Invoice invoice : invoices) {
+        for (Invoice invoice : getInvoices()) {
             if (invoice.getId().equals(invoiceId)) {
                 return invoice;
             }
         }
-
-        if (true) {
-            throw new DatabaseOperationException(
-                invoiceNotExistingMessage(invoiceId));
-        } else {
-            return null;
-        }
+        synchronizeDbFiles();
+        throw new DatabaseOperationException(DATABASE_CORRUPTED_MSG);
     }
 
     @Override
     public Collection<Invoice> getInvoices() throws DatabaseOperationException {
-        ArrayList<Invoice> invoices = new ArrayList<>();
+        ArrayList<Invoice> invoices;
 
         try {
             ArrayList<String> lines = fileAccessor.readLines();
             invoices = new Converter().getInvoicesFromLines(lines);
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (invoices.size() == 0) {
-            throw new DatabaseOperationException("No invoices in file database.");
+            throw new DatabaseOperationException("Unable to read invoices.", e);
         }
         return invoices;
     }
@@ -123,7 +126,19 @@ public class InFileDatabase implements Database {
         return invoice.getId() + ": " + new Converter().getJsonFromInvoice(invoice);
     }
 
-    private String invoiceNotExistingMessage(Long invoiceId) {
-        return "Invoice id=[" + invoiceId + "] doesn't exists.";
+    private void synchronizeDbFiles() throws DatabaseOperationException {
+        try {
+            idCoordinator.synchronizeData(getIdsFromDataFile());
+        } catch (IOException e) {
+            throw new DatabaseOperationException(DATABASE_CORRUPTED_MSG, e);
+        }
+    }
+
+    private ArrayList<Long> getIdsFromDataFile() throws DatabaseOperationException {
+        ArrayList<Long> idsFromDataFile = new ArrayList<>();
+        for (Invoice invoice : getInvoices()) {
+            idsFromDataFile.add(invoice.getId());
+        }
+        return idsFromDataFile;
     }
 }

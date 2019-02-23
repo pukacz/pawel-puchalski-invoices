@@ -6,7 +6,7 @@ import pl.coderstrust.invoices.model.Invoice;
 
 public interface Database {
 
-    void saveInvoice(Invoice invoice) throws DatabaseOperationException;
+    Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException;
 
     void deleteInvoice(Long id) throws DatabaseOperationException;
 

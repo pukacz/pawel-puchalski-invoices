@@ -60,4 +60,16 @@ class InvoiceIdCoordinator {
             writer.write(emptyList);
         }
     }
+
+    public void removeId(Long invoiceId) {
+        invoicesIds.remove(invoiceId);
+    }
+
+    public void synchronizeData(Collection<Long> ids) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
+            invoicesIds = ids;
+            String updatedList = new Converter().sendIdsToJson(new TreeSet<>(invoicesIds));
+            writer.write(updatedList);
+        }
+    }
 }
