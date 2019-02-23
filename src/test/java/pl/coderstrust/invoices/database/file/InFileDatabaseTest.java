@@ -63,6 +63,7 @@ public class InFileDatabaseTest {
         String invoiceInJson = new Converter().getJsonFromInvoice(invoice);
         String line = invoice.getId() + ": " + invoiceInJson;
         when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L, 3L, 4L)));
+        when(fileAccessor.invalidateLine(3L)).thenReturn(true);
 
         //when
         inFileDatabase.saveInvoice(getInvoices().get(2));
