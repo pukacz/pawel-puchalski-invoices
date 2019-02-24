@@ -46,7 +46,7 @@ class InvoiceFileAccessor {
         }
     }
 
-    boolean invalidateLine(Long invoiceId) throws IOException{
+    boolean invalidateLine(Long invoiceId) throws IOException {
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
             file.seek(0);
             file.seek(0);
@@ -62,9 +62,8 @@ class InvoiceFileAccessor {
                 }
                 file.writeBytes("\n");
                 return true;
-            } else {
-                return false;
             }
+            return false;
         }
     }
 

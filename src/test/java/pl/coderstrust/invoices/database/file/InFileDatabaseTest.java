@@ -111,13 +111,22 @@ public class InFileDatabaseTest {
     }
 
     @Test
+    public void testForSynchronizeDbFiles() throws DatabaseOperationException, IOException {
+        //when
+        inFileDatabase.synchronizeDbFiles();
+
+        //then
+        verify(idCoordinator, times(1)).isDataSynchronized(inFileDatabase.getIdsFromDataFile());
+    }
+
+    @Test
     public void shouldGenerateNewIdForInvoice() throws IOException, DatabaseOperationException {
         //given
         Invoice invoice = new Invoice(null, "defaultID", null, null, null, null);
+        when(idCoordinator.getIds()).thenReturn(new ArrayList<>(asList(1L, 2L)));
 
         //when
-        when(idCoordinator.getIds()).thenReturn(new ArrayList<>(asList(1L, 2L)));
-        inFileDatabase.saveInvoice(invoice);
+        invoice = inFileDatabase.saveInvoice(invoice);
         Long actual = invoice.getId();
 
         //then
@@ -125,15 +134,29 @@ public class InFileDatabaseTest {
     }
 
     @Test
+    public void shouldReturnIdsFromDataFile() throws IOException, DatabaseOperationException {
+        //given
+        when(fileAccessor.readLines()).thenReturn(getLinesFromFile(allInvoices()));
+
+        //when
+        ArrayList actual = inFileDatabase.getIdsFromDataFile();
+        ArrayList expected = new ArrayList(asList(1L, 2L, 3L, 4L, 5L));
+
+        //then
+        Assert.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
     public void shouldThrowDatabaseOperationExceptionWhenSaving()
         throws IOException, DatabaseOperationException {
         //given
         expectedException.expect(DatabaseOperationException.class);
-        expectedException.expectMessage("Invoice id=[3] doesn't exist.");
+        expectedException.expectMessage("You are trying to update invoice which is not "
+            + "recognized in coordination file. Please synchronize database files first.");
         Invoice invoice = new Invoice(3L, null, null, null, null, null);
+        when(idCoordinator.getIds()).thenReturn(new ArrayList<>(asList(2L)));
 
         //when
-        when(idCoordinator.getIds()).thenReturn(new ArrayList<>(asList(2L)));
         inFileDatabase.saveInvoice(invoice);
     }
 

@@ -18,8 +18,9 @@ import pl.coderstrust.invoices.model.Invoice;
 public class InFileDatabase implements Database {
 
     private static final String INVOICE_NOT_EXISTING_MSG = "Invoice id=[%d] doesn't exist.";
-    private static final String DATABASE_CORRUPTED_MSG = "Database files were not synchronized,"
-        + "please try again.";
+    private static final String DATABASE_CORRUPTED_MSG =
+        "You are trying to update invoice which is "
+            + "not recognized in coordination file. Please synchronize database files first.";
     private InvoiceFileAccessor fileAccessor;
     private InvoiceIdCoordinator idCoordinator;
 
@@ -35,20 +36,16 @@ public class InFileDatabase implements Database {
 
         try {
             Collection<Long> ids = idCoordinator.getIds();
-            if (!invoiceId.equals(null) && !ids.contains(invoiceId)) {
-                if (synchronizeDbFiles()) {
-                    throw new DatabaseOperationException(
-                        String.format(INVOICE_NOT_EXISTING_MSG + " Update failed.", invoiceId));
-                }
-                throw new DatabaseOperationException(
-                    String.format(INVOICE_NOT_EXISTING_MSG + " Update failed.", invoiceId));
-            }
 
-            if (invoiceId.equals(null)) {
+            if (invoiceId == null) {
                 invoiceId = new IdGenerator().generateId(ids);
                 invoice = new Invoice(invoice, invoiceId);
-            } else if (ids.contains(invoiceId)) {
-                deleteInvoice(invoiceId);
+            } else {
+                if (ids.contains(invoiceId)) {
+                    deleteInvoice(invoiceId);
+                } else {
+                    throw new DatabaseOperationException(DATABASE_CORRUPTED_MSG);
+                }
             }
 
             String line = getLineFromInvoice(invoice);
@@ -90,9 +87,7 @@ public class InFileDatabase implements Database {
                 return invoice;
             }
         }
-        if (synchronizeDbFiles()) {
-            throw new DatabaseOperationException(DATABASE_CORRUPTED_MSG);
-        }
+        throw new DatabaseOperationException(DATABASE_CORRUPTED_MSG);
     }
 
     @Override
@@ -132,7 +127,7 @@ public class InFileDatabase implements Database {
         return invoice.getId() + ": " + new Converter().getJsonFromInvoice(invoice);
     }
 
-    private boolean synchronizeDbFiles() throws DatabaseOperationException {
+    public boolean synchronizeDbFiles() throws DatabaseOperationException {
         try {
             return idCoordinator.isDataSynchronized(getIdsFromDataFile());
         } catch (IOException e) {
@@ -140,7 +135,7 @@ public class InFileDatabase implements Database {
         }
     }
 
-    private ArrayList<Long> getIdsFromDataFile() throws DatabaseOperationException {
+    public ArrayList<Long> getIdsFromDataFile() throws DatabaseOperationException {
         ArrayList<Long> idsFromDataFile = new ArrayList<>();
         for (Invoice invoice : getInvoices()) {
             idsFromDataFile.add(invoice.getId());
