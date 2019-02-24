@@ -63,17 +63,28 @@ class InvoiceIdCoordinator {
         }
     }
 
-    public void removeId(Long invoiceId) {
+    public void removeId(Long invoiceId) throws IOException {
         invoicesIds.remove(invoiceId);
+        String line = new Converter().sendIdsToJson(invoicesIds);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
+            writer.write(line);
+        }
     }
 
     public boolean isDataSynchronized(Collection<Long> ids) throws IOException {
+        if (invoicesIds.containsAll(ids) && ids.containsAll(invoicesIds)) {
+            return true;
+        }
+        return false;
+    }
+
+    public void synchronizeData(Collection<Long> ids) throws IOException {
         invoicesIds = ids;
         String updatedList = new Converter().sendIdsToJson(new TreeSet<>(invoicesIds));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
             writer.write(updatedList);
         }
-        return true;
     }
 }

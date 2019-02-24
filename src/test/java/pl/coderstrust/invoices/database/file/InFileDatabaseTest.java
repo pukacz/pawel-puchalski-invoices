@@ -112,11 +112,16 @@ public class InFileDatabaseTest {
 
     @Test
     public void testForSynchronizeDbFiles() throws DatabaseOperationException, IOException {
+        //given
+        when(idCoordinator.isDataSynchronized(inFileDatabase.getIdsFromDataFile()))
+            .thenReturn(false);
+
         //when
         inFileDatabase.synchronizeDbFiles();
 
         //then
         verify(idCoordinator, times(1)).isDataSynchronized(inFileDatabase.getIdsFromDataFile());
+        verify(idCoordinator, times(1)).synchronizeData(inFileDatabase.getIdsFromDataFile());
     }
 
     @Test
@@ -147,17 +152,57 @@ public class InFileDatabaseTest {
     }
 
     @Test
+    public void shouldThrowDatabaseOperationExceptionWhenIdIsNotRecognizedInCoorFil()
+        throws IOException, DatabaseOperationException {
+        //given
+        when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L)));
+        expectedException.expect(DatabaseOperationException.class);
+        expectedException.expectMessage("Invoice id=[5] doesn't exist.");
+
+        //then
+        inFileDatabase.getInvoice(5L);
+    }
+
+    @Test
+    public void shouldThrowDatabaseOperationExceptionWhenInvoiceIsNotExisting()
+        throws IOException, DatabaseOperationException {
+        //given
+        when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L, 15L)));
+        when(fileAccessor.readLines()).thenReturn(getLinesFromFile(allInvoices()));
+        expectedException.expect(DatabaseOperationException.class);
+        expectedException.expectMessage("You are trying to read/update invoice which is "
+            + "not recognized in coordination file. Please synchronize database files first.");
+
+        //then
+        inFileDatabase.getInvoice(15L);
+    }
+
+    @Test
     public void shouldThrowDatabaseOperationExceptionWhenSaving()
         throws IOException, DatabaseOperationException {
         //given
         expectedException.expect(DatabaseOperationException.class);
-        expectedException.expectMessage("You are trying to update invoice which is not "
+        expectedException.expectMessage("You are trying to read/update invoice which is not "
             + "recognized in coordination file. Please synchronize database files first.");
         Invoice invoice = new Invoice(3L, null, null, null, null, null);
         when(idCoordinator.getIds()).thenReturn(new ArrayList<>(asList(2L)));
 
         //when
         inFileDatabase.saveInvoice(invoice);
+    }
+
+    @Test
+    public void shouldThrowDatabaseOperationExceptionWhenDatesAreWrong()
+        throws DatabaseOperationException {
+        //given
+        LocalDate start = LocalDate.of(2018, 1, 31);
+        LocalDate end = LocalDate.of(2016, 12, 1);
+        expectedException.expect(DatabaseOperationException.class);
+        expectedException
+            .expectMessage("Start date [" + start + "] is after end date [" + end + "].");
+
+        //when
+        inFileDatabase.getInvoicesByDate(start, end);
     }
 
 

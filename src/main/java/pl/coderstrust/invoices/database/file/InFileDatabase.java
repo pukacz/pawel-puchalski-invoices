@@ -19,7 +19,7 @@ public class InFileDatabase implements Database {
 
     private static final String INVOICE_NOT_EXISTING_MSG = "Invoice id=[%d] doesn't exist.";
     private static final String DATABASE_CORRUPTED_MSG =
-        "You are trying to update invoice which is "
+        "You are trying to read/update invoice which is "
             + "not recognized in coordination file. Please synchronize database files first.";
     private InvoiceFileAccessor fileAccessor;
     private InvoiceIdCoordinator idCoordinator;
@@ -116,10 +116,6 @@ public class InFileDatabase implements Database {
             .filter(invoice -> invoice.getIssueDate().toEpochDay() <= endDate.toEpochDay())
             .collect(Collectors.toList());
 
-        if (invoices.size() == 0) {
-            throw new DatabaseOperationException(
-                "No invoices between [" + startDate + "] - [" + endDate + "] in file - database.");
-        }
         return invoices;
     }
 
@@ -127,9 +123,11 @@ public class InFileDatabase implements Database {
         return invoice.getId() + ": " + new Converter().getJsonFromInvoice(invoice);
     }
 
-    public boolean synchronizeDbFiles() throws DatabaseOperationException {
+    public void synchronizeDbFiles() throws DatabaseOperationException {
         try {
-            return idCoordinator.isDataSynchronized(getIdsFromDataFile());
+            if (!idCoordinator.isDataSynchronized(getIdsFromDataFile())) {
+                idCoordinator.synchronizeData(getIdsFromDataFile());
+            }
         } catch (IOException e) {
             throw new DatabaseOperationException(DATABASE_CORRUPTED_MSG, e);
         }

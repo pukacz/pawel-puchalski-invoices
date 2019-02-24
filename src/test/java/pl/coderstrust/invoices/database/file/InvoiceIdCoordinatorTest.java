@@ -27,7 +27,6 @@ public class InvoiceIdCoordinatorTest {
     @Mock
     private Configuration configuration;
 
-
     @BeforeClass
     public static void createTempFile() throws IOException {
         invoicesIdsFile().createNewFile();
@@ -39,7 +38,7 @@ public class InvoiceIdCoordinatorTest {
     }
 
     @Test
-    public void shouldReturnInvoicesIds() throws IOException {
+    public void testReturnIds() throws IOException {
         //given
         when(configuration.getInvoicesIdsFilePath()).thenReturn(invoicesIdsFilePath);
         InvoiceIdCoordinator idCoordinator = new InvoiceIdCoordinator(configuration);
@@ -47,12 +46,11 @@ public class InvoiceIdCoordinatorTest {
         //when
         idCoordinator.coordinateIds(2L);
         idCoordinator.coordinateIds(3L);
-        idCoordinator.coordinateIds(2L);
+        idCoordinator.removeId(3L);
         Collection<Long> actual = idCoordinator.getIds();
-        TreeSet<Long> expected = new TreeSet<>(asList(2L, 3L));
 
         //then
-        Assert.assertEquals(expected, actual);
+        Assert.assertEquals(new TreeSet<>(asList(2L)), actual);
     }
 
     private static File invoicesIdsFile() {
