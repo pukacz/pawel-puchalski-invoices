@@ -72,7 +72,7 @@ class InvoiceIdCoordinator {
         }
     }
 
-    public boolean isDataSynchronized(Collection<Long> ids) throws IOException {
+    public boolean isDataSynchronized(Collection<Long> ids) {
         if (invoicesIds.containsAll(ids) && ids.containsAll(invoicesIds)) {
             return true;
         }

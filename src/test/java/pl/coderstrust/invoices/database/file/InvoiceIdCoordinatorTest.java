@@ -5,8 +5,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.TreeSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -47,10 +45,11 @@ public class InvoiceIdCoordinatorTest {
         idCoordinator.coordinateIds(2L);
         idCoordinator.coordinateIds(3L);
         idCoordinator.removeId(3L);
-        Collection<Long> actual = idCoordinator.getIds();
+        idCoordinator.synchronizeData(asList(2L, 4L));
 
         //then
-        Assert.assertEquals(new TreeSet<>(asList(2L)), actual);
+        Assert.assertTrue(idCoordinator.isDataSynchronized(asList(2L, 4L)));
+        Assert.assertFalse(idCoordinator.isDataSynchronized(asList(2L, 3L)));
     }
 
     private static File invoicesIdsFile() {
