@@ -185,7 +185,7 @@ public class InFileDatabaseTest {
         expectedException.expectMessage("You are trying to read/update invoice which is not "
             + "recognized in coordination file. Please synchronize database files first.");
         Invoice invoice = new Invoice(3L, null, null, null, null, null);
-        when(idCoordinator.getIds()).thenReturn(new ArrayList<>(asList(2L)));
+        when(idCoordinator.getIds()).thenReturn(new ArrayList<>(Collections.singletonList(2L)));
 
         //when
         inFileDatabase.saveInvoice(invoice);

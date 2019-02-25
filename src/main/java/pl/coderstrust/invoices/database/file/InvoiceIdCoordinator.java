@@ -63,7 +63,7 @@ class InvoiceIdCoordinator {
         }
     }
 
-    public void removeId(Long invoiceId) throws IOException {
+    void removeId(Long invoiceId) throws IOException {
         invoicesIds.remove(invoiceId);
         String line = new Converter().sendIdsToJson(invoicesIds);
 
@@ -72,14 +72,11 @@ class InvoiceIdCoordinator {
         }
     }
 
-    public boolean isDataSynchronized(Collection<Long> ids) {
-        if (invoicesIds.containsAll(ids) && ids.containsAll(invoicesIds)) {
-            return true;
-        }
-        return false;
+    boolean isDataSynchronized(Collection<Long> ids) {
+        return invoicesIds.containsAll(ids) && ids.containsAll(invoicesIds);
     }
 
-    public void synchronizeData(Collection<Long> ids) throws IOException {
+    void synchronizeData(Collection<Long> ids) throws IOException {
         invoicesIds = ids;
         String updatedList = new Converter().sendIdsToJson(new TreeSet<>(invoicesIds));
 

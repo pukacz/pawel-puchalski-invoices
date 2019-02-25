@@ -40,8 +40,7 @@ class InvoiceFileAccessor {
 
     void saveLine(String line) throws IOException {
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
-            long cursor = file.length();
-            file.seek(cursor);
+            file.seek(file.length());
             file.writeBytes(line + "\n");
         }
     }

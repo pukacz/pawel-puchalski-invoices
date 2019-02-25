@@ -47,10 +47,7 @@ public class InFileDatabase implements Database {
                     throw new DatabaseOperationException(DATABASE_CORRUPTED_MSG);
                 }
             }
-
-            String line = getLineFromInvoice(invoice);
-
-            fileAccessor.saveLine(line);
+            fileAccessor.saveLine(getLineFromInvoice(invoice));
             idCoordinator.coordinateIds(invoiceId);
         } catch (IOException e) {
             throw new DatabaseOperationException("Unable to save invoice.", e);
@@ -111,19 +108,17 @@ public class InFileDatabase implements Database {
                 "Start date [" + startDate + "] is after end date [" + endDate + "].");
         }
 
-        Collection<Invoice> invoices = new ArrayList<>(getInvoices()).stream()
+        return new ArrayList<>(getInvoices()).stream()
             .filter(invoice -> invoice.getIssueDate().toEpochDay() >= startDate.toEpochDay())
             .filter(invoice -> invoice.getIssueDate().toEpochDay() <= endDate.toEpochDay())
             .collect(Collectors.toList());
-
-        return invoices;
     }
 
     private String getLineFromInvoice(Invoice invoice) throws JsonProcessingException {
         return invoice.getId() + ": " + new Converter().getJsonFromInvoice(invoice);
     }
 
-    public void synchronizeDbFiles() throws DatabaseOperationException {
+    void synchronizeDbFiles() throws DatabaseOperationException {
         try {
             if (!idCoordinator.isDataSynchronized(getIdsFromDataFile())) {
                 idCoordinator.synchronizeData(getIdsFromDataFile());
@@ -133,7 +128,7 @@ public class InFileDatabase implements Database {
         }
     }
 
-    public ArrayList<Long> getIdsFromDataFile() throws DatabaseOperationException {
+    ArrayList<Long> getIdsFromDataFile() throws DatabaseOperationException {
         ArrayList<Long> idsFromDataFile = new ArrayList<>();
         for (Invoice invoice : getInvoices()) {
             idsFromDataFile.add(invoice.getId());
