@@ -152,7 +152,17 @@ public class InFileDatabaseTest {
     }
 
     @Test
-    public void shouldThrowDatabaseOperationExceptionWhenIdIsNotRecognizedInCoorFil()
+    public void shouldThrowNullPointerExceptionWhenSavingNull() throws DatabaseOperationException {
+        //given
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Invoice must not be null.");
+
+        //then
+        inFileDatabase.saveInvoice(null);
+    }
+
+    @Test
+    public void shouldThrowDatabaseOperationExceptionWhenIdIsNotRecognizedInCoordinationFile()
         throws IOException, DatabaseOperationException {
         //given
         when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L)));
