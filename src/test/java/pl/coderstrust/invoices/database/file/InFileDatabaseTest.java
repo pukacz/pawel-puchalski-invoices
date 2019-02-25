@@ -152,13 +152,23 @@ public class InFileDatabaseTest {
     }
 
     @Test
-    public void shouldThrowNullPointerExceptionWhenSavingNull() throws DatabaseOperationException {
+    public void shouldThrowIllegalArgumentExceptionWhenSavingNull() throws DatabaseOperationException {
         //given
-        expectedException.expect(NullPointerException.class);
+        expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("Invoice must not be null.");
 
         //then
         inFileDatabase.saveInvoice(null);
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionWhenGettingInvoiceWithNullId() throws DatabaseOperationException {
+        //given
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Invoice Id must not be null.");
+
+        //then
+        inFileDatabase.getInvoice(null);
     }
 
     @Test

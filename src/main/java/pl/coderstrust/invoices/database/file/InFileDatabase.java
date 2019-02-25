@@ -33,7 +33,7 @@ public class InFileDatabase implements Database {
     @Override
     public Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException {
         if (invoice == null) {
-            throw new NullPointerException("Invoice must not be null.");
+            throw new IllegalArgumentException("Invoice must not be null.");
         }
         Long invoiceId = invoice.getId();
 
@@ -73,6 +73,10 @@ public class InFileDatabase implements Database {
 
     @Override
     public Invoice getInvoice(Long invoiceId) throws DatabaseOperationException {
+        if (invoiceId == null) {
+            throw new IllegalArgumentException("Invoice Id must not be null.");
+        }
+
         try {
             if (!idCoordinator.getIds().contains(invoiceId)) {
                 throw new DatabaseOperationException(
