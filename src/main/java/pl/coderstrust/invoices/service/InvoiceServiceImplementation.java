@@ -11,9 +11,9 @@ import pl.coderstrust.invoices.model.Invoice;
 @Service
 public class InvoiceServiceImplementation implements InvoiceService {
 
+    private static final String INVOICE_ID_MUST_NOT_BE_NULL = "Invoice ID must not be null.";
+    private static final String INVOICE_MUST_NOT_BE_NULL = "Invoice must not be null.";
     private Database database;
-    private String invoiceNotExistingMessage = "there is no invoice with this ID in the database";
-    private String invoiceNullIdMessage = "Invoice ID must not be null.";
 
     @Autowired
     public InvoiceServiceImplementation(Database database) {
@@ -24,50 +24,61 @@ public class InvoiceServiceImplementation implements InvoiceService {
         try {
             return database.getInvoices();
         } catch (Exception e) {
-            throw new DatabaseOperationException("there are no invoices", e);
+            // TODO errors should be logged here
+            throw e;
         }
     }
 
     public Collection<Invoice> getAllOfRange(LocalDate fromDate, LocalDate toDate)
         throws DatabaseOperationException {
+        if (fromDate == null) {
+            throw new IllegalArgumentException("From date must not be null.");
+        }
+        if (toDate == null) {
+            throw new IllegalArgumentException("To date must not be null.");
+        }
         try {
             return database.getInvoicesByDate(fromDate, toDate);
         } catch (Exception e) {
-            throw new DatabaseOperationException("there are no invoices in this data range", e);
+            // TODO errors should be logged here
+            throw e;
         }
     }
 
     public Invoice getInvoiceById(Long id) throws DatabaseOperationException {
         if (id == null) {
-            throw new DatabaseOperationException(invoiceNullIdMessage,
-                new IllegalArgumentException());
+            throw new IllegalArgumentException(INVOICE_ID_MUST_NOT_BE_NULL);
         }
         try {
             return database.getInvoice(id);
         } catch (Exception e) {
-            throw new DatabaseOperationException(invoiceNotExistingMessage, e);
+            // TODO errors should be logged here
+            throw e;
         }
     }
 
     public Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException {
+        if (invoice == null) {
+            throw new IllegalArgumentException(INVOICE_MUST_NOT_BE_NULL);
+        }
         try {
             database.saveInvoice(invoice);
         } catch (Exception e) {
-            throw new DatabaseOperationException(
-                "can not add/update this invoice to/in the database", e);
+            // TODO errors should be logged here
+            throw e;
         }
         return invoice;
     }
 
     public void deleteInvoice(Long id) throws DatabaseOperationException {
         if (id == null) {
-            throw new DatabaseOperationException(invoiceNullIdMessage,
-                new IllegalArgumentException());
+            throw new IllegalArgumentException(INVOICE_ID_MUST_NOT_BE_NULL);
         }
         try {
             database.deleteInvoice(id);
         } catch (Exception e) {
-            throw new DatabaseOperationException(invoiceNotExistingMessage, e);
+            // TODO errors should be logged here
+            throw e;
         }
     }
 }

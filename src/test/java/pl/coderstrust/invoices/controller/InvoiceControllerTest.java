@@ -39,17 +39,6 @@ public class InvoiceControllerTest {
             .andExpect(content().string(containsString("[]")));
     }
 
-//    @Test
-//    public void testGetAllInvoicesInDates() throws Exception {
-//        LocalDate fromDate = LocalDate.ofEpochDay(2019 - 01 - 28);
-//        LocalDate toDate = LocalDate.ofEpochDay(2019 - 01 - 29);
-//        when(service.getAllOfRange(fromDate, toDate)).thenReturn(new ArrayList<>());
-//        this.mockMvc.perform(get("/invoices/byDates"))
-//            .andDo(print())
-//            .andExpect(status().isOk())
-//            .andExpect(content().string(containsString("[]")));
-//    }
-
     @Test
     public void testGetInvoiceById() throws Exception {
         when(service.getInvoiceById(0L)).thenReturn(new Invoice(0L, "", null, null, null, null));
@@ -58,13 +47,4 @@ public class InvoiceControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("")));
     }
-
-//    @Test
-//    public void testDeleteInvoiceById() throws Exception {
-//        when(service.deleteInvoice(0L)).thenReturn(new Invoice(0L, "", "", "", "", ""));
-//        this.mockMvc.perform(get("/invoices/0"))
-//            .andDo(print())
-//            .andExpect(status().isOk())
-//            .andExpect(content().string(containsString("")));
-//    }
 }
