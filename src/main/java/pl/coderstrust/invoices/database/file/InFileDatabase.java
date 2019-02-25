@@ -32,6 +32,9 @@ public class InFileDatabase implements Database {
 
     @Override
     public Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException {
+        if (invoice == null) {
+            throw new NullPointerException("Invoice must not be null.");
+        }
         Long invoiceId = invoice.getId();
 
         try {
