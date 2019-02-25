@@ -12,6 +12,8 @@ import pl.coderstrust.invoices.model.Invoice;
 public class InvoiceServiceImplementation implements InvoiceService {
 
     private Database database;
+    private String invoiceNotExistingMessage = "there is no invoice with this ID in the database";
+    private String invoicePositiveIdMessage = "invoice ID must be positive";
 
     @Autowired
     public InvoiceServiceImplementation(Database database) {
@@ -67,7 +69,4 @@ public class InvoiceServiceImplementation implements InvoiceService {
             throw new DatabaseOperationException(invoiceNotExistingMessage, e);
         }
     }
-
-    private String invoiceNotExistingMessage = "there is no invoice with this ID in the database";
-    private String invoicePositiveIdMessage = "invoice ID must be positive";
 }
