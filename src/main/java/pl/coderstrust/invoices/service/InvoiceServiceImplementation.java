@@ -13,7 +13,7 @@ public class InvoiceServiceImplementation implements InvoiceService {
 
     private Database database;
     private String invoiceNotExistingMessage = "there is no invoice with this ID in the database";
-    private String invoicePositiveIdMessage = "invoice ID must be positive";
+    private String invoiceNullIdMessage = "Invoice ID must not be null.";
 
     @Autowired
     public InvoiceServiceImplementation(Database database) {
@@ -38,8 +38,8 @@ public class InvoiceServiceImplementation implements InvoiceService {
     }
 
     public Invoice getInvoiceById(Long id) throws DatabaseOperationException {
-        if (id <= 0) {
-            throw new DatabaseOperationException(invoicePositiveIdMessage,
+        if (id == null) {
+            throw new DatabaseOperationException(invoiceNullIdMessage,
                 new IllegalArgumentException());
         }
         try {
@@ -60,8 +60,8 @@ public class InvoiceServiceImplementation implements InvoiceService {
     }
 
     public void deleteInvoice(Long id) throws DatabaseOperationException {
-        if (id <= 0) {
-            throw new DatabaseOperationException(invoicePositiveIdMessage,
+        if (id == null) {
+            throw new DatabaseOperationException(invoiceNullIdMessage,
                 new IllegalArgumentException());
         }
         try {
