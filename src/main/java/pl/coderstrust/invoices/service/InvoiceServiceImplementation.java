@@ -49,13 +49,14 @@ public class InvoiceServiceImplementation implements InvoiceService {
         }
     }
 
-    public void saveInvoice(Invoice invoice) throws DatabaseOperationException {
+    public Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException {
         try {
             database.saveInvoice(invoice);
         } catch (Exception e) {
             throw new DatabaseOperationException(
                 "can not add/update this invoice to/in the database", e);
         }
+        return invoice;
     }
 
     public void deleteInvoice(Long id) throws DatabaseOperationException {

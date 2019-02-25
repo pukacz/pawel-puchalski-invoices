@@ -15,7 +15,7 @@ public interface InvoiceService {
 
     Invoice getInvoiceById(Long id) throws DatabaseOperationException;
 
-    void saveInvoice(Invoice invoice) throws DatabaseOperationException;
+    Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException;
 
     void deleteInvoice(Long id) throws DatabaseOperationException;
 }
