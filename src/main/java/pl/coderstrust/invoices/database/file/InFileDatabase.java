@@ -60,6 +60,10 @@ public class InFileDatabase implements Database {
 
     @Override
     public void deleteInvoice(Long invoiceId) throws DatabaseOperationException {
+        if (invoiceId == null) {
+            throw new IllegalArgumentException("Invoice Id must not be null.");
+        }
+
         try {
             if (!fileAccessor.invalidateLine(invoiceId)) {
                 throw new DatabaseOperationException(

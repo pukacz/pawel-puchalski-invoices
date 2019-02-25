@@ -162,6 +162,16 @@ public class InFileDatabaseTest {
     }
 
     @Test
+    public void shouldThrowIllegalArgumentExceptionWhenDeletingInvoiceWithNullId() throws DatabaseOperationException {
+        //given
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Invoice Id must not be null.");
+
+        //then
+        inFileDatabase.deleteInvoice(null);
+    }
+
+    @Test
     public void shouldThrowIllegalArgumentExceptionWhenGettingInvoiceWithNullId() throws DatabaseOperationException {
         //given
         expectedException.expect(IllegalArgumentException.class);
