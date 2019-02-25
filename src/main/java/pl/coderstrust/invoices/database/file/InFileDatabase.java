@@ -21,6 +21,7 @@ public class InFileDatabase implements Database {
     private static final String DATABASE_CORRUPTED_MSG =
         "You are trying to read/update invoice which is "
             + "not recognized in coordination file. Please synchronize database files first.";
+    private static final String INVOICE_ID_NOT_NULL_MSG = "Invoice Id must not be null.";
     private InvoiceFileAccessor fileAccessor;
     private InvoiceIdCoordinator idCoordinator;
 
@@ -61,7 +62,7 @@ public class InFileDatabase implements Database {
     @Override
     public void deleteInvoice(Long invoiceId) throws DatabaseOperationException {
         if (invoiceId == null) {
-            throw new IllegalArgumentException("Invoice Id must not be null.");
+            throw new IllegalArgumentException(INVOICE_ID_NOT_NULL_MSG);
         }
 
         try {
@@ -78,7 +79,7 @@ public class InFileDatabase implements Database {
     @Override
     public Invoice getInvoice(Long invoiceId) throws DatabaseOperationException {
         if (invoiceId == null) {
-            throw new IllegalArgumentException("Invoice Id must not be null.");
+            throw new IllegalArgumentException(INVOICE_ID_NOT_NULL_MSG);
         }
 
         try {
