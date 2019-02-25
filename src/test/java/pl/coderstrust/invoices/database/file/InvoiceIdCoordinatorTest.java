@@ -5,8 +5,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.TreeSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -27,7 +25,6 @@ public class InvoiceIdCoordinatorTest {
     @Mock
     private Configuration configuration;
 
-
     @BeforeClass
     public static void createTempFile() throws IOException {
         invoicesIdsFile().createNewFile();
@@ -39,7 +36,7 @@ public class InvoiceIdCoordinatorTest {
     }
 
     @Test
-    public void shouldReturnInvoicesIds() throws IOException {
+    public void testReturnIds() throws IOException {
         //given
         when(configuration.getInvoicesIdsFilePath()).thenReturn(invoicesIdsFilePath);
         InvoiceIdCoordinator idCoordinator = new InvoiceIdCoordinator(configuration);
@@ -47,12 +44,12 @@ public class InvoiceIdCoordinatorTest {
         //when
         idCoordinator.coordinateIds(2L);
         idCoordinator.coordinateIds(3L);
-        idCoordinator.coordinateIds(2L);
-        Collection<Long> actual = idCoordinator.getIds();
-        TreeSet<Long> expected = new TreeSet<>(asList(2L, 3L));
+        idCoordinator.removeId(3L);
+        idCoordinator.synchronizeData(asList(2L, 4L));
 
         //then
-        Assert.assertEquals(expected, actual);
+        Assert.assertTrue(idCoordinator.isDataSynchronized(asList(2L, 4L)));
+        Assert.assertFalse(idCoordinator.isDataSynchronized(asList(2L, 3L)));
     }
 
     private static File invoicesIdsFile() {

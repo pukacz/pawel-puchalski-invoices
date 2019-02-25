@@ -1,4 +1,4 @@
-package pl.coderstrust.invoices.services;
+package pl.coderstrust.invoices.service;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -10,12 +10,12 @@ public interface InvoiceService {
     Collection<Invoice> getAllInvoices()
         throws DatabaseOperationException;
 
-    Collection<Invoice> getAllofRange(LocalDate fromDate, LocalDate toDate)
+    Collection<Invoice> getAllOfRange(LocalDate fromDate, LocalDate toDate)
         throws DatabaseOperationException;
 
     Invoice getInvoiceById(Long id) throws DatabaseOperationException;
 
-    void saveInvoice(Invoice invoice) throws DatabaseOperationException;
+    Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException;
 
     void deleteInvoice(Long id) throws DatabaseOperationException;
 }

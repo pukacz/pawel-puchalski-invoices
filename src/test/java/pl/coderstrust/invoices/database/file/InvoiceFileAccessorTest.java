@@ -48,7 +48,7 @@ public class InvoiceFileAccessorTest {
     }
 
     @After
-    public void deleteTestFile() throws IOException {
+    public void deleteTestFile()  {
         invoicesFile().delete();
         invoicesIdsFile().delete();
     }

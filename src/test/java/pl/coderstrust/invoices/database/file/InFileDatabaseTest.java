@@ -19,12 +19,14 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.MockitoRule;
+import pl.coderstrust.invoices.database.DatabaseOperationException;
 import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
@@ -32,6 +34,9 @@ import pl.coderstrust.invoices.model.VAT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InFileDatabaseTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -56,17 +61,16 @@ public class InFileDatabaseTest {
     }
 
     @Test
-    public void shouldSave1AndReturn1invoice() throws IOException {
+    public void shouldSave1AndReturn1invoice() throws IOException, DatabaseOperationException {
         //given
         Invoice invoice = getInvoices().get(2);
         String invoiceInJson = new Converter().getJsonFromInvoice(invoice);
         String line = invoice.getId() + ": " + invoiceInJson;
-        when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L, 3L, 4L)));
 
         //when
+        when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L, 3L, 4L)));
+        when(fileAccessor.invalidateLine(3L)).thenReturn(true);
         inFileDatabase.saveInvoice(getInvoices().get(2));
-        Invoice expected = getInvoices().get(1);
-        Invoice actual = inFileDatabase.getInvoice(2L);
 
         //then
         verify(idCoordinator, times(1)).getIds();
@@ -76,7 +80,7 @@ public class InFileDatabaseTest {
     }
 
     @Test
-    public void shouldReturnAllInvoicesFromFile() throws IOException {
+    public void shouldReturnAllInvoicesFromFile() throws IOException, DatabaseOperationException {
         //given
         when(fileAccessor.readLines()).thenReturn(getLinesFromFile(allInvoices()));
 
@@ -89,7 +93,8 @@ public class InFileDatabaseTest {
     }
 
     @Test
-    public void shouldReturnInvoicesFrom_01_December_2016_to_31_January_2018() throws IOException {
+    public void shouldReturnInvoicesFrom_01_December_2016_to_31_January_2018()
+        throws IOException, DatabaseOperationException {
         //given
         LocalDate start = LocalDate.of(2016, 12, 1);
         LocalDate end = LocalDate.of(2018, 1, 31);
@@ -104,6 +109,132 @@ public class InFileDatabaseTest {
         //then
         Assert.assertEquals(expected, actual);
     }
+
+    @Test
+    public void testForSynchronizeDbFiles() throws DatabaseOperationException, IOException {
+        //given
+        when(idCoordinator.isDataSynchronized(inFileDatabase.getIdsFromDataFile()))
+            .thenReturn(false);
+
+        //when
+        inFileDatabase.synchronizeDbFiles();
+
+        //then
+        verify(idCoordinator, times(1)).isDataSynchronized(inFileDatabase.getIdsFromDataFile());
+        verify(idCoordinator, times(1)).synchronizeData(inFileDatabase.getIdsFromDataFile());
+    }
+
+    @Test
+    public void shouldGenerateNewIdForInvoice() throws IOException, DatabaseOperationException {
+        //given
+        Invoice invoice = new Invoice(null, "defaultID", null, null, null, null);
+        when(idCoordinator.getIds()).thenReturn(new ArrayList<>(asList(1L, 2L)));
+
+        //when
+        invoice = inFileDatabase.saveInvoice(invoice);
+        Long actual = invoice.getId();
+
+        //then
+        Assert.assertEquals(3L, actual.longValue());
+    }
+
+    @Test
+    public void shouldReturnIdsFromDataFile() throws IOException, DatabaseOperationException {
+        //given
+        when(fileAccessor.readLines()).thenReturn(getLinesFromFile(allInvoices()));
+
+        //when
+        ArrayList actual = inFileDatabase.getIdsFromDataFile();
+        ArrayList expected = new ArrayList(asList(1L, 2L, 3L, 4L, 5L));
+
+        //then
+        Assert.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionWhenSavingNull() throws DatabaseOperationException {
+        //given
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Invoice must not be null.");
+
+        //then
+        inFileDatabase.saveInvoice(null);
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionWhenDeletingInvoiceWithNullId() throws DatabaseOperationException {
+        //given
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Invoice Id must not be null.");
+
+        //then
+        inFileDatabase.deleteInvoice(null);
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionWhenGettingInvoiceWithNullId() throws DatabaseOperationException {
+        //given
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Invoice Id must not be null.");
+
+        //then
+        inFileDatabase.getInvoice(null);
+    }
+
+    @Test
+    public void shouldThrowDatabaseOperationExceptionWhenIdIsNotRecognizedInCoordinationFile()
+        throws IOException, DatabaseOperationException {
+        //given
+        when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L)));
+        expectedException.expect(DatabaseOperationException.class);
+        expectedException.expectMessage("Invoice id=[5] doesn't exist.");
+
+        //then
+        inFileDatabase.getInvoice(5L);
+    }
+
+    @Test
+    public void shouldThrowDatabaseOperationExceptionWhenInvoiceIsNotExisting()
+        throws IOException, DatabaseOperationException {
+        //given
+        when(idCoordinator.getIds()).thenReturn(new TreeSet<>(asList(1L, 2L, 15L)));
+        when(fileAccessor.readLines()).thenReturn(getLinesFromFile(allInvoices()));
+        expectedException.expect(DatabaseOperationException.class);
+        expectedException.expectMessage("You are trying to read/update invoice which is "
+            + "not recognized in coordination file. Please synchronize database files first.");
+
+        //then
+        inFileDatabase.getInvoice(15L);
+    }
+
+    @Test
+    public void shouldThrowDatabaseOperationExceptionWhenSaving()
+        throws IOException, DatabaseOperationException {
+        //given
+        expectedException.expect(DatabaseOperationException.class);
+        expectedException.expectMessage("You are trying to read/update invoice which is not "
+            + "recognized in coordination file. Please synchronize database files first.");
+        Invoice invoice = new Invoice(3L, null, null, null, null, null);
+        when(idCoordinator.getIds()).thenReturn(new ArrayList<>(Collections.singletonList(2L)));
+
+        //when
+        inFileDatabase.saveInvoice(invoice);
+    }
+
+    @Test
+    public void shouldThrowDatabaseOperationExceptionWhenDatesAreWrong()
+        throws DatabaseOperationException {
+        //given
+        LocalDate start = LocalDate.of(2018, 1, 31);
+        LocalDate end = LocalDate.of(2016, 12, 1);
+        expectedException.expect(DatabaseOperationException.class);
+        expectedException
+            .expectMessage("Start date [" + start + "] is after end date [" + end + "].");
+
+        //when
+        inFileDatabase.getInvoicesByDate(start, end);
+    }
+
 
     private static File fileFor1Invoice() {
         return new File(testFolder() + "invoicesTestSave1.dat");

@@ -4,15 +4,23 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 class InvoiceFileAccessor {
 
     private File invoicesFile;
 
+    @Autowired
     InvoiceFileAccessor(Configuration configuration) throws IOException {
         this.invoicesFile = new File(configuration.getInvoicesFilePath());
+        File parent = invoicesFile.getParentFile();
 
         if (!invoicesFile.exists()) {
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
             invoicesFile.createNewFile();
         }
     }
@@ -32,13 +40,12 @@ class InvoiceFileAccessor {
 
     void saveLine(String line) throws IOException {
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
-            long cursor = file.length();
-            file.seek(cursor);
+            file.seek(file.length());
             file.writeBytes(line + "\n");
         }
     }
 
-    void invalidateLine(Long invoiceId) throws IOException {
+    boolean invalidateLine(Long invoiceId) throws IOException {
         try (RandomAccessFile file = new RandomAccessFile(invoicesFile, "rw")) {
             file.seek(0);
             file.seek(0);
@@ -53,7 +60,9 @@ class InvoiceFileAccessor {
                     file.writeBytes(" ");
                 }
                 file.writeBytes("\n");
+                return true;
             }
+            return false;
         }
     }
 

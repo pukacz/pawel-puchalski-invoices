@@ -8,16 +8,24 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.TreeSet;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 class InvoiceIdCoordinator {
 
     private File invoicesIdsFile;
     private Collection<Long> invoicesIds;
 
+    @Autowired
     InvoiceIdCoordinator(Configuration configuration) throws IOException {
         this.invoicesIdsFile = new File(configuration.getInvoicesIdsFilePath());
+        File parent = invoicesIdsFile.getParentFile();
 
         if (!invoicesIdsFile.exists()) {
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
             invoicesIdsFile.createNewFile();
             writeEmptySet();
         }
@@ -39,17 +47,41 @@ class InvoiceIdCoordinator {
     }
 
     void coordinateIds(Long invoiceId) throws IOException {
+        invoicesIds.add(invoiceId);
+        String line = new Converter().sendIdsToJson(invoicesIds);
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
-            invoicesIds.add(invoiceId);
-            String line = new Converter().sendIdsToJson(invoicesIds);
             writer.write(line);
         }
     }
 
     private void writeEmptySet() throws IOException {
+        String emptyList = new Converter().sendIdsToJson(new TreeSet<>());
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
-            String emptyList = new Converter().sendIdsToJson(new TreeSet<>());
             writer.write(emptyList);
+        }
+    }
+
+    void removeId(Long invoiceId) throws IOException {
+        invoicesIds.remove(invoiceId);
+        String line = new Converter().sendIdsToJson(invoicesIds);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
+            writer.write(line);
+        }
+    }
+
+    boolean isDataSynchronized(Collection<Long> ids) {
+        return invoicesIds.containsAll(ids) && ids.containsAll(invoicesIds);
+    }
+
+    void synchronizeData(Collection<Long> ids) throws IOException {
+        invoicesIds = ids;
+        String updatedList = new Converter().sendIdsToJson(new TreeSet<>(invoicesIds));
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
+            writer.write(updatedList);
         }
     }
 }
