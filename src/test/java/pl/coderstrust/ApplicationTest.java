@@ -1,9 +1,13 @@
 package pl.coderstrust;
 
-import static com.google.common.primitives.Longs.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,22 +15,24 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.coderstrust.invoices.controller.InvoiceController;
-import pl.coderstrust.invoices.database.file.InvoiceFileAccessor;
-import pl.coderstrust.invoices.database.file.InvoiceIdCoordinator;
 import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
@@ -43,21 +49,64 @@ public class ApplicationTest {
     @Autowired
     private InvoiceController controller;
 
-    @MockBean
-    private InvoiceIdCoordinator idCoordinator;
-
-    @MockBean
-    private InvoiceFileAccessor fileAccessor;
+    @Test
+    public void contextLoads() throws Exception {
+    }
 
     @Test
     public void smokeTest() throws Exception {
         assertThat(controller).isNotNull();
     }
 
+    @BeforeClass
+    public static void clearFilesBeforeAllTests() throws IOException {
+        if (allInvoicesFile().exists()) {
+            try (RandomAccessFile randomAccessFile = new RandomAccessFile(allInvoicesFile(), "rw")) {
+                randomAccessFile.setLength(0);
+            }
+        }
+        if (allIdsFile().exists()) {
+            try (RandomAccessFile randomAccessFile = new RandomAccessFile(allIdsFile(), "rw")) {
+                randomAccessFile.setLength(0);
+            }
+        }
+    }
+
+    @After
+    public void clearAfterEachMethod() throws IOException {
+        if (allInvoicesFile().exists()) {
+            try (RandomAccessFile randomAccessFile = new RandomAccessFile(allInvoicesFile(), "rw")) {
+                randomAccessFile.setLength(0);
+            }
+        }
+        if (allIdsFile().exists()) {
+            try (RandomAccessFile randomAccessFile = new RandomAccessFile(allIdsFile(), "rw")) {
+                randomAccessFile.setLength(0);
+            }
+        }
+    }
+
     @Test
-    public void shouldReturnSavedInvoice() throws Exception {
-        Invoice invoice = new Invoice(getInvoices().get(0), null);
-        when(idCoordinator.getIds()).thenReturn(asList(1L, 2L, 3L));
+    public void shouldSaveAndCheckContentOfInvoice() throws Exception {
+        mockMvc
+            .perform(post("/invoices/add")
+                .content(invoiceToJson(getInvoices().get(0)))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
+
+        mockMvc
+            .perform(get("/invoices"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].id", is(1)))
+            .andExpect(jsonPath("$[0].issue", is("1")))
+            .andExpect(jsonPath("$[0].issueDate", is("2019-01-01")))
+            .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    public void shouldUpdateInvoice() throws Exception {
+        Invoice invoice = getInvoices().get(0);
 
         mockMvc
             .perform(post("/invoices/add")
@@ -65,11 +114,77 @@ public class ApplicationTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
-//        mockMvc
-//            .perform(get("/invoices"))
-//            .andDo(print())
-//            .andExpect(status().isOk())
-//            .andExpect(jsonPath("$", hasSize(1)));
+        Invoice invoice1 = new Invoice(getInvoices().get(1), 1L);
+
+        mockMvc
+            .perform(post("/invoices/add")
+                .content(invoiceToJson(invoice1))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
+
+        mockMvc
+            .perform(get("/invoices"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].id", is(1)))
+            .andExpect(jsonPath("$[0].issue", is("2")))
+            .andExpect(jsonPath("$[0].issueDate", is("2017-08-02")))
+            .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    public void shouldDeleteInvoice() throws Exception {
+        mockMvc
+            .perform(post("/invoices/add")
+                .content(invoiceToJson(getInvoices().get(0)))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
+
+        mockMvc
+            .perform(delete("/invoices/{id}", "1")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
+
+        mockMvc
+            .perform(get("/invoices"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    public void shouldReturnInvoice() throws Exception {
+        mockMvc
+            .perform(post("/invoices/add")
+                .content(invoiceToJson(getInvoices().get(1)))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
+
+        mockMvc
+            .perform(get("/invoices/{id}", "1")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldReturnInvoicesByDate() throws Exception {
+        for (int i = 0; i < 3; i++) {
+            mockMvc
+                .perform(post("/invoices/add")
+                    .content(invoiceToJson(getInvoices().get(i)))
+                    .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
+        }
+
+        LocalDate start = LocalDate.of(2016, 12, 1);
+        LocalDate end = LocalDate.of(2018, 1, 31);
+
+        mockMvc
+            .perform(get("/invoices/byDates/{fromDate}/{toDate}", start, end)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
     }
 
     private String invoiceToJson(Invoice invoice) throws JsonProcessingException {
@@ -84,11 +199,11 @@ public class ApplicationTest {
     private ArrayList<Invoice> getInvoices() {
         ArrayList<Invoice> invoices = new ArrayList<>();
 
-        invoices.add(new Invoice(1L, "1", LocalDate.of(2019, 1, 1),
+        invoices.add(new Invoice(null, "1", LocalDate.of(2019, 1, 1),
             company().get(0), company().get(1), Collections.singletonList(invoiceEntry().get(0))));
-        invoices.add(new Invoice(2L, "2", LocalDate.of(2017, 8, 2),
+        invoices.add(new Invoice(null, "2", LocalDate.of(2017, 8, 2),
             company().get(1), company().get(2), Collections.singletonList(invoiceEntry().get(1))));
-        invoices.add(new Invoice(3L, "3", LocalDate.of(2016, 3, 3),
+        invoices.add(new Invoice(2L, "3", LocalDate.of(2016, 3, 3),
             company().get(2), company().get(0), Collections.singletonList(invoiceEntry().get(2))));
 
         return invoices;
@@ -111,9 +226,24 @@ public class ApplicationTest {
             BigDecimal.valueOf(350), VAT.VAT_8));
         invoiceEntries.add(new InvoiceEntry(22L, "2", "Table", "2",
             BigDecimal.valueOf(1500), VAT.VAT_5));
-        invoiceEntries.add(new InvoiceEntry(33L, "3", "Cleaning of Audi Q5", "3",
+        invoiceEntries.add(new InvoiceEntry(33L, "3", "Audi Q5", "3",
             BigDecimal.valueOf(250), VAT.VAT_8));
 
         return invoiceEntries;
     }
+
+    private static File allInvoicesFile() {
+        return new File(testFolder() + "invoicesTest.dat");
+    }
+
+    private static File allIdsFile() {
+        return new File(testFolder() + "invoicesIdsTest.cor");
+    }
+
+    private static String testFolder() {
+        return "src" + separator + "test" + separator + "resources" + separator
+            + "file-database" + separator;
+    }
+
+    private static String separator = File.separator;
 }

@@ -2,15 +2,21 @@ package pl.coderstrust.invoices.controller;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import pl.coderstrust.invoices.database.DatabaseOperationException;
-import pl.coderstrust.invoices.model.Invoice;
-import pl.coderstrust.invoices.service.InvoiceService;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import pl.coderstrust.invoices.database.DatabaseOperationException;
+import pl.coderstrust.invoices.model.Invoice;
+import pl.coderstrust.invoices.service.InvoiceService;
 
 @RequestMapping("/invoices")
 @RestController
@@ -29,7 +35,7 @@ public class InvoiceController {
         return invoiceService.getAllInvoices();
     }
 
-    @GetMapping("/byDates")
+    @GetMapping("/bydates/{fromDate}/{toDate}")
     @ApiOperation(value = "Find invoices from the time range", notes = "Retrieving time range (from date - to date)", response = Invoice[].class)
     public Collection<Invoice> getAllOfRange(
         @ApiParam @RequestParam(value = "fromDate") String fromDate,
@@ -46,7 +52,8 @@ public class InvoiceController {
     }
 
     @PostMapping("/add")
-    @ApiOperation(value = "Add or update invoice", notes = "Retrieving JSON body of new invoice (ID = 0), or invoice to update")
+    @ApiOperation(value = "Add or update invoice",
+        notes = "Retrieving JSON body of new invoice (ID = 0), or invoice to update", response = Invoice.class)
     public void addInvoice(@RequestBody Invoice invoice) throws DatabaseOperationException {
         invoiceService.saveInvoice(invoice);
     }
