@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+public
 class InvoiceIdCoordinator {
 
     private File invoicesIdsFile;
@@ -32,7 +33,7 @@ class InvoiceIdCoordinator {
         invoicesIds = getIds();
     }
 
-    Collection<Long> getIds() throws IOException {
+    public Collection<Long> getIds() throws IOException {
         Collection<Long> invoicesIds;
         try (BufferedReader reader = new BufferedReader(new FileReader(invoicesIdsFile))) {
             String line;
