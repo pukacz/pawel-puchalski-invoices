@@ -35,7 +35,7 @@ public class InvoiceController {
         return invoiceService.getAllInvoices();
     }
 
-    @GetMapping("/bydates/{fromDate}/{toDate}")
+    @GetMapping("/byDates")
     @ApiOperation(value = "Find invoices from the time range", notes = "Retrieving time range (from date - to date)", response = Invoice[].class)
     public Collection<Invoice> getAllOfRange(
         @ApiParam @RequestParam(value = "fromDate") String fromDate,
