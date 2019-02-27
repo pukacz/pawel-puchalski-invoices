@@ -51,10 +51,7 @@ public class ApplicationTest {
 
     @Test
     public void contextLoads() throws Exception {
-    }
-
-    @Test
-    public void smokeTest() throws Exception {
+        assertThat(mockMvc).isNotNull();
         assertThat(controller).isNotNull();
     }
 
@@ -64,11 +61,16 @@ public class ApplicationTest {
             try (RandomAccessFile randomAccessFile = new RandomAccessFile(allInvoicesFile(), "rw")) {
                 randomAccessFile.setLength(0);
             }
+        } else {
+            allInvoicesFile().createNewFile();
         }
+
         if (allIdsFile().exists()) {
             try (RandomAccessFile randomAccessFile = new RandomAccessFile(allIdsFile(), "rw")) {
                 randomAccessFile.setLength(0);
             }
+        } else {
+            allIdsFile().createNewFile();
         }
     }
 
@@ -185,7 +187,7 @@ public class ApplicationTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$",hasSize(1)));
+            .andExpect(jsonPath("$", hasSize(1)));
     }
 
     private String invoiceToJson(Invoice invoice) throws JsonProcessingException {

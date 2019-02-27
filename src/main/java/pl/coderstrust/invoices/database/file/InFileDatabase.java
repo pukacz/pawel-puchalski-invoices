@@ -24,11 +24,13 @@ public class InFileDatabase implements Database {
     private static final String INVOICE_ID_NOT_NULL_MSG = "Invoice Id must not be null.";
     private InvoiceFileAccessor fileAccessor;
     private InvoiceIdCoordinator idCoordinator;
+    private IdGenerator idGenerator;
 
     @Autowired
-    InFileDatabase(InvoiceFileAccessor fileAccessor, InvoiceIdCoordinator idCoordinator) {
+    InFileDatabase(InvoiceFileAccessor fileAccessor, InvoiceIdCoordinator idCoordinator, IdGenerator idGenerator) {
         this.fileAccessor = fileAccessor;
         this.idCoordinator = idCoordinator;
+        this.idGenerator = idGenerator;
     }
 
     @Override
@@ -42,7 +44,7 @@ public class InFileDatabase implements Database {
             Collection<Long> ids = idCoordinator.getIds();
 
             if (invoiceId == null) {
-                invoiceId = new IdGenerator().generateId(ids);
+                invoiceId = idGenerator.generateId(ids);
                 invoice = new Invoice(invoice, invoiceId);
             } else {
                 if (ids.contains(invoiceId)) {
