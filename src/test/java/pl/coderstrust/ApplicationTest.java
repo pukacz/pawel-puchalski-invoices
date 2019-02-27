@@ -43,6 +43,15 @@ import pl.coderstrust.invoices.model.VAT;
 @AutoConfigureMockMvc
 public class ApplicationTest {
 
+    private static final String SEPARATOR = File.separator;
+    private static final String TEST_FOLDER = "src" + SEPARATOR + "test" + SEPARATOR + "resources" + SEPARATOR
+        + "file-database" + SEPARATOR;
+    private static final String INVOICES_FILE_NAME = "invoicesTest.dat";
+    private static final String INVOICES_IDS_FILE_NAME = "invoicesIdsTest.cor";
+
+    private static final File INVOICES_FILE = new File(TEST_FOLDER + INVOICES_FILE_NAME);
+    private static final File INVOICES_IDS_FILE = new File(TEST_FOLDER + INVOICES_IDS_FILE_NAME);
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -57,32 +66,32 @@ public class ApplicationTest {
 
     @BeforeClass
     public static void clearFilesBeforeAllTests() throws IOException {
-        if (allInvoicesFile().exists()) {
-            try (RandomAccessFile randomAccessFile = new RandomAccessFile(allInvoicesFile(), "rw")) {
+        if (INVOICES_FILE.exists()) {
+            try (RandomAccessFile randomAccessFile = new RandomAccessFile(INVOICES_FILE, "rw")) {
                 randomAccessFile.setLength(0);
             }
         } else {
-            allInvoicesFile().createNewFile();
+            INVOICES_FILE.createNewFile();
         }
 
-        if (allIdsFile().exists()) {
-            try (RandomAccessFile randomAccessFile = new RandomAccessFile(allIdsFile(), "rw")) {
+        if (INVOICES_IDS_FILE.exists()) {
+            try (RandomAccessFile randomAccessFile = new RandomAccessFile(INVOICES_IDS_FILE, "rw")) {
                 randomAccessFile.setLength(0);
             }
         } else {
-            allIdsFile().createNewFile();
+            INVOICES_IDS_FILE.createNewFile();
         }
     }
 
     @After
     public void clearAfterEachMethod() throws IOException {
-        if (allInvoicesFile().exists()) {
-            try (RandomAccessFile randomAccessFile = new RandomAccessFile(allInvoicesFile(), "rw")) {
+        if (INVOICES_FILE.exists()) {
+            try (RandomAccessFile randomAccessFile = new RandomAccessFile(INVOICES_FILE, "rw")) {
                 randomAccessFile.setLength(0);
             }
         }
-        if (allIdsFile().exists()) {
-            try (RandomAccessFile randomAccessFile = new RandomAccessFile(allIdsFile(), "rw")) {
+        if (INVOICES_IDS_FILE.exists()) {
+            try (RandomAccessFile randomAccessFile = new RandomAccessFile(INVOICES_IDS_FILE, "rw")) {
                 randomAccessFile.setLength(0);
             }
         }
@@ -234,19 +243,4 @@ public class ApplicationTest {
 
         return invoiceEntries;
     }
-
-    private static File allInvoicesFile() {
-        return new File(testFolder() + "invoicesTest.dat");
-    }
-
-    private static File allIdsFile() {
-        return new File(testFolder() + "invoicesIdsTest.cor");
-    }
-
-    private static String testFolder() {
-        return "src" + separator + "test" + separator + "resources" + separator
-            + "file-database" + separator;
-    }
-
-    private static String separator = File.separator;
 }
