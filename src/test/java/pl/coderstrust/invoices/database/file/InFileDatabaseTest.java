@@ -132,15 +132,15 @@ public class InFileDatabaseTest {
     @Test
     public void shouldGenerateNewIdForInvoice() throws IOException, DatabaseOperationException {
         //given
-        ArrayList<Long> list = new ArrayList<>(asList(1L, 2L));
         Invoice invoice = new Invoice(null, "defaultID", null, null, null, null);
-        when(idCoordinator.getIds()).thenReturn(list);
+        when(idCoordinator.getIds()).thenReturn(new ArrayList<>(asList(1L, 2L)));
 
         //when
-        inFileDatabase.saveInvoice(invoice);
+        invoice = inFileDatabase.saveInvoice(invoice);
+        Long actual = invoice.getId();
 
         //then
-        verify(idGenerator, times(1)).generateId(list);
+        Assert.assertEquals(3L, actual.longValue());
     }
 
     @Test
@@ -150,7 +150,7 @@ public class InFileDatabaseTest {
 
         //when
         ArrayList actual = inFileDatabase.getIdsFromDataFile();
-        ArrayList expected = new ArrayList<>(asList(1L, 2L, 3L, 4L, 5L));
+        ArrayList expected = new ArrayList(asList(1L, 2L, 3L, 4L, 5L));
 
         //then
         Assert.assertArrayEquals(expected.toArray(), actual.toArray());
