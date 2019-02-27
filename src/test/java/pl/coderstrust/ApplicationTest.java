@@ -177,14 +177,15 @@ public class ApplicationTest {
                 .andExpect(status().isOk());
         }
 
-        LocalDate start = LocalDate.of(2016, 12, 1);
-        LocalDate end = LocalDate.of(2018, 1, 31);
+        LocalDate start = LocalDate.of(2016, 2, 1);
+        LocalDate end = LocalDate.of(2016, 12, 30);
 
         mockMvc
-            .perform(get("/invoices/byDates/{fromDate}/{toDate}", start, end)
+            .perform(get("/invoices/byDates?fromDate={fromDate}&toDate={toDate}", start, end)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$",hasSize(1)));
     }
 
     private String invoiceToJson(Invoice invoice) throws JsonProcessingException {
