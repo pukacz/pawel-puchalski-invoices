@@ -9,12 +9,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeSet;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import pl.coderstrust.invoices.model.Invoice;
 
-class Converter {
+@Component
+public class Converter {
 
     private ObjectMapper jsonConverter;
 
+    @Autowired
     Converter() {
         jsonConverter = new ObjectMapper();
         jsonConverter.registerModule(new JavaTimeModule());
@@ -22,11 +26,11 @@ class Converter {
         jsonConverter.configure(DeserializationFeature.USE_LONG_FOR_INTS, true);
     }
 
-    private Invoice getInvoiceFromJson(String invoiceInJson) throws IOException {
+    public Invoice getInvoiceFromJson(String invoiceInJson) throws IOException {
         return jsonConverter.readValue(invoiceInJson, Invoice.class);
     }
 
-    String getJsonFromInvoice(Invoice invoice) throws JsonProcessingException {
+    public String getJsonFromInvoice(Invoice invoice) throws JsonProcessingException {
         return jsonConverter.writeValueAsString(invoice);
     }
 

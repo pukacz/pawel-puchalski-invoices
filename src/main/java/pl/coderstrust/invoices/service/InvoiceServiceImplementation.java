@@ -62,12 +62,11 @@ public class InvoiceServiceImplementation implements InvoiceService {
             throw new IllegalArgumentException(INVOICE_MUST_NOT_BE_NULL);
         }
         try {
-            database.saveInvoice(invoice);
+            return database.saveInvoice(invoice);
         } catch (Exception e) {
             // TODO errors should be logged here
             throw e;
         }
-        return invoice;
     }
 
     public void deleteInvoice(Long id) throws DatabaseOperationException {
