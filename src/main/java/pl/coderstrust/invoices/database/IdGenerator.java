@@ -1,4 +1,4 @@
-package pl.coderstrust.invoices.database.file;
+package pl.coderstrust.invoices.database;
 
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;

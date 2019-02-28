@@ -10,9 +10,10 @@ import java.util.Collection;
 import java.util.TreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.coderstrust.invoices.database.Converter;
 
 @Component
-public class InvoiceIdCoordinator {
+class InvoiceIdCoordinator {
 
     private File invoicesIdsFile;
     private Collection<Long> invoicesIds;
@@ -34,7 +35,7 @@ public class InvoiceIdCoordinator {
         invoicesIds = getIds();
     }
 
-    public Collection<Long> getIds() throws IOException {
+    Collection<Long> getIds() throws IOException {
         Collection<Long> invoicesIds;
         try (BufferedReader reader = new BufferedReader(new FileReader(invoicesIdsFile))) {
             String line;

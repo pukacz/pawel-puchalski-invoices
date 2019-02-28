@@ -30,7 +30,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.coderstrust.invoices.controller.InvoiceController;
-import pl.coderstrust.invoices.database.file.Converter;
+import pl.coderstrust.invoices.database.Converter;
 import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
