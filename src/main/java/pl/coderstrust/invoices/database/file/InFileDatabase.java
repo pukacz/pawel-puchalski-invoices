@@ -9,8 +9,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
+import pl.coderstrust.invoices.database.Converter;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
+import pl.coderstrust.invoices.database.IdGenerator;
 import pl.coderstrust.invoices.model.Invoice;
 
 @Repository

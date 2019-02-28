@@ -26,7 +26,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.MockitoRule;
+import pl.coderstrust.invoices.database.Converter;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
+import pl.coderstrust.invoices.database.IdGenerator;
 import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
@@ -130,7 +132,7 @@ public class InFileDatabaseTest {
     @Test
     public void shouldGenerateNewIdForInvoice() throws IOException, DatabaseOperationException {
         //given
-        ArrayList <Long> list = new ArrayList(asList(1L, 2L));
+        ArrayList<Long> list = new ArrayList<>(asList(1L, 2L));
         Invoice invoice = new Invoice(null, "defaultID", null, null, null, null);
         when(idCoordinator.getIds()).thenReturn(list);
 
@@ -138,7 +140,7 @@ public class InFileDatabaseTest {
         inFileDatabase.saveInvoice(invoice);
 
         //then
-        verify(idGenerator,times(1)).generateId(list);
+        verify(idGenerator, times(1)).generateId(list);
     }
 
     @Test
@@ -148,7 +150,7 @@ public class InFileDatabaseTest {
 
         //when
         ArrayList actual = inFileDatabase.getIdsFromDataFile();
-        ArrayList expected = new ArrayList(asList(1L, 2L, 3L, 4L, 5L));
+        ArrayList expected = new ArrayList<>(asList(1L, 2L, 3L, 4L, 5L));
 
         //then
         Assert.assertArrayEquals(expected.toArray(), actual.toArray());

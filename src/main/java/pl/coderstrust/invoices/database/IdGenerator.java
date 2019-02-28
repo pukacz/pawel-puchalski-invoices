@@ -1,17 +1,17 @@
-package pl.coderstrust.invoices.database.file;
+package pl.coderstrust.invoices.database;
 
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-class IdGenerator {
+public class IdGenerator {
 
     @Autowired
     public IdGenerator() {
     }
 
-    Long generateId(Collection<Long> ids) {
+    public Long generateId(Collection<Long> ids) {
         Long invoiceId = 1L;
         if (!ids.isEmpty()) {
             while (ids.contains(invoiceId)) {

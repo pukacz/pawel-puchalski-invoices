@@ -1,4 +1,4 @@
-package pl.coderstrust.invoices.database.file;
+package pl.coderstrust.invoices.database;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -19,7 +19,7 @@ public class Converter {
     private ObjectMapper jsonConverter;
 
     @Autowired
-    Converter() {
+    public Converter() {
         jsonConverter = new ObjectMapper();
         jsonConverter.registerModule(new JavaTimeModule());
         jsonConverter.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -34,7 +34,7 @@ public class Converter {
         return jsonConverter.writeValueAsString(invoice);
     }
 
-    ArrayList<Invoice> getInvoicesFromLines(ArrayList<String> lines) throws IOException {
+    public ArrayList<Invoice> getInvoicesFromLines(ArrayList<String> lines) throws IOException {
         ArrayList<Invoice> invoices = new ArrayList<>();
         for (String line : lines) {
             int colonPosition = line.indexOf(": ");
@@ -49,11 +49,11 @@ public class Converter {
         return invoices;
     }
 
-    Collection getInvoicesIds(String line) throws IOException {
+    public TreeSet getInvoicesIds(String line) throws IOException {
         return jsonConverter.readValue(line, TreeSet.class);
     }
 
-    String sendIdsToJson(Collection<Long> ids) throws JsonProcessingException {
+    public String sendIdsToJson(Collection<Long> ids) throws JsonProcessingException {
         return jsonConverter.writeValueAsString(ids);
     }
 }
