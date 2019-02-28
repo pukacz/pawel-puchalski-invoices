@@ -34,7 +34,7 @@ public class Converter {
         return jsonConverter.writeValueAsString(invoice);
     }
 
-    public ArrayList<Invoice> getInvoicesFromLines(ArrayList<String> lines) throws IOException {
+    ArrayList<Invoice> getInvoicesFromLines(ArrayList<String> lines) throws IOException {
         ArrayList<Invoice> invoices = new ArrayList<>();
         for (String line : lines) {
             int colonPosition = line.indexOf(": ");
