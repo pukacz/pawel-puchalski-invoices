@@ -41,12 +41,12 @@ import pl.coderstrust.invoices.model.VAT;
 @AutoConfigureMockMvc
 public class ApplicationTest {
 
+    private static final String INVOICES_FILE_NAME = "invoicesTest.dat";
+    private static final String INVOICES_IDS_FILE_NAME = "invoicesIdsTest.cor";
     private static final String SEPARATOR = File.separator;
     private static final String TEST_FOLDER = "src" + SEPARATOR + "test" + SEPARATOR + "resources" + SEPARATOR
         + "file-database" + SEPARATOR;
-    private static final String INVOICES_FILE_NAME = "invoicesTest.dat";
-    private static final String INVOICES_IDS_FILE_NAME = "invoicesIdsTest.cor";
-
+    
     private static final File INVOICES_FILE = new File(TEST_FOLDER + INVOICES_FILE_NAME);
     private static final File INVOICES_IDS_FILE = new File(TEST_FOLDER + INVOICES_IDS_FILE_NAME);
 
