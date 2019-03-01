@@ -75,7 +75,7 @@ public class ApplicationTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private InvoiceController controller;
+    private InvoiceController invoiceController;
 
     @Autowired
     private JsonConverter jsonConverter;
@@ -83,7 +83,7 @@ public class ApplicationTest {
     @Test
     public void contextLoads()  {
         assertThat(mockMvc).isNotNull();
-        assertThat(controller).isNotNull();
+        assertThat(invoiceController).isNotNull();
         assertThat(jsonConverter).isNotNull();
     }
 

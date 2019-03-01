@@ -1,6 +1,5 @@
 package pl.coderstrust.invoices.database.file;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.time.LocalDate;
