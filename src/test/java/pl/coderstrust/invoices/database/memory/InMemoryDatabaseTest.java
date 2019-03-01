@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
+import pl.coderstrust.invoices.database.IdGenerator;
 import pl.coderstrust.invoices.model.Invoice;
 
 public class InMemoryDatabaseTest {
@@ -15,10 +16,12 @@ public class InMemoryDatabaseTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
+    private IdGenerator idGenerator = new IdGenerator();
+
     @Test
     public void shouldSaveTwoInvoices() throws DatabaseOperationException {
         //given
-        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase();
+        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(idGenerator);
         Invoice invoice1 = new Invoice(null, null, null, null, null, null);
         Invoice invoice2 = new Invoice(13L, null, null, null, null, null);
         //when
@@ -33,7 +36,7 @@ public class InMemoryDatabaseTest {
         //given
         expectedException.expect(DatabaseOperationException.class);
         expectedException.expectMessage("Invoice must not be null");
-        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase();
+        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(idGenerator);
         //then
         inMemoryDatabase.saveInvoice(null);
     }
@@ -41,7 +44,7 @@ public class InMemoryDatabaseTest {
     @Test
     public void shouldDeleteInvoice() throws DatabaseOperationException {
         //given
-        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase();
+        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(idGenerator);
         Invoice invoice1 = new Invoice(null, null, null, null, null, null);
         Invoice invoice2 = new Invoice(13L, null, null, null, null, null);
         //when
@@ -57,7 +60,7 @@ public class InMemoryDatabaseTest {
         //given
         expectedException.expect(DatabaseOperationException.class);
         expectedException.expectMessage("Failed to remove invoice. Invoice for id=[13] doesn't exist.");
-        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase();
+        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(idGenerator);
         //when
         inMemoryDatabase.deleteInvoice(13L);
     }
@@ -65,7 +68,7 @@ public class InMemoryDatabaseTest {
     @Test
     public void shouldReturnInvoice() throws DatabaseOperationException {
         //given
-        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase();
+        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(idGenerator);
         Invoice invoice1 = new Invoice(3L, null, null, null, null, null);
         Invoice invoice2 = new Invoice(13L, null, null, null, null, null);
         //when
@@ -83,7 +86,7 @@ public class InMemoryDatabaseTest {
         LocalDate end = LocalDate.of(2018, 1, 31);
         LocalDate invoice1Date = LocalDate.of(2017, 3, 1);
         LocalDate invoice2Date = LocalDate.of(2019, 1, 31);
-        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase();
+        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(idGenerator);
         Invoice invoice1 = new Invoice(3L, null, invoice1Date, null, null, null);
         Invoice invoice2 = new Invoice(13L, null, invoice2Date, null, null, null);
         //when

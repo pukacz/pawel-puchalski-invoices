@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.MockitoRule;
-import pl.coderstrust.invoices.database.Converter;
+import pl.coderstrust.invoices.database.JsonConverter;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
 import pl.coderstrust.invoices.database.IdGenerator;
 import pl.coderstrust.invoices.model.Company;
@@ -69,7 +69,7 @@ public class InFileDatabaseTest {
     public void shouldSave1AndReturn1invoice() throws IOException, DatabaseOperationException {
         //given
         Invoice invoice = getInvoices().get(2);
-        String invoiceInJson = new Converter().getJsonFromInvoice(invoice);
+        String invoiceInJson = new JsonConverter().getJsonFromInvoice(invoice);
         String line = invoice.getId() + ": " + invoiceInJson;
 
         //when

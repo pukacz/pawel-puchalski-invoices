@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
 import pl.coderstrust.invoices.model.Invoice;
 
 @Component
-public class Converter {
+public class JsonConverter {
 
     private ObjectMapper jsonConverter;
 
     @Autowired
-    public Converter() {
+    public JsonConverter() {
         jsonConverter = new ObjectMapper();
         jsonConverter.registerModule(new JavaTimeModule());
         jsonConverter.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
