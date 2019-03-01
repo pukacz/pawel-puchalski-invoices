@@ -35,7 +35,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.coderstrust.invoices.controller.InvoiceController;
-import pl.coderstrust.invoices.database.Converter;
+import pl.coderstrust.invoices.database.JsonConverter;
 import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
@@ -83,13 +83,13 @@ public class ApplicationTest {
     private InvoiceController controller;
 
     @Autowired
-    private Converter converter;
+    private JsonConverter jsonConverter;
 
     @Test
     public void contextLoads()  {
         assertThat(mockMvc).isNotNull();
         assertThat(controller).isNotNull();
-        assertThat(converter).isNotNull();
+        assertThat(jsonConverter).isNotNull();
     }
 
     @BeforeClass
@@ -129,7 +129,7 @@ public class ApplicationTest {
     public void shouldSaveAndCheckContentOfInvoice() throws Exception {
         mockMvc
             .perform(post("/invoices/add")
-                .content(converter.getJsonFromInvoice(invoices.get(0)))
+                .content(jsonConverter.getJsonFromInvoice(invoices.get(0)))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
@@ -147,18 +147,18 @@ public class ApplicationTest {
     public void shouldUpdateInvoice() throws Exception {
         MvcResult result = mockMvc
             .perform(post("/invoices/add")
-                .content(converter.getJsonFromInvoice(invoices.get(0)))
+                .content(jsonConverter.getJsonFromInvoice(invoices.get(0)))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk())
             .andReturn();
 
         String returnedContent = result.getResponse().getContentAsString();
-        Long id = converter.getInvoiceFromJson(returnedContent).getId();
+        Long id = jsonConverter.getInvoiceFromJson(returnedContent).getId();
         Invoice invoiceForUpdate = new Invoice(invoices.get(2), id);
 
         mockMvc
             .perform(post("/invoices/add")
-                .content(converter.getJsonFromInvoice(invoiceForUpdate))
+                .content(jsonConverter.getJsonFromInvoice(invoiceForUpdate))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
@@ -176,7 +176,7 @@ public class ApplicationTest {
     public void shouldDeleteInvoice() throws Exception {
         mockMvc
             .perform(post("/invoices/add")
-                .content(converter.getJsonFromInvoice(invoices.get(0)))
+                .content(jsonConverter.getJsonFromInvoice(invoices.get(0)))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
@@ -196,7 +196,7 @@ public class ApplicationTest {
     public void shouldReturnInvoice() throws Exception {
         mockMvc
             .perform(post("/invoices/add")
-                .content(converter.getJsonFromInvoice(invoices.get(1)))
+                .content(jsonConverter.getJsonFromInvoice(invoices.get(1)))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
@@ -212,7 +212,7 @@ public class ApplicationTest {
         for (int i = 0; i < 3; i++) {
             mockMvc
                 .perform(post("/invoices/add")
-                    .content(converter.getJsonFromInvoice(invoices.get(i)))
+                    .content(jsonConverter.getJsonFromInvoice(invoices.get(i)))
                     .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
         }

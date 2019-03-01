@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.MockitoRule;
-import pl.coderstrust.invoices.database.Converter;
+import pl.coderstrust.invoices.database.JsonConverter;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InvoiceIdCoordinatorTest {
@@ -26,7 +26,7 @@ public class InvoiceIdCoordinatorTest {
     @Mock
     private Configuration configuration;
 
-    private Converter converter;
+    private JsonConverter jsonConverter;
 
     @BeforeClass
     public static void createTempFile() throws IOException {

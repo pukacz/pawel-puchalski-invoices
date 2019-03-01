@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
-import pl.coderstrust.invoices.database.Converter;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
 import pl.coderstrust.invoices.database.IdGenerator;
+import pl.coderstrust.invoices.database.JsonConverter;
 import pl.coderstrust.invoices.model.Invoice;
 
 @Repository
@@ -109,7 +109,7 @@ public class InFileDatabase implements Database {
 
         try {
             ArrayList<String> lines = fileAccessor.readLines();
-            invoices = new Converter().getInvoicesFromLines(lines);
+            invoices = new JsonConverter().getInvoicesFromLines(lines);
         } catch (IOException e) {
             throw new DatabaseOperationException("Unable to read invoices.", e);
         }
@@ -131,7 +131,7 @@ public class InFileDatabase implements Database {
     }
 
     private String getLineFromInvoice(Invoice invoice) throws JsonProcessingException {
-        return invoice.getId() + ": " + new Converter().getJsonFromInvoice(invoice);
+        return invoice.getId() + ": " + new JsonConverter().getJsonFromInvoice(invoice);
     }
 
     void synchronizeDbFiles() throws DatabaseOperationException {
