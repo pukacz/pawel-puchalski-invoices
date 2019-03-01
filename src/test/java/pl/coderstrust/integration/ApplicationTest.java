@@ -89,19 +89,25 @@ public class ApplicationTest {
 
     @BeforeClass
     public static void clearFilesBeforeAllTests() throws IOException {
-        if (!INVOICES_FILE.exists()) {
-            if (!INVOICES_FILE.getParentFile().exists()) {
-                INVOICES_FILE.getParentFile().mkdirs();
-            }
+        if (INVOICES_FILE.getParentFile().mkdirs()) {
             INVOICES_FILE.createNewFile();
-        }
-
-        if (INVOICES_IDS_FILE.exists()) {
-            try (RandomAccessFile randomAccessFile = new RandomAccessFile(INVOICES_IDS_FILE, "rw")) {
-                randomAccessFile.setLength(0);
-            }
-        } else {
             INVOICES_IDS_FILE.createNewFile();
+        } else {
+            if (INVOICES_IDS_FILE.exists()) {
+                try (RandomAccessFile randomAccessFile = new RandomAccessFile(INVOICES_IDS_FILE, "rw")) {
+                    randomAccessFile.setLength(0);
+                }
+            } else {
+                INVOICES_IDS_FILE.createNewFile();
+            }
+
+            if (INVOICES_IDS_FILE.exists()) {
+                try (RandomAccessFile randomAccessFile = new RandomAccessFile(INVOICES_IDS_FILE, "rw")) {
+                    randomAccessFile.setLength(0);
+                }
+            } else {
+                INVOICES_IDS_FILE.createNewFile();
+            }
         }
     }
 
