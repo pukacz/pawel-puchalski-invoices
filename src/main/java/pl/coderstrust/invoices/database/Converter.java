@@ -49,7 +49,7 @@ public class Converter {
         return invoices;
     }
 
-    public TreeSet getInvoicesIds(String line) throws IOException {
+    public Collection getInvoicesIds(String line) throws IOException {
         return jsonConverter.readValue(line, TreeSet.class);
     }
 

@@ -1,4 +1,4 @@
-package pl.coderstrust;
+package pl.coderstrust.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -89,11 +89,10 @@ public class ApplicationTest {
 
     @BeforeClass
     public static void clearFilesBeforeAllTests() throws IOException {
-        if (INVOICES_FILE.exists()) {
-            try (RandomAccessFile randomAccessFile = new RandomAccessFile(INVOICES_FILE, "rw")) {
-                randomAccessFile.setLength(0);
+        if (!INVOICES_FILE.exists()) {
+            if (!INVOICES_FILE.getParentFile().exists()) {
+                INVOICES_FILE.getParentFile().mkdirs();
             }
-        } else {
             INVOICES_FILE.createNewFile();
         }
 
