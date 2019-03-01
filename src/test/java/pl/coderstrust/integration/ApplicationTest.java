@@ -10,11 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -94,20 +89,25 @@ public class ApplicationTest {
 
     @BeforeClass
     public static void clearFilesBeforeAllTests() throws IOException {
-        if (INVOICES_FILE.exists()) {
-            try (RandomAccessFile randomAccessFile = new RandomAccessFile(INVOICES_FILE, "rw")) {
-                randomAccessFile.setLength(0);
-            }
-        } else {
+        if (INVOICES_FILE.getParentFile().mkdirs()) {
             INVOICES_FILE.createNewFile();
-        }
-
-        if (INVOICES_IDS_FILE.exists()) {
-            try (RandomAccessFile randomAccessFile = new RandomAccessFile(INVOICES_IDS_FILE, "rw")) {
-                randomAccessFile.setLength(0);
-            }
-        } else {
             INVOICES_IDS_FILE.createNewFile();
+        } else {
+            if (INVOICES_IDS_FILE.exists()) {
+                try (RandomAccessFile randomAccessFile = new RandomAccessFile(INVOICES_IDS_FILE, "rw")) {
+                    randomAccessFile.setLength(0);
+                }
+            } else {
+                INVOICES_IDS_FILE.createNewFile();
+            }
+
+            if (INVOICES_IDS_FILE.exists()) {
+                try (RandomAccessFile randomAccessFile = new RandomAccessFile(INVOICES_IDS_FILE, "rw")) {
+                    randomAccessFile.setLength(0);
+                }
+            } else {
+                INVOICES_IDS_FILE.createNewFile();
+            }
         }
     }
 
