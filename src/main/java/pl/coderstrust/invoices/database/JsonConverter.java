@@ -1,4 +1,4 @@
-package pl.coderstrust.invoices.database.file;
+package pl.coderstrust.invoices.database;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -9,28 +9,32 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeSet;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import pl.coderstrust.invoices.model.Invoice;
 
-class Converter {
+@Component
+public class JsonConverter {
 
     private ObjectMapper jsonConverter;
 
-    Converter() {
+    @Autowired
+    public JsonConverter() {
         jsonConverter = new ObjectMapper();
         jsonConverter.registerModule(new JavaTimeModule());
         jsonConverter.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         jsonConverter.configure(DeserializationFeature.USE_LONG_FOR_INTS, true);
     }
 
-    private Invoice getInvoiceFromJson(String invoiceInJson) throws IOException {
+    public Invoice getInvoiceFromJson(String invoiceInJson) throws IOException {
         return jsonConverter.readValue(invoiceInJson, Invoice.class);
     }
 
-    String getJsonFromInvoice(Invoice invoice) throws JsonProcessingException {
+    public String getJsonFromInvoice(Invoice invoice) throws JsonProcessingException {
         return jsonConverter.writeValueAsString(invoice);
     }
 
-    ArrayList<Invoice> getInvoicesFromLines(ArrayList<String> lines) throws IOException {
+    public ArrayList<Invoice> getInvoicesFromLines(ArrayList<String> lines) throws IOException {
         ArrayList<Invoice> invoices = new ArrayList<>();
         for (String line : lines) {
             int colonPosition = line.indexOf(": ");
@@ -45,11 +49,11 @@ class Converter {
         return invoices;
     }
 
-    Collection getInvoicesIds(String line) throws IOException {
+    public Collection getInvoicesIds(String line) throws IOException {
         return jsonConverter.readValue(line, TreeSet.class);
     }
 
-    String sendIdsToJson(Collection<Long> ids) throws JsonProcessingException {
+    public String sendIdsToJson(Collection<Long> ids) throws JsonProcessingException {
         return jsonConverter.writeValueAsString(ids);
     }
 }

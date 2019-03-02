@@ -9,14 +9,14 @@ import pl.coderstrust.invoices.database.DatabaseOperationException;
 import pl.coderstrust.invoices.model.Invoice;
 
 @Service
-public class InvoiceServiceImplementation implements InvoiceService {
+public class InvoiceBook implements InvoiceService {
 
     private static final String INVOICE_ID_MUST_NOT_BE_NULL = "Invoice ID must not be null.";
     private static final String INVOICE_MUST_NOT_BE_NULL = "Invoice must not be null.";
     private Database database;
 
     @Autowired
-    public InvoiceServiceImplementation(Database database) {
+    public InvoiceBook(Database database) {
         this.database = database;
     }
 
@@ -62,12 +62,11 @@ public class InvoiceServiceImplementation implements InvoiceService {
             throw new IllegalArgumentException(INVOICE_MUST_NOT_BE_NULL);
         }
         try {
-            database.saveInvoice(invoice);
+            return database.saveInvoice(invoice);
         } catch (Exception e) {
             // TODO errors should be logged here
             throw e;
         }
-        return invoice;
     }
 
     public void deleteInvoice(Long id) throws DatabaseOperationException {

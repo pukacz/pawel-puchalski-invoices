@@ -11,6 +11,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
+import pl.coderstrust.invoices.database.IdGenerator;
+import pl.coderstrust.invoices.database.JsonConverter;
 import pl.coderstrust.invoices.model.Invoice;
 
 @Repository
@@ -24,11 +26,13 @@ public class InFileDatabase implements Database {
     private static final String INVOICE_ID_NOT_NULL_MSG = "Invoice Id must not be null.";
     private InvoiceFileAccessor fileAccessor;
     private InvoiceIdCoordinator idCoordinator;
+    private IdGenerator idGenerator;
 
     @Autowired
-    InFileDatabase(InvoiceFileAccessor fileAccessor, InvoiceIdCoordinator idCoordinator) {
+    InFileDatabase(InvoiceFileAccessor fileAccessor, InvoiceIdCoordinator idCoordinator, IdGenerator idGenerator) {
         this.fileAccessor = fileAccessor;
         this.idCoordinator = idCoordinator;
+        this.idGenerator = idGenerator;
     }
 
     @Override
@@ -42,7 +46,7 @@ public class InFileDatabase implements Database {
             Collection<Long> ids = idCoordinator.getIds();
 
             if (invoiceId == null) {
-                invoiceId = new IdGenerator().generateId(ids);
+                invoiceId = idGenerator.generateId(ids);
                 invoice = new Invoice(invoice, invoiceId);
             } else {
                 if (ids.contains(invoiceId)) {
@@ -105,7 +109,7 @@ public class InFileDatabase implements Database {
 
         try {
             ArrayList<String> lines = fileAccessor.readLines();
-            invoices = new Converter().getInvoicesFromLines(lines);
+            invoices = new JsonConverter().getInvoicesFromLines(lines);
         } catch (IOException e) {
             throw new DatabaseOperationException("Unable to read invoices.", e);
         }
@@ -127,7 +131,7 @@ public class InFileDatabase implements Database {
     }
 
     private String getLineFromInvoice(Invoice invoice) throws JsonProcessingException {
-        return invoice.getId() + ": " + new Converter().getJsonFromInvoice(invoice);
+        return invoice.getId() + ": " + new JsonConverter().getJsonFromInvoice(invoice);
     }
 
     void synchronizeDbFiles() throws DatabaseOperationException {

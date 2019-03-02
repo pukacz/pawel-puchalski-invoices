@@ -52,9 +52,10 @@ public class InvoiceController {
     }
 
     @PostMapping("/add")
-    @ApiOperation(value = "Add or update invoice", notes = "Retrieving JSON body of new invoice (ID = 0), or invoice to update")
-    public void addInvoice(@RequestBody Invoice invoice) throws DatabaseOperationException {
-        invoiceService.saveInvoice(invoice);
+    @ApiOperation(value = "Add or update invoice",
+        notes = "Retrieving JSON body of new invoice (ID = 0), or invoice to update", response = Invoice.class)
+    public Invoice addInvoice(@RequestBody Invoice invoice) throws DatabaseOperationException {
+        return invoiceService.saveInvoice(invoice);
     }
 
     @DeleteMapping("/{id}")
