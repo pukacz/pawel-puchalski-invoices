@@ -19,7 +19,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.coderstrust.invoices.model.Invoice;
-import pl.coderstrust.invoices.service.InvoiceServiceImplementation;
+import pl.coderstrust.invoices.service.InvoiceBook;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -31,7 +31,7 @@ public class InvoiceControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private InvoiceServiceImplementation service;
+    private InvoiceBook service;
 
     @Test
     public void shouldGetEmptyListOfInvoices() throws Exception {

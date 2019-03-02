@@ -19,13 +19,13 @@ import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
 
 @RunWith(MockitoJUnitRunner.class)
-public class InvoiceServiceImplementationTest {
+public class InvoiceBookTest {
 
     @Mock
     private Database database;
 
     @InjectMocks
-    private InvoiceServiceImplementation invoiceService;
+    private InvoiceBook invoiceService;
 
     @Test
     public void testGetInvoices() throws DatabaseOperationException {
