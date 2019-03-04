@@ -4,32 +4,68 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import javax.validation.constraints.NotNull;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @ApiModel(value = "Invoice", description = "invoice model")
+@Entity
+@Table(name = "invoices")
 public final class Invoice {
 
     @ApiModelProperty(value = "Unique ID of invoice", readOnly = true)
     @NotNull(message = "NotNull.Invoice.description")
-    private final Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
 
     @ApiModelProperty(value = "Place of invoice issue", readOnly = true)
-    private final String issue;
+    @Column(name = "issue")
+    private String issue;
 
     @ApiModelProperty(value = "Date of invoice issue", readOnly = true)
-    private final LocalDate issueDate;
+    @Column(name = "issue_date")
+    private LocalDate issueDate;
 
     @ApiModelProperty(value = "Model Company of seller", readOnly = true)
-    private final Company seller;
+    @ManyToOne(fetch= FetchType.LAZY, cascade = {CascadeType.ALL})
+    @JoinColumn(name = "seller_id")
+    private Company seller;
 
     @ApiModelProperty(value = "Model Company of buyer", readOnly = true)
-    private final Company buyer;
+    @ManyToOne(fetch= FetchType.LAZY, cascade = {CascadeType.ALL})
+    @JoinColumn(name = "buyer_id")
+    private Company buyer;
 
     @ApiModelProperty(value = "Model InvoiceEntry - selling items", readOnly = true)
-    private final List<InvoiceEntry> entries;
+    @OneToMany(fetch= FetchType.LAZY, cascade = {CascadeType.ALL})
+    @JoinTable(name="entries",
+            joinColumns=@JoinColumn(name="entries_id"),
+            inverseJoinColumns=@JoinColumn(name="invoice_id"))
+    private List<InvoiceEntry> entries;
+
+    public Invoice() {
+        this.id = null;
+        this.issue = null;
+        this.issueDate = null;
+        this.seller = null;
+        this.buyer = null;
+        this.entries = null;
+    }
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public Invoice(@JsonProperty("id") Long id, @JsonProperty("issue") String issue,

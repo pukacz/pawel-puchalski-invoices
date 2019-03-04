@@ -6,19 +6,38 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @ApiModel(value = "Company", description = "company model")
+@Entity
+@Table(name = "company")
 public final class Company {
 
     @ApiModelProperty(value = "Unique ID of company", readOnly = true)
     @NotNull(message = "NotNull.Company.description")
-    private final Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
 
     @ApiModelProperty(value = "Name of company", readOnly = true)
-    private final String name;
+    @Column(name = "name")
+    private String name;
 
     @ApiModelProperty(value = "Tax identification number", readOnly = true)
-    private final String taxIdentificationNumber;
+    @Column(name = "tax_identification_number")
+    private String taxIdentificationNumber;
+
+    public Company() {
+        this.id = null;
+        this.name = null;
+        this.taxIdentificationNumber = null;
+    }
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public Company(@JsonProperty("id") Long id, @JsonProperty("name") String name,
