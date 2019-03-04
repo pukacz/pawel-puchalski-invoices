@@ -1,13 +1,6 @@
 package pl.coderstrust.invoices.database.hibernate;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.IntNode;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +11,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.coderstrust.Application;
+import pl.coderstrust.invoices.database.JsonConverter;
 import pl.coderstrust.invoices.model.Invoice;
-
-import java.io.IOException;
-import java.time.LocalDate;
 
 import static org.hamcrest.core.Is.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,9 +28,13 @@ public class HibernateDatabaseTest {
 
     @Autowired
     private MockMvc mockMvc;
+    private JsonConverter jsonConverter = new JsonConverter();
 
     @Test
     public void saveInvoiceTest() throws Exception {
+        //given
+        String jsonContent = "{\"id\":3,\"issue\":\"Poznan\",\"issueDate\":\"2019-03-03\",\"seller\":{\"id\":2,\"name\":\"Zenek z poczty\",\"taxIdentificationNumber\":\"\"},\"buyer\":{\"id\":1,\"name\":\"Polbicycle\",\"taxIdentificationNumber\":\"\"},\"entries\":[{\"id\":4,\"unit\":\"sztuki\",\"productName\":\"rower\",\"amount\":\"1\",\"price\":1845,\"vat\":\"VAT_23\"}]}";
+
         //when
         String addedInvoiceJson = mockMvc.perform(post("/invoices/add")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -72,13 +67,10 @@ public class HibernateDatabaseTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(Invoice.class, new DeserializationInvoice());
-        mapper.registerModule(module);
-        Invoice addedInvoice = mapper.readValue(addedInvoiceJson, Invoice.class);
+        Invoice addedInvoice = jsonConverter.getInvoiceFromJson(addedInvoiceJson);
 
         //than
+        Assert.assertEquals(jsonContent, addedInvoiceJson);
         mockMvc.perform(get("/invoices/" + addedInvoice.getId().toString()))
                 .andDo(print())
                 .andExpect(jsonPath("$.issueDate", is("2019-03-03")));
@@ -123,11 +115,7 @@ public class HibernateDatabaseTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(Invoice.class, new DeserializationInvoice());
-        mapper.registerModule(module);
-        Invoice addedInvoice = mapper.readValue(addedInvoiceJson, Invoice.class);
+        Invoice addedInvoice = jsonConverter.getInvoiceFromJson(addedInvoiceJson);
         //than
         mockMvc.perform(get("/invoices/" + addedInvoice.getId().toString()))
                 .andExpect(jsonPath("$.issue", is("Szczecin")));
@@ -183,7 +171,7 @@ public class HibernateDatabaseTest {
     }
 
     private Invoice addInvoiceAndGetID() throws Exception {
-        String addInvoiceToDBJson = mockMvc.perform(post("/invoices/add")
+        String addedInvoiceToDBJson = mockMvc.perform(post("/invoices/add")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content("{\n"
                         + "    \"id\": 0,\n"
@@ -214,38 +202,7 @@ public class HibernateDatabaseTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(Invoice.class, new DeserializationInvoice());
-        mapper.registerModule(module);
-        return mapper.readValue(addInvoiceToDBJson, Invoice.class);
+        return jsonConverter.getInvoiceFromJson(addedInvoiceToDBJson);
     }
 
-}
-
-class DeserializationInvoice extends StdDeserializer<Invoice> {
-
-    public DeserializationInvoice() {
-        this(null);
-    }
-
-    public DeserializationInvoice(Class<?> invoice) {
-        super(invoice);
-    }
-
-    @Override
-    public Invoice deserialize(JsonParser jp, DeserializationContext invoice) throws IOException, JsonProcessingException {
-        JsonNode node = jp.getCodec().readTree(jp);
-        Long id = (Long) ((IntNode) node.get("id")).longValue();
-        String issue = node.get("issue").asText();
-        String issueDateString = node.get("issueDate").asText();
-        LocalDate issueDate = LocalDate.parse(issueDateString);
-
-        return new Invoice(id,
-                issue,
-                issueDate,
-                null,
-                null,
-                null);
-    }
 }
