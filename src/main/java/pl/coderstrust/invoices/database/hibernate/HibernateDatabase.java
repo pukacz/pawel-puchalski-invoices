@@ -1,6 +1,7 @@
 package pl.coderstrust.invoices.database.hibernate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "hibernate")
 public class HibernateDatabase implements Database {
 
     @Autowired
