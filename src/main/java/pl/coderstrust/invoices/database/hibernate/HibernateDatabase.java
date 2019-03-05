@@ -32,7 +32,6 @@ public class HibernateDatabase implements Database {
             Optional<Invoice> optionalInvoice = repository.findById(invoice.getId());
             if (optionalInvoice.isPresent()) {
                 deleteInvoice(optionalInvoice.get().getId());
-                return repository.save(invoice);
             }
             return repository.save(invoice);
         } catch (PersistenceException e) {
