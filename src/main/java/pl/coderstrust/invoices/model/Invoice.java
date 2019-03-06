@@ -4,22 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import javax.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @ApiModel(value = "Invoice", description = "invoice model")
 @Entity
@@ -42,20 +32,20 @@ public final class Invoice {
     private LocalDate issueDate;
 
     @ApiModelProperty(value = "Model Company of seller", readOnly = true)
-    @ManyToOne(fetch= FetchType.LAZY, cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinColumn(name = "seller_id")
     private Company seller;
 
     @ApiModelProperty(value = "Model Company of buyer", readOnly = true)
-    @ManyToOne(fetch= FetchType.LAZY, cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinColumn(name = "buyer_id")
     private Company buyer;
 
     @ApiModelProperty(value = "Model InvoiceEntry - selling items", readOnly = true)
-    @OneToMany(fetch= FetchType.LAZY, cascade = {CascadeType.ALL})
-    @JoinTable(name="entries",
-            joinColumns=@JoinColumn(name="entries_id"),
-            inverseJoinColumns=@JoinColumn(name="invoice_id"))
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @JoinTable(name = "entries",
+            joinColumns = @JoinColumn(name = "entries_id"),
+            inverseJoinColumns = @JoinColumn(name = "invoice_id"))
     private List<InvoiceEntry> entries;
 
     public Invoice() {
