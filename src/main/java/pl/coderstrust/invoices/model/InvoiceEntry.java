@@ -6,29 +6,57 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @ApiModel(value = "InvoiceEntry", description = "invoice entry model")
+@Entity
+@Table(name = "invoiceentry")
 public final class InvoiceEntry {
 
     @ApiModelProperty(value = "Unique ID of invoice entry", readOnly = true)
     @NotNull(message = "NotNull.InvoiceEntry.description")
-    private final Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
 
     @ApiModelProperty(value = "Unit of product", readOnly = true)
-    private final String unit;
+    @Column(name = "unit")
+    private String unit;
 
     @ApiModelProperty(value = "Product name", readOnly = true)
-    private final String productName;
+    @Column(name = "product_name")
+    private String productName;
 
     @ApiModelProperty(value = "Amount of product", readOnly = true)
-    private final String amount;
+    @Column(name = "amount")
+    private String amount;
 
     @ApiModelProperty(value = "Price of product", readOnly = true)
-    private final BigDecimal price;
+    @Column(name = "price")
+    private BigDecimal price;
 
     @ApiModelProperty(value = "Model of VAT", readOnly = true)
-    private final VAT vat;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "vat")
+    private VAT vat;
+
+    public InvoiceEntry() {
+        this.id = null;
+        this.unit = null;
+        this.productName = null;
+        this.amount = null;
+        this.price = null;
+        this.vat = null;
+    }
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public InvoiceEntry(@JsonProperty("id") Long id, @JsonProperty("unit") String unit,
