@@ -31,10 +31,6 @@ public class HibernateDatabase implements Database {
             throw new DatabaseOperationException("Invoice can not be null.");
         }
         try {
-            Optional<Invoice> optionalInvoice = repository.findById(invoice.getId());
-            if (optionalInvoice.isPresent()) {
-                deleteInvoice(optionalInvoice.get().getId());
-            }
             return repository.save(invoice);
         } catch (PersistenceException e) {
             throw new DatabaseOperationException("Failed to add/update invoice", e);
