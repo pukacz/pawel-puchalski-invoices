@@ -21,6 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -45,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
@@ -112,19 +114,6 @@ public class ApplicationTest {
                 .build();
     }
 
-//    @Before
-//    public void configureMock() {
-//        MockHttpServletRequestBuilder requestBuilder = get("/");
-//        requestBuilder.secure(true);
-//        requestBuilder.header("origin", "http://localhost");
-//        mockMvc = MockMvcBuilders
-//                .webAppContextSetup(wac)
-//                .apply(SecurityMockMvcConfigurers.springSecurity())
-//                .addFilter(springSecurityFilterChain)
-//                .defaultRequest(requestBuilder)
-//                .build();
-//    }
-
     @BeforeClass
     public static void clearFilesBeforeAllTests() throws IOException {
         if (INVOICES_FILE.getParentFile().mkdirs()) {
@@ -163,24 +152,6 @@ public class ApplicationTest {
         }
     }
 
-    private String obtainAccessToken(String username, String password) throws Exception {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "password");
-        params.add("client_id", "fooClientIdPassword");
-        params.add("user", username);
-        params.add("password", password);
-        ResultActions result
-                = mockMvc.perform(post("/oauth/token")
-                .params(params)
-                .with(httpBasic("fooClientIdPassword", "secret"))
-                .accept("application/json;charset=UTF-8"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"));
-        String resultString = result.andReturn().getResponse().getContentAsString();
-        JacksonJsonParser jsonParser = new JacksonJsonParser();
-        return jsonParser.parseMap(resultString).get("access_token").toString();
-    }
-
     @Test
     public void contextLoads()  {
         assertThat(mockMvc).isNotNull();
@@ -196,27 +167,21 @@ public class ApplicationTest {
     }
 
     @Test
-    public void unauthorizedAccessTest() throws Exception {
-        mockMvc
-                .perform(get("/invoices"))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
     @WithMockUser
     public void shouldSaveAndCheckContentOfInvoice() throws Exception {
-//        String accessToken = obtainAccessToken("user", "password");
         mockMvc
             .perform(post("/invoices/add")
+                .with(csrf())
                 .with(user("user").password("password"))
-//                .header("Authorization","Bearer " + accessToken)
-//                .with(csrf().asHeader())
                 .content(jsonConverter.getJsonFromInvoice(invoices.get(0)))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk());
 
         mockMvc
-            .perform(get("/invoices"))
+            .perform(get("/invoices")
+                    .with(csrf())
+                    .with(user("user").password("password")))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id", is(1)))
@@ -229,6 +194,8 @@ public class ApplicationTest {
     public void shouldUpdateInvoice() throws Exception {
         MvcResult result = mockMvc
             .perform(post("/invoices/add")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .content(jsonConverter.getJsonFromInvoice(invoices.get(0)))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk())
@@ -240,12 +207,16 @@ public class ApplicationTest {
 
         mockMvc
             .perform(post("/invoices/add")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .content(jsonConverter.getJsonFromInvoice(invoiceForUpdate))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
         mockMvc
-            .perform(get("/invoices"))
+            .perform(get("/invoices")
+                    .with(csrf())
+                    .with(user("user").password("password")))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id", is(id.intValue())))
@@ -258,18 +229,24 @@ public class ApplicationTest {
     public void shouldDeleteInvoice() throws Exception {
         mockMvc
             .perform(post("/invoices/add")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .content(jsonConverter.getJsonFromInvoice(invoices.get(0)))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
         mockMvc
             .perform(delete("/invoices/{id}", "1")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
         mockMvc
-            .perform(get("/invoices"))
+            .perform(get("/invoices").with(csrf())
+                    .with(csrf())
+                    .with(user("user").password("password")))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(0)));
     }
@@ -278,12 +255,16 @@ public class ApplicationTest {
     public void shouldReturnInvoice() throws Exception {
         mockMvc
             .perform(post("/invoices/add")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .content(jsonConverter.getJsonFromInvoice(invoices.get(1)))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
         mockMvc
             .perform(get("/invoices/{id}", "1")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
@@ -294,6 +275,8 @@ public class ApplicationTest {
         for (int i = 0; i < 3; i++) {
             mockMvc
                 .perform(post("/invoices/add")
+                    .with(csrf())
+                    .with(user("user").password("password"))
                     .content(jsonConverter.getJsonFromInvoice(invoices.get(i)))
                     .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
@@ -304,6 +287,8 @@ public class ApplicationTest {
 
         mockMvc
             .perform(get("/invoices/byDates?fromDate={fromDate}&toDate={toDate}", start, end)
+                .with(csrf())
+                .with(user("user").password("password"))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk())
