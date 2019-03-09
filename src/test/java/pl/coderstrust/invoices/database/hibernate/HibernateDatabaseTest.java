@@ -1,5 +1,12 @@
 package pl.coderstrust.invoices.database.hibernate;
 
+import static org.hamcrest.core.Is.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,15 +21,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.coderstrust.Application;
-import pl.coderstrust.invoices.database.JsonConverter;
+import pl.coderstrust.invoices.database.InvoiceJsonSerializer;
 import pl.coderstrust.invoices.model.Invoice;
-
-import static org.hamcrest.core.Is.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestPropertySource(properties = "spring.config.name=hibernate")
 @ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "hibernate")
@@ -34,7 +34,7 @@ public class HibernateDatabaseTest {
 
     @Autowired
     private MockMvc mockMvc;
-    private JsonConverter jsonConverter = new JsonConverter();
+    private InvoiceJsonSerializer jsonConverter = new InvoiceJsonSerializer();
 
     @Test
     public void saveInvoiceTest() throws Exception {
@@ -125,7 +125,6 @@ public class HibernateDatabaseTest {
         //than
         mockMvc.perform(get("/invoices/" + addedInvoice.getId().toString()))
                 .andExpect(jsonPath("$.issue", is("Szczecin")));
-
     }
 
     @Test

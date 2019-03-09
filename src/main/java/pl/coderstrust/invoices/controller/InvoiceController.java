@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
 import pl.coderstrust.invoices.model.Invoice;
+import pl.coderstrust.invoices.model.StandardInvoice;
 import pl.coderstrust.invoices.service.InvoiceService;
 
 @RequestMapping("/invoices")
@@ -30,13 +31,13 @@ public class InvoiceController {
     }
 
     @GetMapping("")
-    @ApiOperation(value = "Show all invoices", notes = "Retrieving all invoices", response = Invoice[].class)
+    @ApiOperation(value = "Show all invoices", notes = "Retrieving all invoices", response = StandardInvoice[].class)
     public Collection<Invoice> getAllInvoices() throws DatabaseOperationException {
         return invoiceService.getAllInvoices();
     }
 
     @GetMapping("/byDates")
-    @ApiOperation(value = "Find invoices from the time range", notes = "Retrieving time range (from date - to date)", response = Invoice[].class)
+    @ApiOperation(value = "Find invoices from the time range", notes = "Retrieving time range (from date - to date)", response = StandardInvoice[].class)
     public Collection<Invoice> getAllOfRange(
         @ApiParam @RequestParam(value = "fromDate") String fromDate,
         @ApiParam @RequestParam(value = "toDate") String toDate) throws DatabaseOperationException {
@@ -46,21 +47,21 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Find invoice by its unique ID", notes = "Retrieving the invoice of ID (Long number)", response = Invoice.class)
-    public Invoice getInvoiceById(@PathVariable Long id) throws DatabaseOperationException {
+    @ApiOperation(value = "Find invoice by its unique ID", notes = "Retrieving the invoice of ID (Long number)", response = StandardInvoice.class)
+    public Invoice getInvoiceById(@PathVariable Object id) throws DatabaseOperationException {
         return invoiceService.getInvoiceById(id);
     }
 
     @PostMapping("/add")
     @ApiOperation(value = "Add or update invoice",
-        notes = "Retrieving JSON body of new invoice (ID = 0), or invoice to update", response = Invoice.class)
+        notes = "Retrieving JSON body of new invoice (ID = 0), or invoice to update", response = StandardInvoice.class)
     public Invoice addInvoice(@RequestBody Invoice invoice) throws DatabaseOperationException {
         return invoiceService.saveInvoice(invoice);
     }
 
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Find invoice by its unique ID and delete it", notes = "Retrieving the invoice of ID (Long number)")
-    public void deleteInvoice(@PathVariable Long id) throws DatabaseOperationException {
+    public void deleteInvoice(@PathVariable Object id) throws DatabaseOperationException {
         invoiceService.deleteInvoice(id);
     }
 }

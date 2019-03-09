@@ -1,5 +1,23 @@
 package pl.coderstrust.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,28 +32,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.coderstrust.invoices.controller.InvoiceController;
-import pl.coderstrust.invoices.database.JsonConverter;
+import pl.coderstrust.invoices.database.InvoiceJsonSerializer;
 import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
 import pl.coderstrust.invoices.model.VAT;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestPropertySource(properties = "spring.config.name=filedatabase")
 @ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "file")
@@ -81,7 +82,7 @@ public class ApplicationTest {
     private InvoiceController invoiceController;
 
     @Autowired
-    private JsonConverter jsonConverter;
+    private InvoiceJsonSerializer jsonConverter;
 
     @Test
     public void contextLoads()  {
@@ -156,7 +157,7 @@ public class ApplicationTest {
             .andReturn();
 
         String returnedContent = result.getResponse().getContentAsString();
-        Long id = jsonConverter.getInvoiceFromJson(returnedContent).getId();
+        Long id = (Long)jsonConverter.getInvoiceFromJson(returnedContent).getId();
         Invoice invoiceForUpdate = new Invoice(invoices.get(2), id);
 
         mockMvc

@@ -10,18 +10,18 @@ import java.util.Collection;
 import java.util.TreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pl.coderstrust.invoices.database.JsonConverter;
+import pl.coderstrust.invoices.database.InvoiceJsonSerializer;
 
 @Component
 class InvoiceIdCoordinator {
 
     private File invoicesIdsFile;
     private Collection<Long> invoicesIds;
-    private JsonConverter jsonConverter;
+    private InvoiceJsonSerializer invoiceJsonSerializer;
 
     @Autowired
     InvoiceIdCoordinator(Configuration configuration) throws IOException {
-        this.jsonConverter = new JsonConverter();
+        this.invoiceJsonSerializer = new InvoiceJsonSerializer();
         this.invoicesIdsFile = new File(configuration.getInvoicesIdsFilePath());
         File parent = invoicesIdsFile.getParentFile();
 
@@ -40,7 +40,7 @@ class InvoiceIdCoordinator {
         try (BufferedReader reader = new BufferedReader(new FileReader(invoicesIdsFile))) {
             String line;
             if ((line = reader.readLine()) != null) {
-                invoicesIds = jsonConverter.getInvoicesIds(line);
+                invoicesIds = invoiceJsonSerializer.getInvoicesIds(line);
             } else {
                 writeEmptySet();
                 return new TreeSet<>();
@@ -51,7 +51,7 @@ class InvoiceIdCoordinator {
 
     void coordinateIds(Long invoiceId) throws IOException {
         invoicesIds.add(invoiceId);
-        String line = jsonConverter.sendIdsToJson(invoicesIds);
+        String line = invoiceJsonSerializer.sendIdsToJson(invoicesIds);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
             writer.write(line);
@@ -59,7 +59,7 @@ class InvoiceIdCoordinator {
     }
 
     private void writeEmptySet() throws IOException {
-        String emptyList = jsonConverter.sendIdsToJson(new TreeSet<>());
+        String emptyList = invoiceJsonSerializer.sendIdsToJson(new TreeSet<>());
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
             writer.write(emptyList);
@@ -68,7 +68,7 @@ class InvoiceIdCoordinator {
 
     void removeId(Long invoiceId) throws IOException {
         invoicesIds.remove(invoiceId);
-        String line = jsonConverter.sendIdsToJson(invoicesIds);
+        String line = invoiceJsonSerializer.sendIdsToJson(invoicesIds);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
             writer.write(line);
@@ -81,7 +81,7 @@ class InvoiceIdCoordinator {
 
     void synchronizeData(Collection<Long> ids) throws IOException {
         invoicesIds = ids;
-        String updatedList = jsonConverter.sendIdsToJson(new TreeSet<>(invoicesIds));
+        String updatedList = invoiceJsonSerializer.sendIdsToJson(new TreeSet<>(invoicesIds));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicesIdsFile))) {
             writer.write(updatedList);

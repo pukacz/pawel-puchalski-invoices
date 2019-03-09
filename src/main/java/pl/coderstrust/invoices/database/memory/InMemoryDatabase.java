@@ -17,6 +17,9 @@ import pl.coderstrust.invoices.model.Invoice;
 @ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "memory")
 public class InMemoryDatabase implements Database {
 
+    private static final String INVOICE_NOT_EXISTING_MSG = "Invoice id=[%d] doesn't exist.";
+    private static final String INVOICE_ID_NOT_NULL_MSG = "Invoice Id must not be null.";
+    private static final String ARGUMENT_ID_MUST_BE_LONG_TYPE_MSG = "Argument id must be long type";
     private HashMap<Long, Invoice> inMemoryDatabase;
     private IdGenerator idGenerator;
 
@@ -29,9 +32,12 @@ public class InMemoryDatabase implements Database {
     @Override
     public Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException {
         if (invoice == null) {
-            throw new DatabaseOperationException("Invoice must not be null");
+            throw new IllegalArgumentException("Invoice must not be null.");
         }
-        Long invoiceId = invoice.getId();
+        if (!(invoice.getId() == null) && !(invoice.getId() instanceof Long)) {
+            throw new DatabaseOperationException(ARGUMENT_ID_MUST_BE_LONG_TYPE_MSG);
+        }
+        Long invoiceId = (Long) invoice.getId();
         if (invoiceId == null) {
             invoiceId = idGenerator.generateId(inMemoryDatabase.keySet());
             invoice = new Invoice(invoice, invoiceId);
@@ -43,20 +49,34 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public synchronized void deleteInvoice(Long invoiceId) throws DatabaseOperationException {
-        if (inMemoryDatabase.containsKey(invoiceId)) {
-            inMemoryDatabase.remove(invoiceId);
+    public synchronized void deleteInvoice(Object invoiceId) throws DatabaseOperationException {
+        if (invoiceId == null) {
+            throw new IllegalArgumentException(INVOICE_ID_NOT_NULL_MSG);
+        }
+        if (!(invoiceId instanceof Long)) {
+            throw new IllegalArgumentException(ARGUMENT_ID_MUST_BE_LONG_TYPE_MSG);
+        }
+        Long id = (Long) invoiceId;
+        if (inMemoryDatabase.containsKey(id)) {
+            inMemoryDatabase.remove(id);
         } else {
-            throw new DatabaseOperationException(String.format("Failed to remove invoice. Invoice for id=[%d] doesn't exist.", invoiceId));
+            throw new DatabaseOperationException(String.format(INVOICE_NOT_EXISTING_MSG, id));
         }
     }
 
     @Override
-    public Invoice getInvoice(Long invoiceId) throws DatabaseOperationException {
-        if (inMemoryDatabase.containsKey(invoiceId)) {
-            return inMemoryDatabase.get(invoiceId);
+    public Invoice getInvoice(Object invoiceId) throws DatabaseOperationException {
+        if (invoiceId == null) {
+            throw new IllegalArgumentException(INVOICE_ID_NOT_NULL_MSG);
+        }
+        if (!(invoiceId instanceof Long)) {
+            throw new IllegalArgumentException(ARGUMENT_ID_MUST_BE_LONG_TYPE_MSG);
+        }
+        Long id = (Long) invoiceId;
+        if (inMemoryDatabase.containsKey(id)) {
+            return inMemoryDatabase.get(id);
         } else {
-            throw new DatabaseOperationException(String.format("Failed to get invoice. Invoice for id=[%d] doesn't exist.", invoiceId));
+            throw new DatabaseOperationException(String.format(INVOICE_NOT_EXISTING_MSG, id));
         }
     }
 

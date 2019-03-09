@@ -1,8 +1,8 @@
 package pl.coderstrust.invoices.database.hibernate;
 
 import org.springframework.data.repository.CrudRepository;
-import pl.coderstrust.invoices.model.Invoice;
+import pl.coderstrust.invoices.model.StandardInvoice;
 
-public interface InvoiceRepository extends CrudRepository<Invoice, Long> {
+public interface InvoiceRepository extends CrudRepository<StandardInvoice, Long> {
 
 }

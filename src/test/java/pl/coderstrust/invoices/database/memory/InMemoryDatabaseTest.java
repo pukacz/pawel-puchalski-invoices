@@ -34,8 +34,7 @@ public class InMemoryDatabaseTest {
     @Test
     public void shouldThrowExceptionWhenSavingNull() throws DatabaseOperationException {
         //given
-        expectedException.expect(DatabaseOperationException.class);
-        expectedException.expectMessage("Invoice must not be null");
+        expectedException.expect(IllegalArgumentException.class);
         InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(idGenerator);
         //then
         inMemoryDatabase.saveInvoice(null);
@@ -48,7 +47,7 @@ public class InMemoryDatabaseTest {
         Invoice invoice1 = new Invoice(null, null, null, null, null, null);
         Invoice invoice2 = new Invoice(13L, null, null, null, null, null);
         //when
-        Long invoice1Id = inMemoryDatabase.saveInvoice(invoice1).getId();
+        Long invoice1Id = (Long)inMemoryDatabase.saveInvoice(invoice1).getId();
         inMemoryDatabase.saveInvoice(invoice2);
         inMemoryDatabase.deleteInvoice(invoice1Id);
         //then

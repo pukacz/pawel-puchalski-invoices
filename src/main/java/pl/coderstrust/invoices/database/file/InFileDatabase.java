@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
 import pl.coderstrust.invoices.database.IdGenerator;
-import pl.coderstrust.invoices.database.JsonConverter;
+import pl.coderstrust.invoices.database.InvoiceJsonSerializer;
 import pl.coderstrust.invoices.model.Invoice;
 
 @Repository
@@ -27,12 +27,14 @@ public class InFileDatabase implements Database {
     private InvoiceFileAccessor fileAccessor;
     private InvoiceIdCoordinator idCoordinator;
     private IdGenerator idGenerator;
+    private InvoiceJsonSerializer invoiceJsonSerializer;
 
     @Autowired
     InFileDatabase(InvoiceFileAccessor fileAccessor, InvoiceIdCoordinator idCoordinator, IdGenerator idGenerator) {
         this.fileAccessor = fileAccessor;
         this.idCoordinator = idCoordinator;
         this.idGenerator = idGenerator;
+        invoiceJsonSerializer = new InvoiceJsonSerializer();
     }
 
     @Override
@@ -40,63 +42,69 @@ public class InFileDatabase implements Database {
         if (invoice == null) {
             throw new IllegalArgumentException("Invoice must not be null.");
         }
-        Long invoiceId = invoice.getId();
+
+        Long invoiceId = getIdFromObject(invoice.getId());
+        Invoice invoiceGenerated;
 
         try {
             Collection<Long> ids = idCoordinator.getIds();
 
             if (invoiceId == null) {
                 invoiceId = idGenerator.generateId(ids);
-                invoice = new Invoice(invoice, invoiceId);
+                invoiceGenerated = new Invoice(invoice, invoiceId);
             } else {
                 if (ids.contains(invoiceId)) {
                     deleteInvoice(invoiceId);
+                    invoiceGenerated = invoice;
                 } else {
                     throw new DatabaseOperationException(DATABASE_CORRUPTED_MSG);
                 }
             }
-            fileAccessor.saveLine(getLineFromInvoice(invoice));
+            fileAccessor.saveLine(getLineFromInvoice(invoiceGenerated));
             idCoordinator.coordinateIds(invoiceId);
         } catch (IOException e) {
             throw new DatabaseOperationException("Unable to save invoice.", e);
         }
-        return invoice;
+        return new Invoice(invoiceGenerated);
     }
 
     @Override
-    public void deleteInvoice(Long invoiceId) throws DatabaseOperationException {
+    public void deleteInvoice(Object invoiceId) throws DatabaseOperationException {
         if (invoiceId == null) {
             throw new IllegalArgumentException(INVOICE_ID_NOT_NULL_MSG);
         }
 
+        Long id = getIdFromObject(invoiceId);
+
         try {
-            if (!fileAccessor.invalidateLine(invoiceId)) {
-                throw new DatabaseOperationException(
-                    "Invoice id=[" + invoiceId + "] doesn't exist.");
+            if (!fileAccessor.invalidateLine(id)) {
+                throw new DatabaseOperationException("Invoice id=[" + invoiceId + "] doesn't exist.");
             }
-            idCoordinator.removeId(invoiceId);
+            idCoordinator.removeId(id);
         } catch (IOException e) {
             throw new DatabaseOperationException("Unable to delete invoice.", e);
         }
     }
 
     @Override
-    public Invoice getInvoice(Long invoiceId) throws DatabaseOperationException {
+    public Invoice getInvoice(Object invoiceId) throws DatabaseOperationException {
         if (invoiceId == null) {
             throw new IllegalArgumentException(INVOICE_ID_NOT_NULL_MSG);
         }
 
+        Long id = getIdFromObject(invoiceId);
+
         try {
-            if (!idCoordinator.getIds().contains(invoiceId)) {
+            if (!idCoordinator.getIds().contains(id)) {
                 throw new DatabaseOperationException(
-                    String.format(INVOICE_NOT_EXISTING_MSG, invoiceId));
+                    String.format(INVOICE_NOT_EXISTING_MSG, id));
             }
         } catch (IOException e) {
             throw new DatabaseOperationException("Unable to read invoice.", e);
         }
 
         for (Invoice invoice : getInvoices()) {
-            if (invoice.getId().equals(invoiceId)) {
+            if (invoice.getId().equals(id)) {
                 return invoice;
             }
         }
@@ -109,7 +117,7 @@ public class InFileDatabase implements Database {
 
         try {
             ArrayList<String> lines = fileAccessor.readLines();
-            invoices = new JsonConverter().getInvoicesFromLines(lines);
+            invoices = invoiceJsonSerializer.getInvoicesFromLines(lines);
         } catch (IOException e) {
             throw new DatabaseOperationException("Unable to read invoices.", e);
         }
@@ -119,6 +127,13 @@ public class InFileDatabase implements Database {
     @Override
     public Collection<Invoice> getInvoicesByDate(LocalDate startDate, LocalDate endDate)
         throws DatabaseOperationException {
+        if (startDate == null) {
+            throw new IllegalArgumentException("Start date must not be null");
+        }
+        if (endDate == null) {
+            throw new IllegalArgumentException("End date must not be null");
+        }
+
         if (startDate.isAfter(endDate)) {
             throw new DatabaseOperationException(
                 "Start date [" + startDate + "] is after end date [" + endDate + "].");
@@ -131,7 +146,7 @@ public class InFileDatabase implements Database {
     }
 
     private String getLineFromInvoice(Invoice invoice) throws JsonProcessingException {
-        return invoice.getId() + ": " + new JsonConverter().getJsonFromInvoice(invoice);
+        return invoice.getId() + ": " + invoiceJsonSerializer.getJsonFromInvoice(invoice);
     }
 
     void synchronizeDbFiles() throws DatabaseOperationException {
@@ -147,8 +162,22 @@ public class InFileDatabase implements Database {
     ArrayList<Long> getIdsFromDataFile() throws DatabaseOperationException {
         ArrayList<Long> idsFromDataFile = new ArrayList<>();
         for (Invoice invoice : getInvoices()) {
-            idsFromDataFile.add(invoice.getId());
+            idsFromDataFile.add((Long) invoice.getId());
         }
         return idsFromDataFile;
+    }
+
+    private Long getIdFromObject(Object id) throws DatabaseOperationException {
+        if (!(id == null) && !(id instanceof String) && !(id instanceof Integer) && !(id instanceof Long)) {
+            throw new DatabaseOperationException("Argument id must be long type");
+        }
+
+        if (id instanceof Integer) {
+            return ((Integer) id).longValue();
+        } else if (id instanceof String) {
+            return Long.parseLong((String) id);
+        } else {
+            return (Long) id;
+        }
     }
 }

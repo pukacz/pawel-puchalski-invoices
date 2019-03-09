@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,14 +15,15 @@ import org.springframework.stereotype.Component;
 import pl.coderstrust.invoices.model.Invoice;
 
 @Component
-public class JsonConverter {
+public class InvoiceJsonSerializer {
 
     private ObjectMapper jsonConverter;
 
     @Autowired
-    public JsonConverter() {
+    public InvoiceJsonSerializer() {
         jsonConverter = new ObjectMapper();
         jsonConverter.registerModule(new JavaTimeModule());
+        jsonConverter.registerModule(new ParameterNamesModule());
         jsonConverter.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         jsonConverter.configure(DeserializationFeature.USE_LONG_FOR_INTS, true);
     }

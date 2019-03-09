@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
 import pl.coderstrust.invoices.model.Invoice;
+import pl.coderstrust.invoices.model.StandardInvoice;
 
 @Repository
 @ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "hibernate")
@@ -28,41 +29,46 @@ public class HibernateDatabase implements Database {
     @Override
     public Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException {
         if (invoice == null) {
-            throw new DatabaseOperationException("Invoice can not be null.");
+            throw new DatabaseOperationException("StandardInvoice can not be null.");
         }
+        StandardInvoice standardInvoice = new StandardInvoice(invoice);
         try {
-            return repository.save(invoice);
+            StandardInvoice result = repository.save(standardInvoice);
+            return new Invoice(result);
         } catch (PersistenceException e) {
             throw new DatabaseOperationException("Failed to add/update invoice", e);
         }
     }
 
     @Override
-    public void deleteInvoice(Long id) throws DatabaseOperationException {
-        if (id == null || id < 1) {
-            throw new IllegalArgumentException(String.format("ID = [%d] can not be NULL or negative.", id));
+    public void deleteInvoice(Object id) throws DatabaseOperationException {
+        Long invoiceId = getIdFromObject(id);
+        if (id == null || invoiceId < 1) {
+            throw new IllegalArgumentException(String.format("ID = [%d] can not be NULL or negative.", invoiceId));
         }
         try {
-            repository.deleteById(id);
+            repository.deleteById(invoiceId);
         } catch (PersistenceException e) {
-            throw new DatabaseOperationException(String.format("Failed to remove invoice with ID = [%d].", id), e);
+            throw new DatabaseOperationException(String.format("Failed to remove invoice with ID = [%d].", invoiceId), e);
         }
     }
 
     @Override
-    public Invoice getInvoice(Long id) throws DatabaseOperationException {
-        if (id == null || id < 1) {
-            throw new IllegalArgumentException(String.format("ID = [%d] can not be NULL or negative.", id));
+    public Invoice getInvoice(Object id) throws DatabaseOperationException {
+        Long invoiceId = getIdFromObject(id);
+        if (id == null || invoiceId < 1) {
+            throw new IllegalArgumentException(String.format("ID = [%d] can not be NULL or negative.", invoiceId));
         }
         try {
-            Optional<Invoice> optionalInvoice = repository.findById(id);
+            Optional<StandardInvoice> optionalInvoice = repository.findById(invoiceId);
             if (optionalInvoice.isPresent()) {
-                return optionalInvoice.get();
+                StandardInvoice standardInvoice = optionalInvoice.get();
+                return new Invoice(standardInvoice);
             } else {
-                throw new DatabaseOperationException(String.format("There is no invoice with this ID = [%d]", id));
+                throw new DatabaseOperationException(String.format("There is no invoice with this ID = [%d]", invoiceId));
             }
         } catch (PersistenceException e) {
-            throw new DatabaseOperationException(String.format("Failed to find invoice with ID = [%d].", id), e);
+            throw new DatabaseOperationException(String.format("Failed to find invoice with ID = [%d].", invoiceId), e);
         }
     }
 
@@ -77,7 +83,7 @@ public class HibernateDatabase implements Database {
 
     @Override
     public Collection<Invoice> getInvoicesByDate(LocalDate startDate, LocalDate endDate)
-            throws DatabaseOperationException {
+        throws DatabaseOperationException {
         if (startDate == null || endDate == null) {
             throw new DatabaseOperationException("Dates can not be null.");
         }
@@ -103,15 +109,30 @@ public class HibernateDatabase implements Database {
 
     private List<Invoice> getAllInvoices() throws DatabaseOperationException {
         try {
-            Iterable<Invoice> iterator = repository.findAll();
+            Iterable<StandardInvoice> iterator = repository.findAll();
             List<Invoice> invoiceList = new ArrayList<>();
-            for (Invoice invoice : iterator) {
-                invoiceList.add(invoice);
+            for (StandardInvoice invoice : iterator) {
+                invoiceList.add(new Invoice(invoice));
             }
             return invoiceList;
         } catch (PersistenceException e) {
             throw new DatabaseOperationException("Failed to find invoices in database.", e);
         }
+    }
+
+    private Long getIdFromObject(Object id) {
+        if (id == null) {
+            return null;
+        }
+        if (id instanceof String) {
+            return Long.parseLong((String) id);
+        }
+
+        if (!(id instanceof String) && !(id instanceof Integer) && !(id instanceof Long)) {
+            throw new IllegalArgumentException("Argument Id must be Long type.");
+        }
+
+        return (Long) id;
     }
 
 }

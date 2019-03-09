@@ -11,8 +11,8 @@ import pl.coderstrust.invoices.model.Invoice;
 @Service
 public class InvoiceBook implements InvoiceService {
 
-    private static final String INVOICE_ID_MUST_NOT_BE_NULL = "Invoice ID must not be null.";
-    private static final String INVOICE_MUST_NOT_BE_NULL = "Invoice must not be null.";
+    private static final String INVOICE_ID_MUST_NOT_BE_NULL = "StandardInvoice ID must not be null.";
+    private static final String INVOICE_MUST_NOT_BE_NULL = "StandardInvoice must not be null.";
     private Database database;
 
     @Autowired
@@ -45,7 +45,7 @@ public class InvoiceBook implements InvoiceService {
         }
     }
 
-    public Invoice getInvoiceById(Long id) throws DatabaseOperationException {
+    public Invoice getInvoiceById(Object id) throws DatabaseOperationException {
         if (id == null) {
             throw new IllegalArgumentException(INVOICE_ID_MUST_NOT_BE_NULL);
         }
@@ -69,7 +69,7 @@ public class InvoiceBook implements InvoiceService {
         }
     }
 
-    public void deleteInvoice(Long id) throws DatabaseOperationException {
+    public void deleteInvoice(Object id) throws DatabaseOperationException {
         if (id == null) {
             throw new IllegalArgumentException(INVOICE_ID_MUST_NOT_BE_NULL);
         }
