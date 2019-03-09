@@ -2,6 +2,8 @@ package pl.coderstrust.invoices.service;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.coderstrust.invoices.database.Database;
@@ -10,6 +12,8 @@ import pl.coderstrust.invoices.model.Invoice;
 
 @Service
 public class InvoiceBook implements InvoiceService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String INVOICE_ID_MUST_NOT_BE_NULL = "Invoice ID must not be null.";
     private static final String INVOICE_MUST_NOT_BE_NULL = "Invoice must not be null.";
@@ -24,7 +28,7 @@ public class InvoiceBook implements InvoiceService {
         try {
             return database.getInvoices();
         } catch (Exception e) {
-            // TODO errors should be logged here
+            logger.error("Selected invoices can't be displayed.");
             throw e;
         }
     }
@@ -40,7 +44,7 @@ public class InvoiceBook implements InvoiceService {
         try {
             return database.getInvoicesByDate(fromDate, toDate);
         } catch (Exception e) {
-            // TODO errors should be logged here
+            logger.error("No invoices for selected date range.");
             throw e;
         }
     }
@@ -52,7 +56,7 @@ public class InvoiceBook implements InvoiceService {
         try {
             return database.getInvoice(id);
         } catch (Exception e) {
-            // TODO errors should be logged here
+            logger.error(String.format("Invoice with id=[%d] can't be saved.", id), e);
             throw e;
         }
     }
@@ -64,7 +68,7 @@ public class InvoiceBook implements InvoiceService {
         try {
             return database.saveInvoice(invoice);
         } catch (Exception e) {
-            // TODO errors should be logged here
+            logger.error("Invoice with id=[%d] can't be saved.");
             throw e;
         }
     }
@@ -76,7 +80,7 @@ public class InvoiceBook implements InvoiceService {
         try {
             database.deleteInvoice(id);
         } catch (Exception e) {
-            // TODO errors should be logged here
+            logger.error(String.format("Invoice with id=[%d] don't exist.", id),e);
             throw e;
         }
     }
