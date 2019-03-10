@@ -38,9 +38,9 @@ public class InvoiceController {
         Collection<Invoice> result;
         try {
             result = invoiceService.getAllInvoices();
-            logger.info("All invoices[\" + invoiceId + \"] have been shown.");
+            logger.info("All invoices have been shown.");
         } catch (DatabaseOperationException e) {
-            logger.error("Selected invoices [\" + invoiceId + \"] can't be displayed.");
+            logger.error("Selected invoices can't be displayed.");
             throw e;
         }
         return result;
@@ -75,7 +75,7 @@ public class InvoiceController {
             Invoice result;
             try {
                 result = invoiceService.getInvoiceById(id);
-                logger.info("This is invoice with selected id [\" + invoiceId + \"].");
+                logger.info("This is invoice with selected id=[%].");
             } catch (DatabaseOperationException e) {
                 logger.error("Selected invoice with id=[%] can't be displayed.",e);
                 throw e;
@@ -92,7 +92,7 @@ public class InvoiceController {
             Invoice result;
             try {
                 result = invoiceService.saveInvoice(invoice);
-                logger.info("The invoice with selected id [\" + invoiceId + \"] has been added/updated successfully.");
+                logger.info("The invoice with selected id=[%] has been added/updated successfully.");
             } catch (DatabaseOperationException e) {
                 logger.error("An error occurred while adding/updating invoice with selected id=[%].");
                 throw e;
@@ -108,9 +108,9 @@ public class InvoiceController {
         {
             try {
                 invoiceService.deleteInvoice(id);
-                logger.info("Invoice with selected id [\" + invoiceId + \"]. has been deleted.");
+                logger.info("Invoice with selected id=[%] has been deleted.");
             } catch (DatabaseOperationException e) {
-                logger.error("An error occurred while adding/updating invoice with selected id [\" + invoiceId + \"]..");
+                logger.error("An error occurred while adding/updating invoice with selected id=[%].");
                 throw e;
             }
         }
