@@ -33,25 +33,20 @@ public final class StandardInvoice {
     @Column(name = "id")
     private Long id;
 
-    @ApiModelProperty(value = "Place of invoice issue", readOnly = true)
     @Column(name = "issue")
     private String issue;
 
-    @ApiModelProperty(value = "Date of invoice issue", readOnly = true)
     @Column(name = "issue_date")
     private LocalDate issueDate;
 
-    @ApiModelProperty(value = "Model Company of seller", readOnly = true)
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinColumn(name = "seller_id")
     private Company seller;
 
-    @ApiModelProperty(value = "Model Company of buyer", readOnly = true)
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinColumn(name = "buyer_id")
     private Company buyer;
 
-    @ApiModelProperty(value = "Model InvoiceEntry - selling items", readOnly = true)
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinTable(name = "entries",
         joinColumns = @JoinColumn(name = "entries_id"),
@@ -77,15 +72,6 @@ public final class StandardInvoice {
         this.seller = seller;
         this.buyer = buyer;
         this.entries = entries;
-    }
-
-    public StandardInvoice(StandardInvoice invoice, Long id) {
-        this.id = id;
-        this.issue = invoice.getIssue();
-        this.issueDate = invoice.getIssueDate();
-        this.seller = invoice.getSeller();
-        this.buyer = invoice.getBuyer();
-        this.entries = invoice.getEntries();
     }
 
     public StandardInvoice(Invoice invoice) {

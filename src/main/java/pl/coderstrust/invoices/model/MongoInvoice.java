@@ -1,15 +1,13 @@
-package pl.coderstrust.invoices.model.mongo;
+package pl.coderstrust.invoices.model;
 
 import io.swagger.annotations.ApiModel;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.data.annotation.Id;
-import pl.coderstrust.invoices.model.Company;
-import pl.coderstrust.invoices.model.Invoice;
-import pl.coderstrust.invoices.model.InvoiceEntry;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-//@Document
+@Document
 @ApiModel(value = "MongoInvoice", description = "mongo invoice model")
 public final class MongoInvoice {
 
@@ -30,27 +28,27 @@ public final class MongoInvoice {
         return id;
     }
 
-    public String getIssue() {
+    String getIssue() {
         return issue;
     }
 
-    public LocalDate getIssueDate() {
+    LocalDate getIssueDate() {
         return issueDate;
     }
 
-    public Company getSeller() {
+    Company getSeller() {
         return seller;
     }
 
-    public Company getBuyer() {
+    Company getBuyer() {
         return buyer;
     }
 
-    public List<InvoiceEntry> getEntries() {
+    List<InvoiceEntry> getEntries() {
         return entries;
     }
 
-    private MongoInvoice(String issue, LocalDate issueDate, Company seller, Company buyer,
+    public MongoInvoice(String issue, LocalDate issueDate, Company seller, Company buyer,
         List<InvoiceEntry> entries) {
         this.issue = issue;
         this.issueDate = issueDate;
@@ -60,11 +58,9 @@ public final class MongoInvoice {
     }
 
     public MongoInvoice(Invoice invoice) {
-        this(invoice.getIssue(), invoice.getIssueDate(), invoice.getSeller(), invoice.getBuyer(), invoice.getEntries());
-        this.id = getIdFromObject(invoice.getId());
-    }
-
-    public MongoInvoice() {
+        this(invoice.getIssue(), invoice.getIssueDate(), invoice.getSeller(), invoice.getBuyer(),
+            invoice.getEntries());
+        id = getIdFromObject(invoice.getId());
     }
 
     @Override

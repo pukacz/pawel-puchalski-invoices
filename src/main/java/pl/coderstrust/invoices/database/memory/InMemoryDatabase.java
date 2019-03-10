@@ -95,8 +95,7 @@ public class InMemoryDatabase implements Database {
         }
 
         if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException(
-                "Start date [" + startDate + "] is after end date [" + endDate + "].");
+            throw new IllegalArgumentException("Start date [" + startDate + "] is after end date [" + endDate + "].");
         }
         return new ArrayList<>(getInvoices()).stream()
             .filter(invoice -> invoice.getIssueDate().toEpochDay() >= startDate.toEpochDay())

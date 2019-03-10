@@ -43,43 +43,43 @@ public class HibernateDatabaseTest {
 
         //when
         String addedInvoiceJson = mockMvc.perform(post("/invoices/add")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content("{\n"
-                        + "    \"id\": 0,\n"
-                        + "    \"issue\": \"Poznan\",\n"
-                        + "    \"issueDate\": \"2019-03-03\",\n"
-                        + "    \"seller\": {\n"
-                        + "        \"id\": 0,\n"
-                        + "        \"name\": \"Zenek z poczty\",\n"
-                        + "        \"taxIdentificationNumber\": \"\"\n"
-                        + "    },\n"
-                        + "    \"buyer\": {\n"
-                        + "        \"id\": 0,\n"
-                        + "        \"name\": \"Polbicycle\",\n"
-                        + "        \"taxIdentificationNumber\": \"\"\n"
-                        + "    },\n"
-                        + "    \"entries\": [\n"
-                        + "        {\n"
-                        + "            \"id\": 0,\n"
-                        + "            \"unit\": \"sztuki\",\n"
-                        + "            \"productName\": \"rower\",\n"
-                        + "            \"amount\": 1,\n"
-                        + "            \"price\": 1845,\n"
-                        + "            \"vat\": 0\n"
-                        + "        }\n"
-                        + "    ]\n"
-                        + "}"))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content("{\n"
+                + "    \"id\": 0,\n"
+                + "    \"issue\": \"Poznan\",\n"
+                + "    \"issueDate\": \"2019-03-03\",\n"
+                + "    \"seller\": {\n"
+                + "        \"id\": 0,\n"
+                + "        \"name\": \"Zenek z poczty\",\n"
+                + "        \"taxIdentificationNumber\": \"\"\n"
+                + "    },\n"
+                + "    \"buyer\": {\n"
+                + "        \"id\": 0,\n"
+                + "        \"name\": \"Polbicycle\",\n"
+                + "        \"taxIdentificationNumber\": \"\"\n"
+                + "    },\n"
+                + "    \"entries\": [\n"
+                + "        {\n"
+                + "            \"id\": 0,\n"
+                + "            \"unit\": \"sztuki\",\n"
+                + "            \"productName\": \"rower\",\n"
+                + "            \"amount\": 1,\n"
+                + "            \"price\": 1845,\n"
+                + "            \"vat\": 0\n"
+                + "        }\n"
+                + "    ]\n"
+                + "}"))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
         Invoice addedInvoice = jsonConverter.getInvoiceFromJson(addedInvoiceJson);
 
         //than
         Assert.assertEquals(jsonContent, addedInvoiceJson);
         mockMvc.perform(get("/invoices/" + addedInvoice.getId().toString()))
-                .andDo(print())
-                .andExpect(jsonPath("$.issueDate", is("2019-03-03")));
+            .andDo(print())
+            .andExpect(jsonPath("$.issueDate", is("2019-03-03")));
 
     }
 
@@ -91,40 +91,40 @@ public class HibernateDatabaseTest {
 
         //when
         String addedInvoiceJson = mockMvc.perform(post("/invoices/add")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content("{\n"
-                        + "    \"id\": " + addedInvoiceId + ",\n"
-                        + "    \"issue\": \"Szczecin\",\n"
-                        + "    \"issueDate\": \"2019-02-27\",\n"
-                        + "    \"seller\": {\n"
-                        + "        \"id\": 0,\n"
-                        + "        \"name\": \"Zenek z poczty\",\n"
-                        + "        \"taxIdentificationNumber\": \"\"\n"
-                        + "    },\n"
-                        + "    \"buyer\": {\n"
-                        + "        \"id\": 0,\n"
-                        + "        \"name\": \"Polbicycle\",\n"
-                        + "        \"taxIdentificationNumber\": \"\"\n"
-                        + "    },\n"
-                        + "    \"entries\": [\n"
-                        + "        {\n"
-                        + "            \"id\": 0,\n"
-                        + "            \"unit\": \"sztuki\",\n"
-                        + "            \"productName\": \"rower\",\n"
-                        + "            \"amount\": 1,\n"
-                        + "            \"price\": 1845,\n"
-                        + "            \"vat\": 0\n"
-                        + "        }\n"
-                        + "    ]\n"
-                        + "}"))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content("{\n"
+                + "    \"id\": " + addedInvoiceId + ",\n"
+                + "    \"issue\": \"Szczecin\",\n"
+                + "    \"issueDate\": \"2019-02-27\",\n"
+                + "    \"seller\": {\n"
+                + "        \"id\": 0,\n"
+                + "        \"name\": \"Zenek z poczty\",\n"
+                + "        \"taxIdentificationNumber\": \"\"\n"
+                + "    },\n"
+                + "    \"buyer\": {\n"
+                + "        \"id\": 0,\n"
+                + "        \"name\": \"Polbicycle\",\n"
+                + "        \"taxIdentificationNumber\": \"\"\n"
+                + "    },\n"
+                + "    \"entries\": [\n"
+                + "        {\n"
+                + "            \"id\": 0,\n"
+                + "            \"unit\": \"sztuki\",\n"
+                + "            \"productName\": \"rower\",\n"
+                + "            \"amount\": 1,\n"
+                + "            \"price\": 1845,\n"
+                + "            \"vat\": 0\n"
+                + "        }\n"
+                + "    ]\n"
+                + "}"))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
         Invoice addedInvoice = jsonConverter.getInvoiceFromJson(addedInvoiceJson);
         //than
         mockMvc.perform(get("/invoices/" + addedInvoice.getId().toString()))
-                .andExpect(jsonPath("$.issue", is("Szczecin")));
+            .andExpect(jsonPath("$.issue", is("Szczecin")));
     }
 
     @Test
@@ -134,8 +134,8 @@ public class HibernateDatabaseTest {
 
         //than
         mockMvc.perform(get("/invoices"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].issueDate", is("2019-03-02")));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].issueDate", is("2019-03-02")));
     }
 
     @Test
@@ -146,9 +146,9 @@ public class HibernateDatabaseTest {
 
         //than
         mockMvc.perform(get("/invoices/" + addedInvoiceId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.issueDate", is("2019-03-02")))
-                .andExpect(jsonPath("$.issue", is("Konin")));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.issueDate", is("2019-03-02")))
+            .andExpect(jsonPath("$.issue", is("Konin")));
     }
 
     @Test
@@ -159,9 +159,9 @@ public class HibernateDatabaseTest {
 
         //than
         mockMvc.perform(get("/invoices/byDates?fromDate=" + addedInvoiceIssueDate + "&toDate=" + addedInvoiceIssueDate))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].issue", is("Konin")))
-                .andExpect(jsonPath("$[0].issueDate", is("2019-03-02")));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].issue", is("Konin")))
+            .andExpect(jsonPath("$[0].issueDate", is("2019-03-02")));
     }
 
     @Test
@@ -172,42 +172,53 @@ public class HibernateDatabaseTest {
 
         //than
         mockMvc.perform(MockMvcRequestBuilders.delete("/invoices/" + addedInvoiceId))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
     }
 
     private Invoice addInvoiceAndGetID() throws Exception {
         String addedInvoiceToDBJson = mockMvc.perform(post("/invoices/add")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content("{\n"
-                        + "    \"id\": 0,\n"
-                        + "    \"issue\": \"Konin\",\n"
-                        + "    \"issueDate\": \"2019-03-02\",\n"
-                        + "    \"seller\": {\n"
-                        + "        \"id\": 0,\n"
-                        + "        \"name\": \"Zenek z poczty\",\n"
-                        + "        \"taxIdentificationNumber\": \"\"\n"
-                        + "    },\n"
-                        + "    \"buyer\": {\n"
-                        + "        \"id\": 0,\n"
-                        + "        \"name\": \"Polbicycle\",\n"
-                        + "        \"taxIdentificationNumber\": \"\"\n"
-                        + "    },\n"
-                        + "    \"entries\": [\n"
-                        + "        {\n"
-                        + "            \"id\": 0,\n"
-                        + "            \"unit\": \"sztuki\",\n"
-                        + "            \"productName\": \"rower\",\n"
-                        + "            \"amount\": 1,\n"
-                        + "            \"price\": 1845,\n"
-                        + "            \"vat\": 0\n"
-                        + "        }\n"
-                        + "    ]\n"
-                        + "}"))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content("{\n"
+                + "    \"id\": 0,\n"
+                + "    \"issue\": \"Konin\",\n"
+                + "    \"issueDate\": \"2019-03-02\",\n"
+                + "    \"seller\": {\n"
+                + "        \"id\": 0,\n"
+                + "        \"name\": \"Zenek z poczty\",\n"
+                + "        \"taxIdentificationNumber\": \"\"\n"
+                + "    },\n"
+                + "    \"buyer\": {\n"
+                + "        \"id\": 0,\n"
+                + "        \"name\": \"Polbicycle\",\n"
+                + "        \"taxIdentificationNumber\": \"\"\n"
+                + "    },\n"
+                + "    \"entries\": [\n"
+                + "        {\n"
+                + "            \"id\": 0,\n"
+                + "            \"unit\": \"sztuki\",\n"
+                + "            \"productName\": \"rower\",\n"
+                + "            \"amount\": 1,\n"
+                + "            \"price\": 1845,\n"
+                + "            \"vat\": 0\n"
+                + "        }\n"
+                + "    ]\n"
+                + "}"))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
         return jsonConverter.getInvoiceFromJson(addedInvoiceToDBJson);
     }
 
+    @Test
+    public void shouldGetId() {
+        //given
+        HibernateDatabase database = new HibernateDatabase();
+
+        //when
+        Long actual = database.getIdFromObject(1234);
+
+        //then
+        Assert.assertEquals(Long.valueOf(1234), actual);
+    }
 }

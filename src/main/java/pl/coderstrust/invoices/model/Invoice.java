@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
-import pl.coderstrust.invoices.model.mongo.MongoInvoice;
 
 @ApiModel(value = "Invoice", description = "invoice model")
 public final class Invoice {

@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.persistence.PersistenceException;
-
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
@@ -20,20 +21,19 @@ import pl.coderstrust.invoices.model.StandardInvoice;
 public class HibernateDatabase implements Database {
 
     @Autowired
-    private InvoiceRepository repository;
+    private HibernateInvoiceRepository hibernateRepository;
 
-    public HibernateDatabase(InvoiceRepository repository) {
-        this.repository = repository;
+    public HibernateDatabase() {
     }
 
     @Override
     public Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException {
         if (invoice == null) {
-            throw new DatabaseOperationException("StandardInvoice can not be null.");
+            throw new DatabaseOperationException("Invoice can not be null.");
         }
         StandardInvoice standardInvoice = new StandardInvoice(invoice);
         try {
-            StandardInvoice result = repository.save(standardInvoice);
+            StandardInvoice result = hibernateRepository.save(standardInvoice);
             return new Invoice(result);
         } catch (PersistenceException e) {
             throw new DatabaseOperationException("Failed to add/update invoice", e);
@@ -47,7 +47,7 @@ public class HibernateDatabase implements Database {
             throw new IllegalArgumentException(String.format("ID = [%d] can not be NULL or negative.", invoiceId));
         }
         try {
-            repository.deleteById(invoiceId);
+            hibernateRepository.deleteById(invoiceId);
         } catch (PersistenceException e) {
             throw new DatabaseOperationException(String.format("Failed to remove invoice with ID = [%d].", invoiceId), e);
         }
@@ -60,7 +60,7 @@ public class HibernateDatabase implements Database {
             throw new IllegalArgumentException(String.format("ID = [%d] can not be NULL or negative.", invoiceId));
         }
         try {
-            Optional<StandardInvoice> optionalInvoice = repository.findById(invoiceId);
+            Optional<StandardInvoice> optionalInvoice = hibernateRepository.findById(invoiceId);
             if (optionalInvoice.isPresent()) {
                 StandardInvoice standardInvoice = optionalInvoice.get();
                 return new Invoice(standardInvoice);
@@ -84,32 +84,26 @@ public class HibernateDatabase implements Database {
     @Override
     public Collection<Invoice> getInvoicesByDate(LocalDate startDate, LocalDate endDate)
         throws DatabaseOperationException {
-        if (startDate == null || endDate == null) {
-            throw new DatabaseOperationException("Dates can not be null.");
+
+        if (startDate == null) {
+            throw new IllegalArgumentException("Start date must not be null");
         }
+        if (endDate == null) {
+            throw new IllegalArgumentException("End date must not be null");
+        }
+
         if (startDate.isAfter(endDate)) {
-            throw new DatabaseOperationException("start date can not be higer than end date");
+            throw new IllegalArgumentException("Start date [" + startDate + "] is after end date [" + endDate + "].");
         }
-        try {
-            List<Invoice> invoiceList = getAllInvoices();
-            List<Invoice> invoiceByDateList = new ArrayList<>();
-            for (Invoice invoice : invoiceList) {
-                if (invoice.getIssueDate().isAfter(startDate) || invoice.getIssueDate().isEqual(startDate)) {
-                    invoiceByDateList.add(invoice);
-                }
-                if (invoice.getIssueDate().isAfter(endDate)) {
-                    break;
-                }
-            }
-            return invoiceByDateList;
-        } catch (PersistenceException e) {
-            throw new DatabaseOperationException("Failed to find invoices in database.", e);
-        }
+        return new ArrayList<>(getInvoices()).stream()
+            .filter(invoice -> invoice.getIssueDate().toEpochDay() >= startDate.toEpochDay())
+            .filter(invoice -> invoice.getIssueDate().toEpochDay() <= endDate.toEpochDay())
+            .collect(Collectors.toList());
     }
 
     private List<Invoice> getAllInvoices() throws DatabaseOperationException {
         try {
-            Iterable<StandardInvoice> iterator = repository.findAll();
+            Iterable<StandardInvoice> iterator = hibernateRepository.findAll();
             List<Invoice> invoiceList = new ArrayList<>();
             for (StandardInvoice invoice : iterator) {
                 invoiceList.add(new Invoice(invoice));
@@ -120,19 +114,26 @@ public class HibernateDatabase implements Database {
         }
     }
 
-    private Long getIdFromObject(Object id) {
+    public Long getIdFromObject(Object id) {
         if (id == null) {
             return null;
         }
+
         if (id instanceof String) {
-            return Long.parseLong((String) id);
+            if (NumberUtils.isParsable((String) id)) {
+                return Long.parseLong((String) id);
+            } else {
+                throw new IllegalArgumentException("Argument Id must be Long type.");
+            }
         }
 
-        if (!(id instanceof String) && !(id instanceof Integer) && !(id instanceof Long)) {
+        if (!(id instanceof Integer) && !(id instanceof Long)) {
             throw new IllegalArgumentException("Argument Id must be Long type.");
         }
 
+        if (id instanceof Integer) {
+            return ((Integer) id).longValue();
+        }
         return (Long) id;
     }
-
 }

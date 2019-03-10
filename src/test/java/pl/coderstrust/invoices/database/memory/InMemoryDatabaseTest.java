@@ -35,6 +35,7 @@ public class InMemoryDatabaseTest {
     public void shouldThrowExceptionWhenSavingNull() throws DatabaseOperationException {
         //given
         expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Invoice must not be null.");
         InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(idGenerator);
         //then
         inMemoryDatabase.saveInvoice(null);
