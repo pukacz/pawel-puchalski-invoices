@@ -1,14 +1,32 @@
 package pl.coderstrust.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import pl.coderstrust.invoices.controller.InvoiceController;
+import pl.coderstrust.invoices.database.InvoiceJsonSerializer;
+import pl.coderstrust.invoices.model.Company;
+import pl.coderstrust.invoices.model.Invoice;
+import pl.coderstrust.invoices.model.InvoiceEntry;
+import pl.coderstrust.invoices.model.VAT;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,31 +36,28 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import pl.coderstrust.invoices.controller.InvoiceController;
-import pl.coderstrust.invoices.database.InvoiceJsonSerializer;
-import pl.coderstrust.invoices.model.Company;
-import pl.coderstrust.invoices.model.Invoice;
-import pl.coderstrust.invoices.model.InvoiceEntry;
-import pl.coderstrust.invoices.model.VAT;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource(properties = "spring.config.name=filedatabase")
 @ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "file")
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@ContextConfiguration
+@WebAppConfiguration
 public class ApplicationTest {
 
     private static final String SEPARATOR = File.separator;
@@ -77,18 +92,22 @@ public class ApplicationTest {
 
     @Autowired
     private MockMvc mockMvc;
-
+    @Autowired
+    private WebApplicationContext wac;
+    @SuppressWarnings("SpringJavaAutowiringInspection")
+    @Autowired
+    private FilterChainProxy springSecurityFilterChain;
     @Autowired
     private InvoiceController invoiceController;
-
     @Autowired
     private InvoiceJsonSerializer jsonConverter;
 
-    @Test
-    public void contextLoads()  {
-        assertThat(mockMvc).isNotNull();
-        assertThat(invoiceController).isNotNull();
-        assertThat(jsonConverter).isNotNull();
+    @Before
+    public void setup() {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(wac)
+                .addFilter(springSecurityFilterChain)
+                .build();
     }
 
     @BeforeClass
@@ -130,15 +149,35 @@ public class ApplicationTest {
     }
 
     @Test
+    public void contextLoads()  {
+        assertThat(mockMvc).isNotNull();
+        assertThat(invoiceController).isNotNull();
+        assertThat(jsonConverter).isNotNull();
+    }
+
+    @Test
+    public void loginTest() throws Exception {
+        mockMvc
+                .perform(formLogin().user("user").password("password"))
+                .andExpect(authenticated());
+    }
+
+    @Test
+    @WithMockUser
     public void shouldSaveAndCheckContentOfInvoice() throws Exception {
         mockMvc
             .perform(post("/invoices/add")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .content(jsonConverter.getJsonFromInvoice(invoices.get(0)))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk());
 
         mockMvc
-            .perform(get("/invoices"))
+            .perform(get("/invoices")
+                    .with(csrf())
+                    .with(user("user").password("password")))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id", is(1)))
@@ -151,6 +190,8 @@ public class ApplicationTest {
     public void shouldUpdateInvoice() throws Exception {
         MvcResult result = mockMvc
             .perform(post("/invoices/add")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .content(jsonConverter.getJsonFromInvoice(invoices.get(0)))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk())
@@ -162,12 +203,16 @@ public class ApplicationTest {
 
         mockMvc
             .perform(post("/invoices/add")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .content(jsonConverter.getJsonFromInvoice(invoiceForUpdate))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
         mockMvc
-            .perform(get("/invoices"))
+            .perform(get("/invoices")
+                    .with(csrf())
+                    .with(user("user").password("password")))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id", is(id.intValue())))
@@ -180,18 +225,24 @@ public class ApplicationTest {
     public void shouldDeleteInvoice() throws Exception {
         mockMvc
             .perform(post("/invoices/add")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .content(jsonConverter.getJsonFromInvoice(invoices.get(0)))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
         mockMvc
             .perform(delete("/invoices/{id}", "1")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
         mockMvc
-            .perform(get("/invoices"))
+            .perform(get("/invoices").with(csrf())
+                    .with(csrf())
+                    .with(user("user").password("password")))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(0)));
     }
@@ -200,12 +251,16 @@ public class ApplicationTest {
     public void shouldReturnInvoice() throws Exception {
         mockMvc
             .perform(post("/invoices/add")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .content(jsonConverter.getJsonFromInvoice(invoices.get(1)))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
         mockMvc
             .perform(get("/invoices/{id}", "1")
+                .with(csrf())
+                .with(user("user").password("password"))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
@@ -216,6 +271,8 @@ public class ApplicationTest {
         for (int i = 0; i < 3; i++) {
             mockMvc
                 .perform(post("/invoices/add")
+                    .with(csrf())
+                    .with(user("user").password("password"))
                     .content(jsonConverter.getJsonFromInvoice(invoices.get(i)))
                     .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
@@ -226,6 +283,8 @@ public class ApplicationTest {
 
         mockMvc
             .perform(get("/invoices/byDates?fromDate={fromDate}&toDate={toDate}", start, end)
+                .with(csrf())
+                .with(user("user").password("password"))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk())

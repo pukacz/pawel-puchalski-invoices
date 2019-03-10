@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Spring Security Example </title>
+</head>
+<body>
+<div th:if="${param.error}" style="font-family:arial" align="center">
+    <br><b>Invalid username and password.</b>
+</div>
+<div th:if="${param.logout}" style="font-family:arial" align="center">
+    <br><b>You have been logged out.</b>
+</div>
+<form th:action="@{/logout}" method="post">
+    <table valign="top" align="center" style="font-family:arial">
+        <tr>
+            <td align="right">
+                <br>
+                <h1 th:inline="text">[[${#httpServletRequest.remoteUser}]]</h1>
+            </td>
+        </tr>
+        <tr>
+            <td align="right">
+                <form th:action="@{/logout}" method="post">
+                    <input type="submit" value="Sign Out"/>
+                </form>
+            </td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

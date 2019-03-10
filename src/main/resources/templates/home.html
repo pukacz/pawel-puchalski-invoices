@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Spring Security Example</title>
+</head>
+<body>
+<table valign="top" align="center" style="font-family:arial">
+    <tr>
+        <td align="center">
+            <br>
+            <h1>Welcome!</h1>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <p>Click <a th:href="@{/invoices}">here</a> to see invoices.</p>
+            <p>Click <a th:href="@{/swagger-ui.html}">here</a> to see Swagger.</p>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
