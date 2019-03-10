@@ -24,8 +24,8 @@ import pl.coderstrust.invoices.service.InvoiceService;
 @RestController
 public class InvoiceController {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private InvoiceService invoiceService;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public InvoiceController(InvoiceService invoiceService) {
@@ -35,84 +35,80 @@ public class InvoiceController {
     @GetMapping("")
     @ApiOperation(value = "Show all invoices", notes = "Retrieving all invoices", response = Invoice[].class)
     public Collection<Invoice> getAllInvoices() throws DatabaseOperationException {
+        logger.trace("Request for all invoices.");
         Collection<Invoice> result;
         try {
             result = invoiceService.getAllInvoices();
-            logger.info("All invoices have been shown.");
+            logger.info("{} invoices were read", result.size());
         } catch (DatabaseOperationException e) {
-            logger.error("Selected invoices can't be displayed.");
+            logger.error("Unable to obtain invoices from service. {}", e.getLocalizedMessage());
             throw e;
         }
         return result;
     }
 
     @GetMapping("/byDates")
-    @ApiOperation(value = "Find invoices from the time range", notes = "Retrieving time range (from date - to date)", response = Invoice[].class)
+    @ApiOperation(value = "Find invoices from the time range", notes = "Retrieving time range (from date - to date)",
+        response = Invoice[].class)
     public Collection<Invoice> getAllOfRange(
         @ApiParam @RequestParam(value = "fromDate") String fromDate,
         @ApiParam @RequestParam(value = "toDate") String toDate) throws DatabaseOperationException {
         LocalDate startDate = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(fromDate));
         LocalDate endDate = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(toDate));
-        invoiceService.getAllOfRange(startDate, endDate);
-        {
-            Collection<Invoice> result;
-            try {
-                result = invoiceService.getAllOfRange(startDate, endDate);
-                logger.info("All invoices in selected date range have been shown.");
-            } catch (DatabaseOperationException e) {
-                logger.error("Selected invoices can't be displayed.");
-                throw e;
-            }
-            return result;
+        logger.trace("Request for invoices from dates: [{} - {}]", startDate.toString(), endDate.toString());
+        Collection<Invoice> result;
+        try {
+            result = invoiceService.getAllOfRange(startDate, endDate);
+            logger.info("{} invoices were read", result.size());
+        } catch (DatabaseOperationException e) {
+            logger.error("Unable to obtain invoices from service. {}", e.getLocalizedMessage());
+            throw e;
         }
+        return result;
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Find invoice by its unique ID", notes = "Retrieving the invoice of ID (Long number)", response = Invoice.class)
-    public Invoice getInvoiceById(@PathVariable Long id) throws DatabaseOperationException {
-        invoiceService.getInvoiceById(id);
-        {
-            Invoice result;
-            try {
-                result = invoiceService.getInvoiceById(id);
-                logger.info("This is invoice with selected id=[%].");
-            } catch (DatabaseOperationException e) {
-                logger.error("Selected invoice with id=[%] can't be displayed.",e);
-                throw e;
-            }
-            return result;
+    @ApiOperation(value = "Find invoice by its unique ID", notes = "Retrieving the invoice of ID", response = Invoice.class)
+    public Invoice getInvoiceById(@PathVariable Object id) throws DatabaseOperationException {
+        logger.trace("Request for invoice with id = [{}]", id);
+        logger.info("sadfdsf {}", id);
+        Invoice result;
+        try {
+            result = invoiceService.getInvoiceById(id);
+            logger.info("Invoice was read successfully. {}", result);
+        } catch (DatabaseOperationException e) {
+            logger.error("Unable to obtain invoices from service. {}", e.getLocalizedMessage());
+            throw e;
         }
+        return result;
     }
 
     @PostMapping("/add")
-    @ApiOperation(value = "Add or update invoice", notes = "Retrieving JSON body of new invoice (ID = 0), or invoice to update")
+    @ApiOperation(value = "Add or update invoice",
+        notes = "Retrieving JSON body of new invoice (ID = 0), or invoice to update", response = Invoice.class)
     public Invoice addInvoice(@RequestBody Invoice invoice) throws DatabaseOperationException {
-        invoiceService.saveInvoice(invoice);
-        {
-            Invoice result;
-            try {
-                result = invoiceService.saveInvoice(invoice);
-                logger.info("The invoice with selected id=[%] has been added/updated successfully.");
-            } catch (DatabaseOperationException e) {
-                logger.error("An error occurred while adding/updating invoice with selected id=[%].");
-                throw e;
-            }
-            return result;
+        logger.trace("Request for save invoice. {}", invoice);
+        Invoice result;
+        try {
+            result = invoiceService.saveInvoice(invoice);
+            logger.info("Invoice was saved successfully. {}", result);
+        } catch (DatabaseOperationException e) {
+            logger.error("Unable to obtain invoices from service. {}", e.getLocalizedMessage());
+            throw e;
         }
+        return result;
     }
 
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Find invoice by its unique ID and delete it", notes = "Retrieving the invoice of ID (Long number)")
-    public void deleteInvoice(@PathVariable Long id) throws DatabaseOperationException {
-        invoiceService.deleteInvoice(id);
-        {
-            try {
-                invoiceService.deleteInvoice(id);
-                logger.info("Invoice with selected id=[%] has been deleted.");
-            } catch (DatabaseOperationException e) {
-                logger.error("An error occurred while adding/updating invoice with selected id=[%].");
-                throw e;
-            }
+    @ApiOperation(value = "Find invoice by its unique ID and delete it", notes = "Retrieving the invoice of ID")
+    public void deleteInvoice(@PathVariable Object id) throws DatabaseOperationException {
+        logger.trace("Request for remove invoice with id = [{}]", id);
+        try {
+            invoiceService.deleteInvoice(id);
+            logger.info("Invoice with selected id=[{}] has been deleted.", id);
+        } catch (DatabaseOperationException e) {
+            logger.error("Unable to obtain invoices from service. {}", e.getLocalizedMessage());
+            throw e;
         }
     }
 }
