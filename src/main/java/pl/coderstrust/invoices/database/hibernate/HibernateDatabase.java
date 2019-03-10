@@ -13,12 +13,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 import pl.coderstrust.invoices.database.Database;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
+import pl.coderstrust.invoices.model.HibernateInvoice;
 import pl.coderstrust.invoices.model.Invoice;
-import pl.coderstrust.invoices.model.StandardInvoice;
 
 @Repository
 @ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "hibernate")
 public class HibernateDatabase implements Database {
+
+    private static final String ID_MUST_BE_LONG_TYPE_MSG = "Argument Id must be Long type.";
 
     @Autowired
     private HibernateInvoiceRepository hibernateRepository;
@@ -31,9 +33,9 @@ public class HibernateDatabase implements Database {
         if (invoice == null) {
             throw new DatabaseOperationException("Invoice can not be null.");
         }
-        StandardInvoice standardInvoice = new StandardInvoice(invoice);
+        HibernateInvoice hibernateInvoice = new HibernateInvoice(invoice);
         try {
-            StandardInvoice result = hibernateRepository.save(standardInvoice);
+            HibernateInvoice result = hibernateRepository.save(hibernateInvoice);
             return new Invoice(result);
         } catch (PersistenceException e) {
             throw new DatabaseOperationException("Failed to add/update invoice", e);
@@ -60,10 +62,10 @@ public class HibernateDatabase implements Database {
             throw new IllegalArgumentException(String.format("ID = [%d] can not be NULL or negative.", invoiceId));
         }
         try {
-            Optional<StandardInvoice> optionalInvoice = hibernateRepository.findById(invoiceId);
+            Optional<HibernateInvoice> optionalInvoice = hibernateRepository.findById(invoiceId);
             if (optionalInvoice.isPresent()) {
-                StandardInvoice standardInvoice = optionalInvoice.get();
-                return new Invoice(standardInvoice);
+                HibernateInvoice hibernateInvoice = optionalInvoice.get();
+                return new Invoice(hibernateInvoice);
             } else {
                 throw new DatabaseOperationException(String.format("There is no invoice with this ID = [%d]", invoiceId));
             }
@@ -103,9 +105,9 @@ public class HibernateDatabase implements Database {
 
     private List<Invoice> getAllInvoices() throws DatabaseOperationException {
         try {
-            Iterable<StandardInvoice> iterator = hibernateRepository.findAll();
+            Iterable<HibernateInvoice> iterator = hibernateRepository.findAll();
             List<Invoice> invoiceList = new ArrayList<>();
-            for (StandardInvoice invoice : iterator) {
+            for (HibernateInvoice invoice : iterator) {
                 invoiceList.add(new Invoice(invoice));
             }
             return invoiceList;
@@ -119,16 +121,16 @@ public class HibernateDatabase implements Database {
             return null;
         }
 
+        if (!(id instanceof String) && !(id instanceof Integer) && !(id instanceof Long)) {
+            throw new IllegalArgumentException(ID_MUST_BE_LONG_TYPE_MSG);
+        }
+
         if (id instanceof String) {
             if (NumberUtils.isParsable((String) id)) {
                 return Long.parseLong((String) id);
             } else {
-                throw new IllegalArgumentException("Argument Id must be Long type.");
+                throw new IllegalArgumentException(ID_MUST_BE_LONG_TYPE_MSG);
             }
-        }
-
-        if (!(id instanceof Integer) && !(id instanceof Long)) {
-            throw new IllegalArgumentException("Argument Id must be Long type.");
         }
 
         if (id instanceof Integer) {

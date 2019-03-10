@@ -70,7 +70,7 @@ public final class Invoice {
         this.entries = invoice.getEntries();
     }
 
-    public Invoice(StandardInvoice invoice) {
+    public Invoice(HibernateInvoice invoice) {
         this.id = invoice.getId();
         this.issue = invoice.getIssue();
         this.issueDate = invoice.getIssueDate();

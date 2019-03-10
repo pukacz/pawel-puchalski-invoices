@@ -240,6 +240,26 @@ public class InFileDatabaseTest {
         inFileDatabase.getInvoicesByDate(start, end);
     }
 
+    @Test
+    public void shouldGetId() {
+        //when
+        Long actual = inFileDatabase.getIdFromObject(1234);
+
+        //then
+        Assert.assertEquals(Long.valueOf(1234), actual);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenWrongId() {
+        //given
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Argument Id must be Long type.");
+        //when
+        Long actual = inFileDatabase.getIdFromObject("1,2.3#4");
+
+        //then
+        Assert.assertEquals(Long.valueOf(1234), actual);
+    }
 
     private static File fileFor1Invoice() {
         return new File(testFolder() + "invoicesTestSave1.dat");

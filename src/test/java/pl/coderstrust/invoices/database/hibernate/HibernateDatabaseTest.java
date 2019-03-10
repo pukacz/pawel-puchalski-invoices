@@ -8,7 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,6 +33,9 @@ import pl.coderstrust.invoices.model.Invoice;
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class HibernateDatabaseTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
     private MockMvc mockMvc;
@@ -212,12 +217,19 @@ public class HibernateDatabaseTest {
 
     @Test
     public void shouldGetId() {
-        //given
-        HibernateDatabase database = new HibernateDatabase();
-
         //when
-        Long actual = database.getIdFromObject(1234);
+        Long actual = new HibernateDatabase().getIdFromObject(1234);
+        //then
+        Assert.assertEquals(Long.valueOf(1234), actual);
+    }
 
+    @Test
+    public void shouldThrowExceptionWhenWrongId() {
+        //given
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Argument Id must be Long type.");
+        //when
+        Long actual = new HibernateDatabase().getIdFromObject("1,2.3#4");
         //then
         Assert.assertEquals(Long.valueOf(1234), actual);
     }

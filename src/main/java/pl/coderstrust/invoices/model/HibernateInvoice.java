@@ -21,13 +21,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-@ApiModel(value = "StandardInvoice", description = "invoice model")
+@ApiModel(value = "HibernateInvoice", description = "invoice model")
 @Entity
 @Table(name = "invoices")
-public final class StandardInvoice {
+public final class HibernateInvoice {
 
     @ApiModelProperty(value = "Unique ID of invoice", readOnly = true)
-    @NotNull(message = "NotNull.StandardInvoice.description")
+    @NotNull(message = "NotNull.HibernateInvoice.description")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -53,7 +53,7 @@ public final class StandardInvoice {
         inverseJoinColumns = @JoinColumn(name = "invoice_id"))
     private List<InvoiceEntry> entries;
 
-    public StandardInvoice() {
+    public HibernateInvoice() {
         this.id = null;
         this.issue = null;
         this.issueDate = null;
@@ -63,7 +63,7 @@ public final class StandardInvoice {
     }
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public StandardInvoice(@JsonProperty("id") Long id, @JsonProperty("issue") String issue,
+    public HibernateInvoice(@JsonProperty("id") Long id, @JsonProperty("issue") String issue,
         @JsonProperty("issueDate") LocalDate issueDate, @JsonProperty("seller") Company seller,
         @JsonProperty("buyer") Company buyer, @JsonProperty("entries") List<InvoiceEntry> entries) {
         this.id = id;
@@ -74,7 +74,7 @@ public final class StandardInvoice {
         this.entries = entries;
     }
 
-    public StandardInvoice(Invoice invoice) {
+    public HibernateInvoice(Invoice invoice) {
         this.id = getIdFromObject(invoice.getId());
         this.issue = invoice.getIssue();
         this.issueDate = invoice.getIssueDate();
@@ -115,7 +115,7 @@ public final class StandardInvoice {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        StandardInvoice invoice = (StandardInvoice) o;
+        HibernateInvoice invoice = (HibernateInvoice) o;
         return Objects.equals(id, invoice.id)
             && Objects.equals(issue, invoice.issue)
             && Objects.equals(issueDate, invoice.issueDate)
@@ -131,7 +131,7 @@ public final class StandardInvoice {
 
     @Override
     public String toString() {
-        return "StandardInvoice{"
+        return "HibernateInvoice{"
             + "id=" + id
             + ", issue='" + issue + '\''
             + ", issueDate=" + issueDate

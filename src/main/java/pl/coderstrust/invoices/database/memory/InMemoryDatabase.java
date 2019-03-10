@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
@@ -19,7 +20,7 @@ public class InMemoryDatabase implements Database {
 
     private static final String INVOICE_NOT_EXISTING_MSG = "Invoice id=[%d] doesn't exist.";
     private static final String INVOICE_ID_NOT_NULL_MSG = "Invoice Id must not be null.";
-    private static final String ARGUMENT_ID_MUST_BE_LONG_TYPE_MSG = "Argument id must be long type";
+    private static final String ID_MUST_BE_LONG_TYPE_MSG = "Argument Id must be Long type.";
     private HashMap<Long, Invoice> inMemoryDatabase;
     private IdGenerator idGenerator;
 
@@ -35,7 +36,7 @@ public class InMemoryDatabase implements Database {
             throw new IllegalArgumentException("Invoice must not be null.");
         }
         if (!(invoice.getId() == null) && !(invoice.getId() instanceof Long)) {
-            throw new DatabaseOperationException(ARGUMENT_ID_MUST_BE_LONG_TYPE_MSG);
+            throw new DatabaseOperationException(INVOICE_ID_NOT_NULL_MSG);
         }
         Long invoiceId = (Long) invoice.getId();
         if (invoiceId == null) {
@@ -53,10 +54,7 @@ public class InMemoryDatabase implements Database {
         if (invoiceId == null) {
             throw new IllegalArgumentException(INVOICE_ID_NOT_NULL_MSG);
         }
-        if (!(invoiceId instanceof Long)) {
-            throw new IllegalArgumentException(ARGUMENT_ID_MUST_BE_LONG_TYPE_MSG);
-        }
-        Long id = (Long) invoiceId;
+        Long id = getIdFromObject(invoiceId);
         if (inMemoryDatabase.containsKey(id)) {
             inMemoryDatabase.remove(id);
         } else {
@@ -70,7 +68,7 @@ public class InMemoryDatabase implements Database {
             throw new IllegalArgumentException(INVOICE_ID_NOT_NULL_MSG);
         }
         if (!(invoiceId instanceof Long)) {
-            throw new IllegalArgumentException(ARGUMENT_ID_MUST_BE_LONG_TYPE_MSG);
+            throw new IllegalArgumentException(INVOICE_ID_NOT_NULL_MSG);
         }
         Long id = (Long) invoiceId;
         if (inMemoryDatabase.containsKey(id)) {
@@ -101,5 +99,28 @@ public class InMemoryDatabase implements Database {
             .filter(invoice -> invoice.getIssueDate().toEpochDay() >= startDate.toEpochDay())
             .filter(invoice -> invoice.getIssueDate().toEpochDay() <= endDate.toEpochDay())
             .collect(Collectors.toList());
+    }
+
+    Long getIdFromObject(Object id) {
+        if (id == null) {
+            return null;
+        }
+
+        if (!(id instanceof String) && !(id instanceof Integer) && !(id instanceof Long)) {
+            throw new IllegalArgumentException(ID_MUST_BE_LONG_TYPE_MSG);
+        }
+
+        if (id instanceof String) {
+            if (NumberUtils.isParsable((String) id)) {
+                return Long.parseLong((String) id);
+            } else {
+                throw new IllegalArgumentException(ID_MUST_BE_LONG_TYPE_MSG);
+            }
+        }
+
+        if (id instanceof Integer) {
+            return ((Integer) id).longValue();
+        }
+        return (Long) id;
     }
 }

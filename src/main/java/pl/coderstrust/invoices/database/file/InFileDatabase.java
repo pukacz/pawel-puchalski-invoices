@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
@@ -19,11 +20,12 @@ import pl.coderstrust.invoices.model.Invoice;
 @ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "file")
 public class InFileDatabase implements Database {
 
-    private static final String INVOICE_NOT_EXISTING_MSG = "Invoice id=[%d] doesn't exist.";
     private static final String DATABASE_CORRUPTED_MSG =
         "You are trying to read/update invoice which is "
             + "not recognized in coordination file. Please synchronize database files first.";
+    private static final String INVOICE_NOT_EXISTING_MSG = "Invoice id=[%d] doesn't exist.";
     private static final String INVOICE_ID_NOT_NULL_MSG = "Invoice Id must not be null.";
+    private static final String ID_MUST_BE_LONG_TYPE_MSG = "Argument Id must be Long type.";
     private InvoiceFileAccessor fileAccessor;
     private InvoiceIdCoordinator idCoordinator;
     private IdGenerator idGenerator;
@@ -167,17 +169,26 @@ public class InFileDatabase implements Database {
         return idsFromDataFile;
     }
 
-    private Long getIdFromObject(Object id) throws DatabaseOperationException {
-        if (!(id == null) && !(id instanceof String) && !(id instanceof Integer) && !(id instanceof Long)) {
-            throw new DatabaseOperationException("Argument id must be long type");
+    Long getIdFromObject(Object id) {
+        if (id == null) {
+            return null;
+        }
+
+        if (!(id instanceof String) && !(id instanceof Integer) && !(id instanceof Long)) {
+            throw new IllegalArgumentException(ID_MUST_BE_LONG_TYPE_MSG);
+        }
+
+        if (id instanceof String) {
+            if (NumberUtils.isParsable((String) id)) {
+                return Long.parseLong((String) id);
+            } else {
+                throw new IllegalArgumentException(ID_MUST_BE_LONG_TYPE_MSG);
+            }
         }
 
         if (id instanceof Integer) {
             return ((Integer) id).longValue();
-        } else if (id instanceof String) {
-            return Long.parseLong((String) id);
-        } else {
-            return (Long) id;
         }
+        return (Long) id;
     }
 }

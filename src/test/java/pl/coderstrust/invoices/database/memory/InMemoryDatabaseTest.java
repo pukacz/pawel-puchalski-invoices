@@ -97,4 +97,16 @@ public class InMemoryDatabaseTest {
         //then
         Assert.assertEquals(expected, actual);
     }
+
+    @Test
+    public void shouldGetId() {
+        //given
+        InMemoryDatabase database = new InMemoryDatabase(idGenerator);
+
+        //when
+        Long actual = database.getIdFromObject(1234);
+
+        //then
+        Assert.assertEquals(Long.valueOf(1234), actual);
+    }
 }

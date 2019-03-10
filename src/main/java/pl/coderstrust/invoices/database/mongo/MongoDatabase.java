@@ -24,10 +24,6 @@ public class MongoDatabase implements Database {
     @Autowired
     private MongoInvoiceRepository repository;
 
-    @Autowired
-    public MongoDatabase() {
-    }
-
     @Override
     public Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException {
         if (invoice == null) {
