@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-    <title>accounting system - Fakturownik</title>
+    <title>Accounting system - Fakturownik</title>
 </head>
 <body>
 <table valign="top" align="center" style="font-family:arial">
@@ -10,10 +10,13 @@
         <td align="center">
             <br>
             <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
+            <br>
+            <p>Click <a th:href="@{/invoices}">here</a> to see invoices.</p>
+            <p>Click <a th:href="@{/swagger-ui.html}">here</a> to see Swagger.</p>
         </td>
     </tr>
     <tr>
-        <td align="centeer">
+        <td align="center">
             <form th:action="@{/logout}" method="post">
                 <input type="submit" value="Sign Out"/>
             </form>
