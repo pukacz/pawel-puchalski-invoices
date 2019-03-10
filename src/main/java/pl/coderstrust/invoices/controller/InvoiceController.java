@@ -37,7 +37,8 @@ public class InvoiceController {
     }
 
     @GetMapping("/byDates")
-    @ApiOperation(value = "Find invoices from the time range", notes = "Retrieving time range (from date - to date)", response = StandardInvoice[].class)
+    @ApiOperation(value = "Find invoices from the time range", notes = "Retrieving time range (from date - to date)",
+        response = StandardInvoice[].class)
     public Collection<Invoice> getAllOfRange(
         @ApiParam @RequestParam(value = "fromDate") String fromDate,
         @ApiParam @RequestParam(value = "toDate") String toDate) throws DatabaseOperationException {

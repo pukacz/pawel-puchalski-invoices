@@ -58,7 +58,7 @@ public class InMemoryDatabaseTest {
     public void shouldThrowExceptionWhenDeletingInvoiceWithWrongId() throws DatabaseOperationException {
         //given
         expectedException.expect(DatabaseOperationException.class);
-        expectedException.expectMessage("Failed to remove invoice. Invoice for id=[13] doesn't exist.");
+        expectedException.expectMessage("Invoice id=[13] doesn't exist.");
         InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(idGenerator);
         //when
         inMemoryDatabase.deleteInvoice(13L);
