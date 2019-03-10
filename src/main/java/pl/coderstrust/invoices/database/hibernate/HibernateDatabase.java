@@ -114,7 +114,7 @@ public class HibernateDatabase implements Database {
         }
     }
 
-    public Long getIdFromObject(Object id) {
+    Long getIdFromObject(Object id) {
         if (id == null) {
             return null;
         }
