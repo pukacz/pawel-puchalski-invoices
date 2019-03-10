@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,9 @@ import pl.coderstrust.invoices.model.Invoice;
 @ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "memory")
 public class InMemoryDatabase implements Database {
 
+    private static final String INVOICE_NOT_EXISTING_MSG = "Invoice id=[%d] doesn't exist.";
+    private static final String INVOICE_ID_NOT_NULL_MSG = "Invoice Id must not be null.";
+    private static final String ID_MUST_BE_LONG_TYPE_MSG = "Argument Id must be Long type.";
     private HashMap<Long, Invoice> inMemoryDatabase;
     private IdGenerator idGenerator;
 
@@ -29,9 +33,12 @@ public class InMemoryDatabase implements Database {
     @Override
     public Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException {
         if (invoice == null) {
-            throw new DatabaseOperationException("Invoice must not be null");
+            throw new IllegalArgumentException("Invoice must not be null.");
         }
-        Long invoiceId = invoice.getId();
+        if (!(invoice.getId() == null) && !(invoice.getId() instanceof Long)) {
+            throw new DatabaseOperationException(INVOICE_ID_NOT_NULL_MSG);
+        }
+        Long invoiceId = (Long) invoice.getId();
         if (invoiceId == null) {
             invoiceId = idGenerator.generateId(inMemoryDatabase.keySet());
             invoice = new Invoice(invoice, invoiceId);
@@ -43,20 +50,31 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public synchronized void deleteInvoice(Long invoiceId) throws DatabaseOperationException {
-        if (inMemoryDatabase.containsKey(invoiceId)) {
-            inMemoryDatabase.remove(invoiceId);
+    public synchronized void deleteInvoice(Object invoiceId) throws DatabaseOperationException {
+        if (invoiceId == null) {
+            throw new IllegalArgumentException(INVOICE_ID_NOT_NULL_MSG);
+        }
+        Long id = getIdFromObject(invoiceId);
+        if (inMemoryDatabase.containsKey(id)) {
+            inMemoryDatabase.remove(id);
         } else {
-            throw new DatabaseOperationException(String.format("Failed to remove invoice. Invoice for id=[%d] doesn't exist.", invoiceId));
+            throw new DatabaseOperationException(String.format(INVOICE_NOT_EXISTING_MSG, id));
         }
     }
 
     @Override
-    public Invoice getInvoice(Long invoiceId) throws DatabaseOperationException {
-        if (inMemoryDatabase.containsKey(invoiceId)) {
-            return inMemoryDatabase.get(invoiceId);
+    public Invoice getInvoice(Object invoiceId) throws DatabaseOperationException {
+        if (invoiceId == null) {
+            throw new IllegalArgumentException(INVOICE_ID_NOT_NULL_MSG);
+        }
+        if (!(invoiceId instanceof Long)) {
+            throw new IllegalArgumentException(INVOICE_ID_NOT_NULL_MSG);
+        }
+        Long id = (Long) invoiceId;
+        if (inMemoryDatabase.containsKey(id)) {
+            return inMemoryDatabase.get(id);
         } else {
-            throw new DatabaseOperationException(String.format("Failed to get invoice. Invoice for id=[%d] doesn't exist.", invoiceId));
+            throw new DatabaseOperationException(String.format(INVOICE_NOT_EXISTING_MSG, id));
         }
     }
 
@@ -75,12 +93,34 @@ public class InMemoryDatabase implements Database {
         }
 
         if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException(
-                "Start date [" + startDate + "] is after end date [" + endDate + "].");
+            throw new IllegalArgumentException("Start date [" + startDate + "] is after end date [" + endDate + "].");
         }
         return new ArrayList<>(getInvoices()).stream()
             .filter(invoice -> invoice.getIssueDate().toEpochDay() >= startDate.toEpochDay())
             .filter(invoice -> invoice.getIssueDate().toEpochDay() <= endDate.toEpochDay())
             .collect(Collectors.toList());
+    }
+
+    Long getIdFromObject(Object id) {
+        if (id == null) {
+            return null;
+        }
+
+        if (!(id instanceof String) && !(id instanceof Integer) && !(id instanceof Long)) {
+            throw new IllegalArgumentException(ID_MUST_BE_LONG_TYPE_MSG);
+        }
+
+        if (id instanceof String) {
+            if (NumberUtils.isParsable((String) id)) {
+                return Long.parseLong((String) id);
+            } else {
+                throw new IllegalArgumentException(ID_MUST_BE_LONG_TYPE_MSG);
+            }
+        }
+
+        if (id instanceof Integer) {
+            return ((Integer) id).longValue();
+        }
+        return (Long) id;
     }
 }

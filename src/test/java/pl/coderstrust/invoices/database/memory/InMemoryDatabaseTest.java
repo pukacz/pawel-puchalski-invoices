@@ -34,8 +34,8 @@ public class InMemoryDatabaseTest {
     @Test
     public void shouldThrowExceptionWhenSavingNull() throws DatabaseOperationException {
         //given
-        expectedException.expect(DatabaseOperationException.class);
-        expectedException.expectMessage("Invoice must not be null");
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Invoice must not be null.");
         InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(idGenerator);
         //then
         inMemoryDatabase.saveInvoice(null);
@@ -48,7 +48,7 @@ public class InMemoryDatabaseTest {
         Invoice invoice1 = new Invoice(null, null, null, null, null, null);
         Invoice invoice2 = new Invoice(13L, null, null, null, null, null);
         //when
-        Long invoice1Id = inMemoryDatabase.saveInvoice(invoice1).getId();
+        Long invoice1Id = (Long)inMemoryDatabase.saveInvoice(invoice1).getId();
         inMemoryDatabase.saveInvoice(invoice2);
         inMemoryDatabase.deleteInvoice(invoice1Id);
         //then
@@ -59,7 +59,7 @@ public class InMemoryDatabaseTest {
     public void shouldThrowExceptionWhenDeletingInvoiceWithWrongId() throws DatabaseOperationException {
         //given
         expectedException.expect(DatabaseOperationException.class);
-        expectedException.expectMessage("Failed to remove invoice. Invoice for id=[13] doesn't exist.");
+        expectedException.expectMessage("Invoice id=[13] doesn't exist.");
         InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(idGenerator);
         //when
         inMemoryDatabase.deleteInvoice(13L);
@@ -96,5 +96,17 @@ public class InMemoryDatabaseTest {
         ArrayList<Invoice> actual = new ArrayList<>(inMemoryDatabase.getInvoicesByDate(start, end));
         //then
         Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldGetId() {
+        //given
+        InMemoryDatabase database = new InMemoryDatabase(idGenerator);
+
+        //when
+        Long actual = database.getIdFromObject(1234);
+
+        //then
+        Assert.assertEquals(Long.valueOf(1234), actual);
     }
 }

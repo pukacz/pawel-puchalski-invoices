@@ -26,9 +26,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.MockitoRule;
-import pl.coderstrust.invoices.database.JsonConverter;
 import pl.coderstrust.invoices.database.DatabaseOperationException;
 import pl.coderstrust.invoices.database.IdGenerator;
+import pl.coderstrust.invoices.database.InvoiceJsonSerializer;
 import pl.coderstrust.invoices.model.Company;
 import pl.coderstrust.invoices.model.Invoice;
 import pl.coderstrust.invoices.model.InvoiceEntry;
@@ -69,7 +69,7 @@ public class InFileDatabaseTest {
     public void shouldSave1AndReturn1invoice() throws IOException, DatabaseOperationException {
         //given
         Invoice invoice = getInvoices().get(2);
-        String invoiceInJson = new JsonConverter().getJsonFromInvoice(invoice);
+        String invoiceInJson = new InvoiceJsonSerializer().getJsonFromInvoice(invoice);
         String line = invoice.getId() + ": " + invoiceInJson;
 
         //when
@@ -240,6 +240,26 @@ public class InFileDatabaseTest {
         inFileDatabase.getInvoicesByDate(start, end);
     }
 
+    @Test
+    public void shouldGetId() {
+        //when
+        Long actual = inFileDatabase.getIdFromObject(1234);
+
+        //then
+        Assert.assertEquals(Long.valueOf(1234), actual);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenWrongId() {
+        //given
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Argument Id must be Long type.");
+        //when
+        Long actual = inFileDatabase.getIdFromObject("1,2.3#4");
+
+        //then
+        Assert.assertEquals(Long.valueOf(1234), actual);
+    }
 
     private static File fileFor1Invoice() {
         return new File(testFolder() + "invoicesTestSave1.dat");

@@ -36,7 +36,8 @@ public class InvoiceController {
     }
 
     @GetMapping("/byDates")
-    @ApiOperation(value = "Find invoices from the time range", notes = "Retrieving time range (from date - to date)", response = Invoice[].class)
+    @ApiOperation(value = "Find invoices from the time range", notes = "Retrieving time range (from date - to date)",
+        response = Invoice[].class)
     public Collection<Invoice> getAllOfRange(
         @ApiParam @RequestParam(value = "fromDate") String fromDate,
         @ApiParam @RequestParam(value = "toDate") String toDate) throws DatabaseOperationException {
@@ -46,8 +47,8 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Find invoice by its unique ID", notes = "Retrieving the invoice of ID (Long number)", response = Invoice.class)
-    public Invoice getInvoiceById(@PathVariable Long id) throws DatabaseOperationException {
+    @ApiOperation(value = "Find invoice by its unique ID", notes = "Retrieving the invoice of ID", response = Invoice.class)
+    public Invoice getInvoiceById(@PathVariable Object id) throws DatabaseOperationException {
         return invoiceService.getInvoiceById(id);
     }
 
@@ -59,8 +60,8 @@ public class InvoiceController {
     }
 
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Find invoice by its unique ID and delete it", notes = "Retrieving the invoice of ID (Long number)")
-    public void deleteInvoice(@PathVariable Long id) throws DatabaseOperationException {
+    @ApiOperation(value = "Find invoice by its unique ID and delete it", notes = "Retrieving the invoice of ID")
+    public void deleteInvoice(@PathVariable Object id) throws DatabaseOperationException {
         invoiceService.deleteInvoice(id);
     }
 }

@@ -13,9 +13,9 @@ public interface InvoiceService {
     Collection<Invoice> getAllOfRange(LocalDate fromDate, LocalDate toDate)
         throws DatabaseOperationException;
 
-    Invoice getInvoiceById(Long id) throws DatabaseOperationException;
+    Invoice getInvoiceById(Object id) throws DatabaseOperationException;
 
     Invoice saveInvoice(Invoice invoice) throws DatabaseOperationException;
 
-    void deleteInvoice(Long id) throws DatabaseOperationException;
+    void deleteInvoice(Object id) throws DatabaseOperationException;
 }
