@@ -71,7 +71,6 @@ public class InvoiceController {
     @ApiOperation(value = "Find invoice by its unique ID", notes = "Retrieving the invoice of ID", response = Invoice.class)
     public Invoice getInvoiceById(@PathVariable Object id) throws DatabaseOperationException {
         logger.trace("Request for invoice with id = [{}]", id);
-        logger.info("sadfdsf {}", id);
         Invoice result;
         try {
             result = invoiceService.getInvoiceById(id);
