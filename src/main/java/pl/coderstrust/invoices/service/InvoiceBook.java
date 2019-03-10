@@ -11,8 +11,8 @@ import pl.coderstrust.invoices.model.Invoice;
 @Service
 public class InvoiceBook implements InvoiceService {
 
-    private static final String INVOICE_ID_MUST_NOT_BE_NULL = "StandardInvoice ID must not be null.";
-    private static final String INVOICE_MUST_NOT_BE_NULL = "StandardInvoice must not be null.";
+    private static final String INVOICE_ID_MUST_NOT_BE_NULL = "Invoice ID must not be null.";
+    private static final String INVOICE_MUST_NOT_BE_NULL = "Invoice must not be null.";
     private Database database;
 
     @Autowired
