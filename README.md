@@ -1,4 +1,4 @@
-# **A Simple Accounting System - Fakturownik**
+# **Invoicing System - Invoicer**
 
 * * *
 
@@ -11,7 +11,7 @@ Maven >= 2.5.1
 
 ## **Quickstart**
 
- To execute Fakturownik simply type in the command line :
+ To execute Invoicer simply type in the command line :
 `mvn exec:java`
 
 
@@ -19,15 +19,15 @@ Maven >= 2.5.1
 
 * * *
 
-Fakturownik is available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
+Invoicer is available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
 
 ## Credits
 
 * * *
 
-Fakturownik is created and maintained by Karolina, Paweł and Mariusz as the main project at [CodersTrust ](https://coderstrust.pl/)
+Invoicer is created and maintained by Karolina, Paweł and Mariusz as the main project at [CodersTrust ](https://coderstrust.pl/)
 
-Fakturownik is powered by:
+Invoicer is powered by:
 
 [![](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/IntelliJ_IDEA_Logo.svg/64px-IntelliJ_IDEA_Logo.svg.png) ](https://www.jetbrains.com/idea/)
  [ ![](https://tinyurl.com/yb8nsx2p) ](https://www.oracle.com/java/) 
